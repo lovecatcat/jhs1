@@ -19,7 +19,8 @@ export default {
   // 去重
   unique (a, key) {
     let res = []
-    let len = a.length
+    let len = (a && a.length) || 0
+    if (!len) return res
     let jLen
     for (let i = 0; i < len; i++) {
       jLen = res.length

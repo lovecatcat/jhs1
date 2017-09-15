@@ -76,7 +76,7 @@ export default new Vuex.Store({
     },
     SET_INSINFO (state, payload) {
       console.log('commit mutation: SET_INSINFO')
-      state.insInfo = Object({}, state.insInfo, payload)
+      state.insInfo = payload
     },
     SET_INSLIST (state, payload) {
       console.log('commit mutation: SET_INSLIST')

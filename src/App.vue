@@ -87,7 +87,7 @@
           for (let j in planIns) {
             let item = planIns[j]
             data.push(item.main)
-            data.concat(...item.addon)
+            item.addon && data.concat(...item.addon)
           }
         }
         console.log(JSON.stringify(data))
@@ -98,21 +98,20 @@
       }
     },
     created () {
-      if (this.pl_id) {
-        // 获取险种列表
-        this.$store.dispatch('SET_INSLIST', {
-          admin_id: this.admin_id,
-          ecb: this.errorCb,
-          scb: () => {
-            // 获取编辑信息
-            this.$store.dispatch('SET_PLANS', {
-              admin_id: this.admin_id,
-              pl_id: this.pl_id,
-              cb: this.errorCb
-            })
-          }
-        })
-      } else {
+      // 获取险种列表
+      this.$store.dispatch('SET_INSLIST', {
+        admin_id: this.admin_id,
+        ecb: this.errorCb,
+        scb: () => {
+          // 获取编辑计划书信息
+          this.pl_id && this.$store.dispatch('SET_PLANS', {
+            admin_id: this.admin_id,
+            pl_id: this.pl_id,
+            cb: this.errorCb
+          })
+        }
+      })
+      if (!this.pl_id) {
         this.$store.commit('SET_PARAM', {
           plans: [{
             ins: [{
