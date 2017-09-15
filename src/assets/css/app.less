@@ -1,0 +1,128 @@
+@media only screen and (min-width: 600px) {
+  html {
+    font-size: 100px !important;
+  }
+}
+
+.am-list.form, .am-list.am-list-form {
+  .am-list-label {
+    font-size: .15rem !important;
+    width: .7rem !important;
+    color: #54585f;
+  }
+  .am-list-item input {
+    font-size: .15rem !important;
+  }
+}
+.insurance .am-list-dropdown-list{
+  margin-left: -.15rem;
+}
+
+.form-header {
+  height: .4rem;
+  line-height: .4rem;
+  color: #bd9340;
+  font-size: .15rem;
+  padding: 0 .1rem;
+  background-color: #fff5dc;
+  &__dropdown{
+    height: .44rem;
+    line-height: .44rem;
+  }
+}
+
+.add-plan {
+  height: 96%;
+}
+
+//日期
+.app-date {
+  position: relative;
+  text-align: center;
+  color: #999999;
+  font-size: .12rem;
+  border: 1px solid #999999;
+  border-radius: 5px;
+  height: .2rem;
+  padding: 0 .03rem;
+  .icon {
+    z-index: 1;
+  }
+  .input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0;
+    z-index: 2;
+  }
+}
+
+//颜色
+.color-blank {
+  color: #000;
+}
+
+//性别
+.sex-radio {
+  display: inline-block;
+  width: 45%;
+}
+
+.sex-radio .am-checkbox {
+  width: .25rem;
+}
+
+//箭头
+.arrow-icon {
+  &:after {
+    content: " ";
+    display: inline-block;
+    float: right;
+    margin: .17rem .02rem 0 0;
+    height: 0.06rem;
+    width: 0.06rem;
+    border: .02rem solid #bd9340;
+    border-bottom: 0 none;
+    border-left: 0 none;
+    -webkit-transform: matrix(.71, .71, -.71, .71, 0, 0);
+    transform: matrix(.71, .71, -.71, .71, 0, 0);
+  }
+  &.active:after {
+    border: .02rem solid #bd9340;
+    border-top: 0 none;
+    border-left: 0 none;
+    -webkit-transform: matrix(.71, .71, -.71, .71, 0, 0);
+    transform: matrix(.71, .71, -.71, .71, 0, 0);
+  }
+}
+
+//按钮
+.am-button-group{
+  padding: .05rem 0!important;
+  background-color: transparent!important;
+}
+.am-button:not([am-version]){
+  &.save{
+    border-top: 1px solid #eee ;
+    border-bottom: 1px solid #eee ;
+    color: #707dfe ;
+    border-radius: 0 ;
+    background-color: #fff;
+  }
+  &.add{
+    border-top: 1px solid #eee ;
+    border-bottom: 1px solid #eee ;
+    color: #f71010 ;
+    border-radius: 0 ;
+    background-color: #fff;
+  }
+  &.created{
+    border-top: 1px solid #eee ;
+    border-bottom: 1px solid #eee ;
+    color: #fff ;
+    border-radius: 0 ;
+    background-color: #febe14;
+  }
+}
