@@ -102,9 +102,9 @@
     created () {
       if (!this.$store.state.pl_id) {
         this.appl = {
-          name: '',
-          age: '',
-          sex: ''
+          name: 'qwe',
+          age: '22',
+          sex: true
         }
       }
     }

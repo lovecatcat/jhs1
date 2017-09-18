@@ -15,7 +15,7 @@ export default new Vuex.Store({
   state: {
     insInfo: {}, // 所有险种详情信息
     insList: null, // 所有险种相关列表
-    admin_id: document.getElementById('admin_id').value || $_GET['admin_id'], // 用户ID
+    admin_id: document.getElementById('admin_id').value || $_GET['admin_id'] || '1846', // 用户ID
     pl_id: $_GET['pl_id'] || '', // 计划书ID
 
     plans: [{}], // 所有方案
@@ -23,7 +23,8 @@ export default new Vuex.Store({
     appl: {}, // 投保人
     // 编辑数据
     plansData: null, // 所有方案
-    applData: {} // 投保人
+    applData: {}, // 投保人
+    saveStatus: [false] // 方案保存状态
   },
   getters: {
     assu: state => {
@@ -69,14 +70,18 @@ export default new Vuex.Store({
         assu: {}
       })
       state.activePlan = state.plans.length - 1
+      state.saveStatus.push(false)
     },
     SET_PLAN (state, payload) {
       console.log('commit mutation: SET_PLAN')
       state.plans[state.activePlan].ins = utils.parseVueObj(payload)
     },
+    CHG_PLAN_STATUS (state, payload) {
+      state.saveStatus[state.activePlan] = payload
+    },
     SET_INSINFO (state, payload) {
       console.log('commit mutation: SET_INSINFO')
-      state.insInfo = payload
+      state.insInfo = Object.assign(state.insInfo, payload)
     },
     SET_INSLIST (state, payload) {
       console.log('commit mutation: SET_INSLIST')

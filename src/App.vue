@@ -21,19 +21,31 @@
     <applicant :edit="applData"></applicant>
 
     <div class="plan" v-show="index === activePlan" v-for="plan,index in plans" :key="index" v-if="!pl_id">
-      <assured></assured>
-      <insurance v-for="ins,i in plan.ins" :key="i" :index="i"></insurance>
+      <assured :ref="'assu_' + index"></assured>
+      <insurance :ref="'ins_' + index" v-for="ins,i in plan.ins" :key="i" :index="i"></insurance>
+
+      <div class="am-button-group" v-show="saveStatus[index] === false">
+        <button type="button" class="am-button add" @click="addIns">
+          <i class="iconfont icon-tianjia"></i> 添加险种
+        </button>
+        <button type="button" class="am-button add" @click="savePlan">
+          <i class="iconfont icon-baocun"></i> 保存方案 {{index + 1}}
+        </button>
+      </div>
     </div>
 
     <div class="plan" v-show="index === activePlan" v-for="plan,index in plansData" :key="index" v-else>
-      <assured :edit="plan.assu"></assured>
-      <insurance :edit="ins" v-for="ins,i in plan.ins" :key="i" :index="i"></insurance>
-    </div>
+      <assured :ref="'assu_' + index" :edit="plan.assu"></assured>
+      <insurance :ref="'ins_' + index" :edit="ins" v-for="ins,i in plan.ins" :key="i" :index="i"></insurance>
 
-    <div class="am-button-group">
-      <button type="button" class="am-button add" @click="addIns">
-        <i class="iconfont icon-tianjia"></i> 添加险种
-      </button>
+      <div class="am-button-group" v-show="saveStatus[index] === false">
+        <button type="button" class="am-button add" @click="addIns">
+          <i class="iconfont icon-tianjia"></i> 添加险种
+        </button>
+        <button type="button" class="am-button add" @click="savePlan">
+          <i class="iconfont icon-baocun"></i> 保存方案 {{index + 1}}
+        </button>
+      </div>
     </div>
 
     <div class="am-button-group">
@@ -66,12 +78,14 @@
     },
     computed: {
       ...mapState([
+        'appl',
         'plans',
         'applData',
         'plansData',
         'pl_id',
         'admin_id',
-        'activePlan'
+        'activePlan',
+        'saveStatus'
       ])
     },
     methods: {
@@ -79,21 +93,68 @@
         console.info('addIns')
         this.$store.commit('ADD_INS')
       },
+      savePlan () {
+        console.info('savePlan')
+        let crtIns = this.$refs['ins_' + this.activePlan]
+        crtIns.forEach(item => {
+          // TODO 校验所有险种 填写完整
+          if (item.showAll === true) { // 收缩险种信息
+            item.$refs.dropdown.toggle()
+          }
+          item.saveIns()
+        })
+        this.$store.commit('CHG_PLAN_STATUS', true)
+        this.$forceUpdate()
+      },
       pushPlan () {
         console.info('pushPlan')
+        for (let s = 0; s < this.saveStatus.length; s++) {
+          if (this.saveStatus[s] === false) {
+            this.$toast.open('请保存方案' + (s + 1))
+            return false
+          }
+        }
+
         let data = []
         for (let i in this.plans) {
           let planIns = this.plans[i].ins
           for (let j in planIns) {
             let item = planIns[j]
             data.push(item.main)
-            item.addon && data.concat(...item.addon)
+            for (let k in item.addon) {
+              data.push(item.addon[k])
+            }
           }
         }
-        console.log(JSON.stringify(data))
         utils.post('Prospectus/CreateBook4', qs.stringify({
           safes: JSON.stringify(data)
         })).then(ret => {
+          ret = ret.data
+          console.log(ret)
+          let url = ''
+          let plId = []
+          let parentId = []
+          let prospectusType = []
+          for (let i = 0; i < ret.data.length; i++) {
+            let j
+            let type
+            let parent
+
+            for (j in ret.data[i]) {
+              console.log(j)
+              if (ret.status && ret.data[i].hasOwnProperty(j) === true && !isNaN(j)) {
+                type = ret.data[i][j].type
+                parent = j
+              }
+            }
+            plId.push(ret.data[i].pl_id)
+            prospectusType.push(type)
+            parentId.push(parent)
+          }
+          url += 'admin_id=' + this.admin_id + '&pl_id=' + plId + '&parent_id=' + parentId + '&prospectus_type=' + prospectusType + '/'
+          url = '/wechat/prospectus_group?' + url + '/' + this.appl.name + '/' + (this.appl.sex === true ? 1 : 2)
+          console.log(url)
+          location.href = url
         }).catch(this.errorCb)
       }
     },

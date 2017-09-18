@@ -53,7 +53,11 @@
     },
     data () {
       return {
-        assu: null,
+        assu: {
+          name: 'qaz',
+          sex: true,
+          age: '24'
+        },
         birthday: ''
       }
     },
@@ -84,9 +88,11 @@
       }
     },
     created () {
-      let assu = Object.assign({}, this.edit)
-      assu.sex && (assu.sex = assu.sex === 1 || assu.sex === true)
-      this.assu = assu
+      if (this.edit) {
+        let assu = Object.assign({}, this.assu)
+        assu.sex = assu.sex === 1 || assu.sex === true
+        this.assu = assu
+      }
     }
   }
 </script>
