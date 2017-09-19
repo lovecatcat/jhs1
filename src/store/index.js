@@ -73,6 +73,11 @@ export default new Vuex.Store({
     },
     SET_PLAN (state, payload) {
       console.log('commit mutation: SET_PLAN')
+      // if (!state.plans[state.activePlan]) {
+      //   state.plans[state.activePlan] = {
+      //     ins: utils.parseVueObj(payload)
+      //   }
+      // }
       state.plans[state.activePlan].ins = utils.parseVueObj(payload)
     },
     CHG_PLAN_STATUS (state, payload) {

@@ -198,7 +198,7 @@
       <template v-if="item.safe_id === '332'">
         <app-select label="保险金额">
           <select v-model.number="flag[item.safe_id]" @change="flagChanged(item.safe_id)">
-            <option disabled value='0'>请选择</option>
+            <option disabled value=''>请选择</option>
             <option value="100000">100000</option>
             <option value="200000">200000</option>
             <option value="300000">300000</option>
@@ -255,7 +255,7 @@
       <template v-else-if="item.safe_id === '294'">
         <app-select label="保险金额">
           <select v-model.number="flag[item.safe_id]" @change="flagChanged(item.safe_id)">
-            <option disabled value='0'>请选择</option>
+            <option disabled value=''>请选择</option>
             <option value="2000">2000</option>
             <option value="3000">3000</option>
             <option value="4000">4000</option>
@@ -338,7 +338,7 @@
       <template v-else-if="item.safe_id === '293'">
         <app-select label="保险金额">
           <select v-model.number="flag[item.safe_id]" @change="flagChanged(item.safe_id)">
-            <option disabled value='0'>请选择</option>
+            <option disabled value=''>请选择</option>
             <option value="150">有社保50万</option>
             <option value="250">无社保50万</option>
           </select>
@@ -427,7 +427,7 @@
       <template v-else-if="(item.safe_id === '235' || item.safe_id === '236' || item.safe_id === '237')">
         <app-select label="保险金额">
           <select v-model.number="flag[item.safe_id]" @change="flagChanged(item.safe_id)">
-            <option disabled value='0'>请选择</option>
+            <option disabled value=''>请选择</option>
             <option value="1" v-if="(insurance.period_money > 1000 && insurance.period_money <= 1499)">1份</option>
             <option :value="n" v-else-if="(insurance.period_money > 1500 && insurance.period_money <= 2999)"
                     v-for="n in 2">{{n}}份
@@ -463,7 +463,7 @@
       <template v-else-if="item.safe_id === '273'">
         <app-select label="选择计划">
           <select v-model.number="flag[item.safe_id]" @change="flagChanged(item.safe_id)">
-            <option disabled value='0'>请选择计划</option>
+            <option disabled value=''>请选择计划</option>
             <option value='1'>愈安</option>
             <option value='3'>愈佳</option>
           </select>
@@ -506,7 +506,7 @@
       <template v-else-if="item.safe_id === '175'">
         <app-select label="保险计划">
           <select v-model.number="flag[item.safe_id]" @change="flagChanged(item.safe_id)">
-            <option disabled value='0'>请选择计划</option>
+            <option disabled value=''>请选择计划</option>
             <option value='1'>计划一(基本保额：1万元)</option>
             <option value='2'>计划二(基本保额：2万元)</option>
             <option value='3'>计划三(基本保额：3.5万元)</option>
@@ -550,7 +550,7 @@
         <app-select label="职业分类">
           <select v-model.number="flag[item.safe_id]"
                   @change="addonRes[item.safe_id]=null,addonsSelected[item.safe_id]=false">
-            <option disabled value='0'>请选择职业分类</option>
+            <option disabled value=''>请选择职业分类</option>
             <option :value="item" v-for="item in 4">{{item}}类</option>
           </select>
         </app-select>
@@ -601,7 +601,7 @@
       <template v-else-if="item.safe_id === '146'">
         <app-select label="保险金额">
           <select v-model.number="flag[item.safe_id]" @change="flagChanged(item.safe_id)">
-            <option disabled value='0'>请选择金额</option>
+            <option disabled value=''>请选择金额</option>
             <option value="2000">2000元</option>
             <option value="3000">3000元</option>
             <option value="4000">4000元</option>
@@ -898,7 +898,7 @@
         }
 
         if (safeid === '205' || safeid === '352') { // 泰康尊享岁月  中国人保尊赢
-          this.flag[safeid] = 0 // 领取年龄
+          this.flag[safeid] = '' // 领取年龄
         }
 
         // 保费、保额
@@ -931,6 +931,7 @@
           this.insurance.money = money || '' // 基本保险金额
           this.insurance.period_money = main.year_fee || '' // 年交保费
           this.$forceUpdate()
+          this.resetAddon()
         }
       },
       // 重置主险费用及附加险
@@ -1014,7 +1015,7 @@
               break
             case '332': // 乐行天下
               if (toastText) break
-              if (flag === 0) {
+              if (flag) {
                 toastText = '请先选择保险金额'
               }
               break
@@ -1071,7 +1072,7 @@
               break
             case '273':
             case '175':
-              if (flag === 0) {
+              if (flag) {
                 toastText = '请先选择计划'
               }
               break
@@ -1082,7 +1083,7 @@
                 toastText = '保险金额范围为5万~300万'
               } else if (this.cache.base_money148 > this.insurance.money * 5) {
                 toastText = '保额不得超过主险保额的5倍'
-              } else if (flag === 0) {
+              } else if (flag) {
                 toastText = '请先选择职业分类'
               }
               break
@@ -1096,7 +1097,7 @@
               }
               break
             case '146':
-              if (flag === 0) {
+              if (flag) {
                 toastText = '请先选择保险金额'
               }
               break
@@ -1127,7 +1128,7 @@
             case '235': // 附加住院费用医疗（非社保型）
               if (this.addonsSelected[236]) {
                 toastText = '社保与非社保只能选择一个'
-              } else if (flag === 0) {
+              } else if (flag) {
                 toastText = '请先选择保险金额'
               }
               break
@@ -1135,12 +1136,12 @@
             case '236': // 附加住院费用医疗（社保型）
               if (this.addonsSelected[235]) {
                 toastText = '社保与非社保只能选择一个'
-              } else if (flag === 0) {
+              } else if (flag) {
                 toastText = '请先选择保险金额'
               }
               break
             case '237': // 附加住院费用医疗（社保型）
-              if (flag === 0) {
+              if (flag) {
                 toastText = '请先选择保险金额'
               }
               break
@@ -1166,24 +1167,24 @@
       resetAddon () {
         let safeid = this.insurance.safe_id
         if (safeid === '318') {
-          this.flag[332] = 0
+          this.flag[332] = ''
         } else if (safeid === '288' || safeid === '290' || safeid === '292') {
-          this.flag[294] = 0
-          this.flag[293] = 0
+          this.flag[294] = ''
+          this.flag[293] = ''
         } else if (safeid === '283') {
-          this.flag[146] = 0
+          this.flag[146] = ''
           this.flag[147] = 2000
           this.cache.quota147 = 2
-          this.flag[148] = 0
+          this.flag[148] = ''
           this.cache.base_money148 = 0
         } else if (safeid === '272') {
-          this.flag[273] = 0
+          this.flag[273] = ''
         } else if (safeid === '130') {
           this.flag[175] = 1
         } else if (safeid === '165' || safeid === '319') {
-          this.flag[235] = 0
-          this.flag[236] = 0
-          this.flag[237] = 0
+          this.flag[235] = ''
+          this.flag[236] = ''
+          this.flag[237] = ''
         }
         this.addonsSelected = {}
         this.cache.pay_money332 = ''
@@ -1643,7 +1644,6 @@
             break
         }
         if (toastText) {
-          // this.log(toastText, INFO)
           this.$toast.open(toastText)
           return false
         }
