@@ -180,11 +180,11 @@
         <template v-if="addonRes[item.safe_id]">
           <div class="am-list-item">
             <div class="am-list-content">保障期间</div>
-            <div class="am-ft-black">{{mainSafe_year}}年</div>
+            <div class="am-ft-black">{{mainSafeYear}}年</div>
           </div>
           <div class="am-list-item">
             <div class="am-list-content">缴费期间</div>
-            <div class="am-ft-black">{{mainPay_year}}年</div>
+            <div class="am-ft-black">{{mainPayYear}}年</div>
           </div>
           <div class="am-list-item">
             <div class="am-list-content">年缴保费</div>
@@ -206,11 +206,11 @@
         <template v-if="addonRes[item.safe_id]">
           <div class="am-list-item">
             <div class="am-list-content">保障期间</div>
-            <div class="am-ft-black">{{mainSafe_year}}年</div>
+            <div class="am-ft-black">{{mainSafeYear}}年</div>
           </div>
           <div class="am-list-item">
             <div class="am-list-content">缴费期间</div>
-            <div class="am-ft-black">{{mainPay_year}}年</div>
+            <div class="am-ft-black">{{mainPayYear}}年</div>
           </div>
           <div class="am-list-item">
             <div class="am-list-content">年缴保费</div>
@@ -370,7 +370,7 @@
         </div>
         <div class="am-list-item">
           <div class="am-list-content">缴费期间</div>
-          <div class="am-ft-black">{{mainPay_year - 1}}年交</div>
+          <div class="am-ft-black">{{mainPayYear - 1}}年交</div>
         </div>
         <div class="am-list-item">
           <div class="am-list-content">保险金额</div>
@@ -386,11 +386,11 @@
       <template v-else-if="(item.safe_id==='285' || item.safe_id==='284') && addonRes[item.safe_id]">
         <div class="am-list-item">
           <div class="am-list-content">保障期间</div>
-          <div class="am-ft-black">{{mainPay_year - 1}}年</div>
+          <div class="am-ft-black">{{mainPayYear - 1}}年</div>
         </div>
         <div class="am-list-item">
           <div class="am-list-content">缴费期间</div>
-          <div class="am-ft-black">{{mainPay_year - 1}}年交</div>
+          <div class="am-ft-black">{{mainPayYear - 1}}年交</div>
         </div>
         <div class="am-list-item">
           <div class="am-list-content">保险金额</div>
@@ -406,11 +406,11 @@
       <template v-else-if="item.safe_id === '281' && addonRes[item.safe_id]">
         <div class="am-list-item">
           <div class="am-list-content">保障期间</div>
-          <div class="am-ft-black">{{mainPay_year}}年</div>
+          <div class="am-ft-black">{{mainPayYear}}年</div>
         </div>
         <div class="am-list-item">
           <div class="am-list-content">缴费期间</div>
-          <div class="am-ft-black">{{mainPay_year}}年交</div>
+          <div class="am-ft-black">{{mainPayYear}}年交</div>
         </div>
         <div class="am-list-item">
           <div class="am-list-content">保险金额</div>
@@ -632,11 +632,11 @@
       <template v-else-if="item.safe_id === '131' && addonRes[item.safe_id]">
         <div class="am-list-item">
           <div class="am-list-content">保障期间</div>
-          <div class="am-ft-black">{{mainPay_year > 1 ? mainPay_year - 1 : mainPay_year}}年</div>
+          <div class="am-ft-black">{{mainPayYear > 1 ? mainPayYear - 1 : mainPayYear}}年</div>
         </div>
         <div class="am-list-item">
           <div class="am-list-content">缴费期间</div>
-          <div class="am-ft-black">{{mainPay_year > 1 ? (mainPay_year - 1) + '年交' : '趸交'}}</div>
+          <div class="am-ft-black">{{mainPayYear > 1 ? (mainPayYear - 1) + '年交' : '趸交'}}</div>
         </div>
         <div class="am-list-item">
           <div class="am-list-content">保险金额</div>
@@ -664,11 +664,11 @@
         </div>
         <div class="am-list-item">
           <div class="am-list-content">缴费期间</div>
-          <div class="am-ft-black">{{mainPay_year}}年交</div>
+          <div class="am-ft-black">{{mainPayYear}}年交</div>
         </div>
         <div class="am-list-item">
           <div class="am-list-content">保险金额</div>
-          <div class="am-ft-orange">{{insurance.period_money * mainPay_year}}</div>
+          <div class="am-ft-orange">{{insurance.period_money * mainPayYear}}</div>
         </div>
         <div class="am-list-item">
           <div class="am-list-content">年缴保费</div>
@@ -680,11 +680,11 @@
       <template v-else-if="item.safe_id === '86' && addonRes[item.safe_id]">
         <div class="am-list-item">
           <div class="am-list-content">保障期间</div>
-          <div class="am-ft-black">{{(mainPay_year - 1) + '年'}}</div>
+          <div class="am-ft-black">{{(mainPayYear - 1) + '年'}}</div>
         </div>
         <div class="am-list-item">
           <div class="am-list-content">缴费期间</div>
-          <div class="am-ft-black">{{(mainPay_year - 1) + '年交'}}</div>
+          <div class="am-ft-black">{{(mainPayYear - 1) + '年交'}}</div>
         </div>
         <div class="am-list-item">
           <div class="am-list-content">年缴保费</div>
@@ -713,7 +713,8 @@
   export default {
     name: 'insurance',
     props: {
-      index: Number
+      index: Number,
+      edit: Object
     },
     data () {
       return {
@@ -799,10 +800,6 @@
        * 主险
        */
       companyChanged () {
-        this.$store.dispatch('SET_INSINFO', {
-          sc_id: this.sc_id,
-          cb: this.errorCb
-        })
         this.insurance = {
           safe_id: '',
           safe_year: '',
@@ -813,8 +810,8 @@
         this.prospectus_type = ''
       },
       // 更改险种
-      insChanged () {
-        const safeid = this.insurance.safe_id
+      insChanged (safeid) {
+        safeid = this.insurance.safe_id || safeid
         if (!safeid) return
         const mainIns = this.insInfo[this.sc_id][safeid]
         this.mainInsurance = mainIns
@@ -2057,6 +2054,32 @@
           addon: this.addonInsData
         }
         this.$store.commit('SET_PLAN', this.ins)
+      }
+    },
+    created () {
+      if (this.edit) {
+        let main = this.edit.main
+        this.sc_id = utils.getCompanyId(this.insList.main, main.safe_id)
+        this.companyChanged()
+//        this.insChanged(main.safe_id)
+        this.insurance.safe_year = Number(main.safe_year)
+        this.insurance.pay_year = Number(main.pay_year)
+        this.insurance.money = main.base_money || '' // 基本保险金额
+        this.insurance.period_money = main.year_fee || '' // 年交保费
+      }
+    },
+    watch: {
+      insInfo: {
+        handler (val) {
+          console.log(val)
+        },
+        deep: true
+      },
+      insList: {
+        handler (val) {
+          console.log(val)
+        },
+        deep: true
       }
     }
   }

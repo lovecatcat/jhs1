@@ -79,10 +79,10 @@ export default new Vuex.Store({
     CHG_PLAN_STATUS (state, payload) {
       state.saveStatus[state.activePlan] = payload
     },
-    SET_INSINFO (state, payload) {
+/*    SET_INSINFO (state, payload) {
       console.log('commit mutation: SET_INSINFO')
       state.insInfo = Object.assign(state.insInfo, payload)
-    },
+    },*/
     SET_INSLIST (state, payload) {
       console.log('commit mutation: SET_INSLIST')
       state.insList = payload
@@ -154,14 +154,14 @@ export default new Vuex.Store({
         commit('SET_INSLIST', ret.data.data)
         payload.scb && payload.scb()
       }).catch(payload.ecb)
-    },
-    SET_INSINFO ({commit}, payload) {
+    }
+/*    SET_INSINFO ({commit}, payload) {
       console.log('dispatch action: SET_INSINFO')
       utils.get('Warranty/getSafegoodsList?sc_id=' + payload.sc_id).then(ret => {
         commit('SET_INSINFO', {
           [payload.sc_id]: ret.data
         })
       }).catch(payload.cb)
-    }
+    }*/
   }
 })

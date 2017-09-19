@@ -24,7 +24,7 @@
       <assured :ref="'assu_' + index"></assured>
       <insurance :ref="'ins_' + index" v-for="ins,i in plan.ins" :key="i" :index="i"></insurance>
 
-      <div class="am-button-group" v-show="saveStatus[index] === false">
+      <div class="am-button-group" v-show="saveStatus[index] !== true">
         <button type="button" class="am-button add" @click="addIns">
           <i class="iconfont icon-tianjia"></i> 添加险种
         </button>
@@ -38,12 +38,12 @@
       <assured :ref="'assu_' + index" :edit="plan.assu"></assured>
       <insurance :ref="'ins_' + index" :edit="ins" v-for="ins,i in plan.ins" :key="i" :index="i"></insurance>
 
-      <div class="am-button-group" v-show="saveStatus[index] === false">
+      <div class="am-button-group" v-show="saveStatus[index] !== true">
         <button type="button" class="am-button add" @click="addIns">
           <i class="iconfont icon-tianjia"></i> 添加险种
         </button>
         <button type="button" class="am-button add" @click="savePlan">
-          <i class="iconfont icon-baocun"></i> 保存方案 {{index + 1}}
+          <i class="iconfont icon-baocun"></i> 保存 方案{{index + 1}}
         </button>
       </div>
     </div>
@@ -110,7 +110,7 @@
         console.info('pushPlan')
         for (let s = 0; s < this.saveStatus.length; s++) {
           if (this.saveStatus[s] === false) {
-            this.$toast.open('请保存方案' + (s + 1))
+            this.$toast.open('请保存 方案' + (s + 1))
             return false
           }
         }
@@ -126,6 +126,7 @@
             }
           }
         }
+        this.log(data)
         utils.post('Prospectus/CreateBook4', qs.stringify({
           safes: JSON.stringify(data)
         })).then(ret => {

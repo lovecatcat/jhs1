@@ -29,7 +29,7 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/api': {
-        target: 'http://cloud.ehuimeng.com',
+        target: 'http://ts-cloud.ehuimeng.com',
         pathRewrite: {
           '^/api': ''
         },
