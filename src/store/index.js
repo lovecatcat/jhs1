@@ -17,7 +17,7 @@ export default new Vuex.Store({
     admin_id: document.getElementById('admin_id').value || $_GET['admin_id'] || '1846', // 用户ID
     pl_id: $_GET['pl_id'] || '', // 计划书ID
 
-    plans: [{}], // 所有方案
+    plans: [], // 所有方案
     activePlan: 0, // 当前方案
     appl: {}, // 投保人
     // 编辑数据
@@ -27,11 +27,11 @@ export default new Vuex.Store({
   },
   getters: {
     assu: state => {
-      let plans = state.pl_id ? state.plansData : state.plans
+      let plans = state.plans
       return plans ? plans[state.activePlan].assu : {}
     },
     ins: state => {
-      let plans = state.pl_id ? state.plansData : state.plans
+      let plans = state.plans
       return plans ? plans[state.activePlan].ins : [{}]
     }
   },
@@ -62,6 +62,10 @@ export default new Vuex.Store({
       console.log('commit mutation: ADD_INS')
       state.plans[state.activePlan].ins.push({})
     },
+    RMV_INS (state, index) {
+      console.log('commit mutation: RMV_INS')
+      state.plans[state.activePlan].ins[index] = null
+    },
     ADD_PLAN (state) {
       console.log('commit mutation: ADD_PLAN')
       state.plans.push({
@@ -73,11 +77,6 @@ export default new Vuex.Store({
     },
     SET_PLAN (state, payload) {
       console.log('commit mutation: SET_PLAN')
-      // if (!state.plans[state.activePlan]) {
-      //   state.plans[state.activePlan] = {
-      //     ins: utils.parseVueObj(payload)
-      //   }
-      // }
       state.plans[state.activePlan].ins = utils.parseVueObj(payload)
     },
     CHG_PLAN_STATUS (state, payload) {
@@ -143,7 +142,7 @@ export default new Vuex.Store({
             })
           }
           commit('SET_PARAM', {
-            plansData: plans
+            plans
           })
           payload.scb && payload.scb()
         }

@@ -1,133 +1,149 @@
 <template>
   <div class="insurance">
-    <app-dropdown :label="plan_name ? plan_name : '险种信息'" ref="dropdown" :up="showAll" :func="toggle" v-if="insList">
-      <app-select label="公司品牌">
-        <select v-model='sc_id' @change="companyChanged">
-          <option disabled value=''>请选择</option>
-          <option v-for="item,index in insList.company" :key="index" :value="item.sc_id">{{item.company_name}}</option>
-        </select>
-      </app-select>
-      <app-select label="险种">
-        <select v-model='mainInsurance' @change="insChanged">
-          <option disabled value=''>请选择</option>
-          <option v-for="item,index in insList.main[sc_id]" v-if="sc_id" :key="index" :value="item">{{item.name}}
-          </option>
-        </select>
-      </app-select>
-      <app-select label="保险期间" :readonly="mainSyAttr != null && mainSyAttr.length === 1">
-        <select v-model.number='insurance.safe_year'
-                :disabled="mainSyAttr != null && mainSyAttr.length === 1"
-                @change="resetFee">
-          <option disabled value=''>请选择</option>
-          <option v-for="(item,index) in mainSyAttr" :value="item.safe_year" :key="index">
-            {{item.safe_year | safeYearFilter}}
-          </option>
-        </select>
-      </app-select>
-      <app-select label="缴费年限" :readonly="mainPyAttr != null && mainPyAttr.length === 1">
-        <select v-model.number='insurance.pay_year'
-                :disabled="mainPyAttr != null && mainPyAttr.length === 1"
-                @change="resetFee">
-          <option disabled value=''>请选择</option>
-          <option v-for="(item,index) in mainPyAttr" :value="item.pay_year" :key="index">
-            {{item.pay_year === '1' ? '趸交' : item.pay_year + '年交'}}
-          </option>
-        </select>
-      </app-select>
-      <template v-if="insurance.safe_id">
-        <!-- 输入保额算保费 -->
-        <template v-if="isBaseMoney&&!fuBaseMoney">
-          <app-select label="计划类型" v-if="prospectus_types.length > 0">
-            <select v-model.number="prospectus_type" v-if="prospectus_types" @change="resetFee">
+    <div class="am-list am-list-6lb form">
+      <div class="am-list-item dropdown" :class="{up:showAll}">
+        <div class="form-header fn-clear form-header__dropdown" @click="toggle">
+          <div class="fn-left">
+            <span>{{plan_name ? plan_name : '险种信息'}}</span>
+          </div>
+          <div class="arrow-icon" :class="{active:showAll}"></div>
+          <div class="fn-right" style="margin-right: .3rem;" @click="delIns">
+            <i class="am-icon-clear am-icon"></i> 删除
+          </div>
+        </div>
+        <div class="am-list-dropdown-list" v-if="insList">
+          <app-select label="公司品牌">
+            <select v-model='sc_id' @change="companyChanged">
               <option disabled value=''>请选择</option>
-              <option v-for="item in prospectus_types" :value="item.value">{{item.name}}</option>
+              <option v-for="item,index in insList.company" :key="index" :value="item.sc_id">{{item.company_name}}</option>
             </select>
           </app-select>
-          <app-select label="领取年龄" v-if="insurance.safe_id === '205'">
-            <select v-model.number="flag['205']" @change="resetFee">
+          <app-select label="险种">
+            <select v-model='mainInsurance' @change="insChanged">
               <option disabled value=''>请选择</option>
-              <option value="60">60岁</option>
-              <option value="65">65岁</option>
-              <option value="70">70岁</option>
-              <option value="75">75岁</option>
+              <option v-for="item,index in insList.main[sc_id]" v-if="sc_id" :key="index" :value="item">{{item.name}}
+              </option>
             </select>
           </app-select>
-          <app-input label="基本保额" v-if="insurance.safe_id !== '292'"
-                     v-show="insurance.safe_id !== '309' && insurance.safe_id !== '280'">
-            <input slot="input" v-model.number.lazy="insurance.money" type="number" placeholder="请填写基本保险金额（元）"
-                   @change="resetFee">
-            <div slot="icon" v-show="insurance.money != ''" class="am-list-clear"><i class="am-icon-clear am-icon"
-                                                                                     @click="insurance.money = ''"></i>
-            </div>
-          </app-input>
-          <template v-else>
-            <app-select label="投保份数">
-              <select v-model.number="insurance.money" @change="resetFee">
-                <option disabled value="">请选择份数</option>
-                h
-                <option :value="n" v-for="n in 4">{{n}}</option>
-              </select>
-            </app-select>
-            <app-input label="基本保额">
-              <div slot="input">{{insurance.money * 50000}}</div>
-            </app-input>
+          <app-select label="保险期间" :readonly="mainSyAttr.length === 1">
+            <select v-model.number='insurance.safe_year'
+                    :disabled="mainSyAttr.length === 1"
+                    @change="resetFee">
+              <option disabled value=''>请选择</option>
+              <option v-for="(item,index) in mainSyAttr" :value="item.safe_year" :key="index">
+                {{item.safe_year | safeYearFilter}}
+              </option>
+            </select>
+          </app-select>
+          <app-select label="缴费年限" :readonly="mainPyAttr.length === 1">
+            <select v-model.number='insurance.pay_year'
+                    :disabled="mainPyAttr.length === 1"
+                    @change="resetFee">
+              <option disabled value=''>请选择</option>
+              <option v-for="(item,index) in mainPyAttr" :value="item.pay_year" :key="index">
+                {{item.pay_year === '1' ? '趸交' : item.pay_year + '年交'}}
+              </option>
+            </select>
+          </app-select>
+          <template v-if="insurance.safe_id">
+            <!-- 输入保额算保费 -->
+            <template v-if="isBaseMoney&&!fuBaseMoney">
+              <app-select label="计划类型" v-if="prospectus_types.length > 0">
+                <select v-model.number="prospectus_type" v-if="prospectus_types" @change="resetFee">
+                  <option disabled value=''>请选择</option>
+                  <option v-for="item in prospectus_types" :value="item.value">{{item.name}}</option>
+                </select>
+              </app-select>
+              <app-select label="领取年龄" v-if="insurance.safe_id === '205'">
+                <select v-model.number="flag['205']" @change="resetFee">
+                  <option disabled value=''>请选择</option>
+                  <option value="60">60岁</option>
+                  <option value="65">65岁</option>
+                  <option value="70">70岁</option>
+                  <option value="75">75岁</option>
+                </select>
+              </app-select>
+              <app-input label="基本保额" v-if="insurance.safe_id !== '292'"
+                         v-show="insurance.safe_id !== '309' && insurance.safe_id !== '280'">
+                <input slot="input" v-model.number.lazy="insurance.money" type="number" placeholder="请填写基本保险金额（元）"
+                       @change="resetFee">
+                <div slot="icon" v-show="insurance.money != ''" class="am-list-clear"><i class="am-icon-clear am-icon"
+                                                                                         @click="insurance.money = ''"></i>
+                </div>
+              </app-input>
+              <template v-else>
+                <app-select label="投保份数">
+                  <select v-model.number="insurance.money" @change="resetFee">
+                    <option disabled value="">请选择份数</option>
+                    h
+                    <option :value="n" v-for="n in 4">{{n}}</option>
+                  </select>
+                </app-select>
+                <app-input label="基本保额">
+                  <div slot="input">{{insurance.money * 50000}}</div>
+                </app-input>
+              </template>
+              <app-input label="年缴保费">
+                <input slot="input" readonly v-model.number.lazy="insurance.period_money" type="number"
+                       placeholder="年缴保费（元）">
+                <div slot="button" class="am-list-button">
+                  <button type="button" @click="calMoney(true)">点击计算</button>
+                </div>
+              </app-input>
+            </template>
+            <!-- 输入保额算保费 -->
+            <!-- 泰康乐行天下 -->
+            <template v-else-if="isBaseMoney&&fuBaseMoney">
+              <app-input label="基本保额">
+                <input slot="input" readonly v-model.number.lazy="insurance.money" type="number" placeholder="完善附加险再计算">
+              </app-input>
+              <app-input label="年缴保费">
+                <input slot="input" readonly v-model.number.lazy="insurance.period_money" type="number"
+                       placeholder="完善附加险再计算">
+                <div slot="button" class="am-list-button">
+                  <button type="button" @click="calMoney(true)">点击计算</button>
+                </div>
+              </app-input>
+            </template>
+            <!-- 泰康乐行天下 -->
+            <!-- 输入保费算保额 -->
+            <template v-else>
+              <app-select label="计划类型" v-if="prospectus_types.length > 0">
+                <select v-model.number="prospectus_type" v-if="prospectus_types" @change="resetFee">
+                  <option disabled value=''>请选择</option>
+                  <option v-for="item in prospectus_types" :value="item.value">{{item.name}}</option>
+                </select>
+              </app-select>
+              <app-select label="领取年龄" v-if="insurance.safe_id === '352'">
+                <!-- 中国人保尊赢人生 -->
+                <select v-model.number="flag['352']" @change="resetFee">
+                  <option disabled value=''>请选择</option>
+                  <option value="60">60岁</option>
+                  <option value="80">80岁</option>
+                </select>
+              </app-select>
+              <app-input label="年缴保费">
+                <input slot="input" v-model.number.lazy="insurance.period_money" type="number" placeholder="请填写年缴保费（元）"
+                       @change="resetFee">
+                <div slot="icon" v-show="insurance.period_money != ''" class="am-list-clear"><i
+                  class="am-icon-clear am-icon" @click="insurance.period_money = ''"></i></div>
+              </app-input>
+              <app-input label="基本保额">
+                <input slot="input" readonly v-model.number.lazy="insurance.money" type="number"
+                       placeholder="基本保险金额（元）">
+                <div slot="button" class="am-list-button">
+                  <button type="button" @click="calMoney(true)">点击计算</button>
+                </div>
+              </app-input>
+            </template>
+            <!-- 输入保费算保额 -->
           </template>
-          <app-input label="年缴保费">
-            <input slot="input" readonly v-model.number.lazy="insurance.period_money" type="number"
-                   placeholder="年缴保费（元）">
-            <div slot="button" class="am-list-button">
-              <button type="button" @click="calMoney(true)">点击计算</button>
-            </div>
-          </app-input>
-        </template>
-        <!-- 输入保额算保费 -->
-        <!-- 泰康乐行天下 -->
-        <template v-else-if="isBaseMoney&&fuBaseMoney">
-          <app-input label="基本保额">
-            <input slot="input" readonly v-model.number.lazy="insurance.money" type="number" placeholder="完善附加险再计算">
-          </app-input>
-          <app-input label="年缴保费">
-            <input slot="input" readonly v-model.number.lazy="insurance.period_money" type="number"
-                   placeholder="完善附加险再计算">
-            <div slot="button" class="am-list-button">
-              <button type="button" @click="calMoney(true)">点击计算</button>
-            </div>
-          </app-input>
-        </template>
-        <!-- 泰康乐行天下 -->
-        <!-- 输入保费算保额 -->
-        <template v-else>
-          <app-select label="计划类型" v-if="prospectus_types.length > 0">
-            <select v-model.number="prospectus_type" v-if="prospectus_types" @change="resetFee">
-              <option disabled value=''>请选择</option>
-              <option v-for="item in prospectus_types" :value="item.value">{{item.name}}</option>
-            </select>
-          </app-select>
-          <app-select label="领取年龄" v-if="insurance.safe_id === '352'">
-            <!-- 中国人保尊赢人生 -->
-            <select v-model.number="flag['352']" @change="resetFee">
-              <option disabled value=''>请选择</option>
-              <option value="60">60岁</option>
-              <option value="80">80岁</option>
-            </select>
-          </app-select>
-          <app-input label="年缴保费">
-            <input slot="input" v-model.number.lazy="insurance.period_money" type="number" placeholder="请填写年缴保费（元）"
-                   @change="resetFee">
-            <div slot="icon" v-show="insurance.period_money != ''" class="am-list-clear"><i
-              class="am-icon-clear am-icon" @click="insurance.period_money = ''"></i></div>
-          </app-input>
-          <app-input label="基本保额">
-            <input slot="input" readonly v-model.number.lazy="insurance.money" type="number"
-                   placeholder="基本保险金额（元）">
-            <div slot="button" class="am-list-button">
-              <button type="button" @click="calMoney(true)">点击计算</button>
-            </div>
-          </app-input>
-        </template>
-        <!-- 输入保费算保额 -->
-      </template>
-    </app-dropdown>
+        </div>
+      </div>
+    </div>
+<!--    <app-dropdown :label="plan_name ? plan_name : '险种信息'" ref="dropdown" :up="showAll" :func="toggle" v-if="insList">
+
+    </app-dropdown>-->
     <app-dropdown
       :ref="'applicant_'+item.safe_id"
       v-for="item,index in Addons"
@@ -763,6 +779,7 @@
     computed: {
       ...mapState([
         'admin_id',
+        'pl_id',
         'appl',
         'insList'
       ]),
@@ -783,6 +800,12 @@
       }
     },
     methods: {
+      delIns () {
+        this.mainInsData = {}
+        this.addonInsData = {}
+        console.info('checkRS: ', this.index)
+        this.$store.commit('RMV_INS', this.index)
+      },
       toggle () {
         this.showAll = !this.showAll
         this.$store.commit('CHG_PLAN_STATUS', false)
@@ -915,7 +938,7 @@
         this.isBaseMoney = calMoneyIns.indexOf(safeid) === -1
         this.fuBaseMoney = fuMoneyIns.indexOf(safeid) !== -1
 
-        if (this.edit) {
+        if (this.pl_id) {
           let main = this.edit.main
           let money = ''
           switch (safeid) {
@@ -2081,20 +2104,12 @@
       }
     },
     created () {
-      if (this.edit) {
+      if (this.pl_id && this.insList) {
         let main = this.edit.main
         let insInfo = utils.getCompanyId(this.insList.main, main.safe_id)
         this.sc_id = insInfo.sc_id
         this.mainInsurance = insInfo
         this.insChanged()
-      }
-    },
-    watch: {
-      insList: {
-        handler (val) {
-          console.log(val)
-        },
-        deep: true
       }
     }
   }

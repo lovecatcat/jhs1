@@ -3,40 +3,18 @@
 
     <div class="am-tab">
       <a href="javascript:;" class="am-tab-item"
-         v-if="!pl_id"
          :class="{selected:activePlan===index}"
          @click="$store.commit('CHG_PLAN',index)"
          v-for="plan,index in plans" :key="index">
-        方案{{index + 1}}
-      </a>
-      <a href="javascript:;" class="am-tab-item"
-         v-if="pl_id"
-         :class="{selected:activePlan===index}"
-         @click="$store.commit('CHG_PLAN',index)"
-         v-for="plan,index in plansData" :key="index">
         方案{{index + 1}}
       </a>
     </div>
 
     <applicant :edit="applData"></applicant>
 
-    <div class="plan" v-show="index === activePlan" v-for="plan,index in plans" :key="index" v-if="!pl_id">
-      <assured :ref="'assu_' + index"></assured>
-      <insurance :ref="'ins_' + index" v-for="ins,i in plan.ins" :key="i" :index="i"></insurance>
-
-      <div class="am-button-group" v-show="saveStatus[index] !== true">
-        <button type="button" class="am-button add" @click="addIns">
-          <i class="iconfont icon-tianjia"></i> 添加险种
-        </button>
-        <button type="button" class="am-button add" @click="savePlan">
-          <i class="iconfont icon-baocun"></i> 保存方案 {{index + 1}}
-        </button>
-      </div>
-    </div>
-
-    <div class="plan" v-show="index === activePlan" v-for="plan,index in plansData" :key="index" v-else>
+    <div class="plan" v-show="index === activePlan" v-for="plan,index in plans" :key="index">
       <assured :ref="'assu_' + index" :edit="plan.assu"></assured>
-      <insurance :ref="'ins_' + index" :edit="ins" v-for="ins,i in plan.ins" :key="i" :index="i"></insurance>
+      <insurance :ref="'ins_' + index" :edit="ins" v-for="ins,i in plan.ins" v-if="ins" :key="i" :index="i"></insurance>
 
       <div class="am-button-group" v-show="saveStatus[index] !== true">
         <button type="button" class="am-button add" @click="addIns">
@@ -104,7 +82,7 @@
             return
           }
           if (item.showAll === true) { // 收缩险种信息
-            item.$refs.dropdown.toggle()
+            item.toggle()
           }
           item.saveIns()
         }

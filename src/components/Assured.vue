@@ -53,11 +53,7 @@
     },
     data () {
       return {
-        assu: {
-          name: 'qaz',
-          sex: true,
-          age: '24'
-        },
+        assu: null,
         birthday: ''
       }
     },
@@ -88,10 +84,14 @@
       }
     },
     created () {
-      if (this.edit) {
-        let assu = Object.assign({}, this.assu)
-        assu.sex = assu.sex === 1 || assu.sex === true
-        this.assu = assu
+      if (this.$store.state.pl_id) {
+        this.assu = Object.assign({}, this.edit)
+      } else {
+        this.assu = {
+          name: '',
+          sex: true,
+          age: ''
+        }
       }
     }
   }

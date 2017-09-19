@@ -65,7 +65,11 @@
     },
     data () {
       return {
-        appl: null,
+        appl: {
+          name: '',
+          age: '',
+          sex: true
+        },
         birthday: ''
       }
     },
@@ -97,15 +101,6 @@
       },
       addPlan () {
         this.$store.commit('ADD_PLAN')
-      }
-    },
-    created () {
-      if (!this.$store.state.pl_id) {
-        this.appl = {
-          name: 'qwe',
-          age: '22',
-          sex: true
-        }
       }
     }
   }
