@@ -96,13 +96,18 @@
       savePlan () {
         console.info('savePlan')
         let crtIns = this.$refs['ins_' + this.activePlan]
-        crtIns.forEach(item => {
+        for (let i in crtIns) {
+          let item = crtIns[i]
           // TODO 校验所有险种 填写完整
+          // 主险费用
+          if (!item.checkMainFee(item.insurance.safe_id)) {
+            return
+          }
           if (item.showAll === true) { // 收缩险种信息
             item.$refs.dropdown.toggle()
           }
           item.saveIns()
-        })
+        }
         this.$store.commit('CHG_PLAN_STATUS', true)
         this.$forceUpdate()
       },
@@ -169,7 +174,11 @@
           this.pl_id && this.$store.dispatch('SET_PLANS', {
             admin_id: this.admin_id,
             pl_id: this.pl_id,
-            cb: this.errorCb
+            scb: () => {
+              console.log(2)
+              this.$forceUpdate()
+            },
+            ecb: this.errorCb
           })
         }
       })

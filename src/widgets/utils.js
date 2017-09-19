@@ -116,15 +116,15 @@ export default {
     return data
   },
   getCompanyId (Obj, safeId) {
-    let scId = ''
+    let insInfo = ''
     for (let i in Obj) {
       let item = Obj[i]
       item.forEach(content => {
         if (content.safe_id === safeId) {
-          scId = content.sc_id
+          insInfo = content
         }
       })
     }
-    return scId
+    return insInfo
   }
 }

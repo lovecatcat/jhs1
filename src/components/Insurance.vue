@@ -8,9 +8,10 @@
         </select>
       </app-select>
       <app-select label="险种">
-        <select v-model='insurance.safe_id' @change="insChanged">
+        <select v-model='mainInsurance' @change="insChanged">
           <option disabled value=''>请选择</option>
-          <option v-for="item,index in insList.main[sc_id]" v-if="sc_id" :key="index" :value="item.safe_id">{{item.name}} </option>
+          <option v-for="item,index in insList.main[sc_id]" v-if="sc_id" :key="index" :value="item">{{item.name}}
+          </option>
         </select>
       </app-select>
       <app-select label="保险期间" :readonly="mainSyAttr != null && mainSyAttr.length === 1">
@@ -728,7 +729,7 @@
           money: '', // 基本保险金额
           period_money: '' // 年交保费
         },
-        mainInsurance: {},
+        mainInsurance: '',
         mainSyAttr: [],
         mainPyAttr: [],
         mainPayYear: '',
@@ -763,18 +764,22 @@
       ...mapState([
         'admin_id',
         'appl',
-        'insList',
-        'insInfo'
+        'insList'
       ]),
       ...mapGetters([
         'assu',
         'ins'
       ]),
       Addons () { // 附加险可选信息
-        if (!this.insurance.safe_id ||
-          !this.insInfo[this.sc_id] ||
-          !this.insInfo[this.sc_id][this.insurance.safe_id]) return {}
-        return this.insInfo[this.sc_id][this.insurance.safe_id].child
+        let Addons = {}
+        if (!this.insurance.safe_id || !this.insList || !this.insList.children) {
+          return Addons
+        }
+        let children = this.insList.children[this.insurance.safe_id]
+        children && children.forEach(item => {
+          Addons[item.safe_id] = utils.parseVueObj(item)
+        })
+        return Addons
       }
     },
     methods: {
@@ -800,6 +805,7 @@
        * 主险
        */
       companyChanged () {
+        this.mainInsurance = ''
         this.insurance = {
           safe_id: '',
           safe_year: '',
@@ -810,11 +816,11 @@
         this.prospectus_type = ''
       },
       // 更改险种
-      insChanged (safeid) {
-        safeid = this.insurance.safe_id || safeid
+      insChanged () {
+        const safeid = this.mainInsurance.safe_id
         if (!safeid) return
-        const mainIns = this.insInfo[this.sc_id][safeid]
-        this.mainInsurance = mainIns
+        this.insurance.safe_id = safeid
+        const mainIns = this.mainInsurance
         this.plan_name = mainIns.name
 
         // 保险期间
@@ -908,6 +914,24 @@
         // 部分险种输入 保额， 算保费
         this.isBaseMoney = calMoneyIns.indexOf(safeid) === -1
         this.fuBaseMoney = fuMoneyIns.indexOf(safeid) !== -1
+
+        if (this.edit) {
+          let main = this.edit.main
+          let money = ''
+          switch (safeid) {
+            case '292':
+              money = main.base_money / 50000
+              break
+            default:
+              money = main.base_money
+              break
+          }
+          this.insurance.safe_year = Number(main.safe_year)
+          this.insurance.pay_year = Number(main.pay_year)
+          this.insurance.money = money || '' // 基本保险金额
+          this.insurance.period_money = main.year_fee || '' // 年交保费
+          this.$forceUpdate()
+        }
       },
       // 重置主险费用及附加险
       resetFee () {
@@ -2059,22 +2083,13 @@
     created () {
       if (this.edit) {
         let main = this.edit.main
-        this.sc_id = utils.getCompanyId(this.insList.main, main.safe_id)
-        this.companyChanged()
-//        this.insChanged(main.safe_id)
-        this.insurance.safe_year = Number(main.safe_year)
-        this.insurance.pay_year = Number(main.pay_year)
-        this.insurance.money = main.base_money || '' // 基本保险金额
-        this.insurance.period_money = main.year_fee || '' // 年交保费
+        let insInfo = utils.getCompanyId(this.insList.main, main.safe_id)
+        this.sc_id = insInfo.sc_id
+        this.mainInsurance = insInfo
+        this.insChanged()
       }
     },
     watch: {
-      insInfo: {
-        handler (val) {
-          console.log(val)
-        },
-        deep: true
-      },
       insList: {
         handler (val) {
           console.log(val)

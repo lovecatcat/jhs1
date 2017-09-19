@@ -13,7 +13,6 @@ const debug = process.env.NODE_ENV !== 'production'
 export default new Vuex.Store({
   strict: debug,
   state: {
-    insInfo: {}, // 所有险种详情信息
     insList: null, // 所有险种相关列表
     admin_id: document.getElementById('admin_id').value || $_GET['admin_id'] || '1846', // 用户ID
     pl_id: $_GET['pl_id'] || '', // 计划书ID
@@ -79,10 +78,6 @@ export default new Vuex.Store({
     CHG_PLAN_STATUS (state, payload) {
       state.saveStatus[state.activePlan] = payload
     },
-/*    SET_INSINFO (state, payload) {
-      console.log('commit mutation: SET_INSINFO')
-      state.insInfo = Object.assign(state.insInfo, payload)
-    },*/
     SET_INSLIST (state, payload) {
       console.log('commit mutation: SET_INSLIST')
       state.insList = payload
@@ -145,8 +140,9 @@ export default new Vuex.Store({
           commit('SET_PARAM', {
             plansData: plans
           })
+          payload.scb && payload.scb()
         }
-      }).catch(payload.cb)
+      }).catch(payload.ecb)
     },
     SET_INSLIST ({commit}, payload) {
       console.log('dispatch action: SET_INSLIST')
@@ -155,13 +151,5 @@ export default new Vuex.Store({
         payload.scb && payload.scb()
       }).catch(payload.ecb)
     }
-/*    SET_INSINFO ({commit}, payload) {
-      console.log('dispatch action: SET_INSINFO')
-      utils.get('Warranty/getSafegoodsList?sc_id=' + payload.sc_id).then(ret => {
-        commit('SET_INSINFO', {
-          [payload.sc_id]: ret.data
-        })
-      }).catch(payload.cb)
-    }*/
   }
 })
