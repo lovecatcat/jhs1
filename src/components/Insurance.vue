@@ -7,7 +7,7 @@
             <span>{{plan_name ? plan_name : '险种信息'}}</span>
           </div>
           <div class="arrow-icon" :class="{active:showAll}"></div>
-          <div class="fn-right" style="margin-right: .3rem;" @click="delIns">
+          <div class="fn-right" style="margin-right: .3rem;" @click.stop="delIns">
             <i class="am-icon-clear am-icon"></i> 删除
           </div>
         </div>
@@ -15,7 +15,8 @@
           <app-select label="公司品牌">
             <select v-model='sc_id' @change="companyChanged">
               <option disabled value=''>请选择</option>
-              <option v-for="item,index in insList.company" :key="index" :value="item.sc_id">{{item.company_name}}</option>
+              <option v-for="item,index in insList.company" :key="index" :value="item.sc_id">{{item.company_name}}
+              </option>
             </select>
           </app-select>
           <app-select label="险种">
@@ -141,9 +142,9 @@
         </div>
       </div>
     </div>
-<!--    <app-dropdown :label="plan_name ? plan_name : '险种信息'" ref="dropdown" :up="showAll" :func="toggle" v-if="insList">
+    <!--    <app-dropdown :label="plan_name ? plan_name : '险种信息'" ref="dropdown" :up="showAll" :func="toggle" v-if="insList">
 
-    </app-dropdown>-->
+        </app-dropdown>-->
     <app-dropdown
       :ref="'applicant_'+item.safe_id"
       v-for="item,index in Addons"
@@ -713,6 +714,10 @@
   </div>
 </template>
 <script>
+  /**
+   * 险种
+   * @vue
+   */
   import utils from '../widgets/utils'
   import qs from 'qs'
 
@@ -801,10 +806,16 @@
     },
     methods: {
       delIns () {
-        this.mainInsData = {}
-        this.addonInsData = {}
-        console.info('checkRS: ', this.index)
-        this.$store.commit('RMV_INS', this.index)
+        if (this.ins.length === 1) {
+          this.$toast.open('本方案的最后一个险种，不能删除')
+          return false
+        }
+
+        this.$dialog.open('确认删除该险种吗？', () => {
+          console.info('delIns: ', this.index)
+          this.$store.commit('RMV_INS', this.index)
+          this.$parent.$forceUpdate()
+        }, this.mainInsurance.name)
       },
       toggle () {
         this.showAll = !this.showAll
@@ -938,7 +949,7 @@
         this.isBaseMoney = calMoneyIns.indexOf(safeid) === -1
         this.fuBaseMoney = fuMoneyIns.indexOf(safeid) !== -1
 
-        if (this.pl_id) {
+        if (this.pl_id && this.edit.main) {
           let main = this.edit.main
           let money = ''
           switch (safeid) {
@@ -2104,7 +2115,7 @@
       }
     },
     created () {
-      if (this.pl_id && this.insList) {
+      if (this.pl_id && this.insList && this.edit.main) {
         let main = this.edit.main
         let insInfo = utils.getCompanyId(this.insList.main, main.safe_id)
         this.sc_id = insInfo.sc_id

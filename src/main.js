@@ -12,9 +12,11 @@ import './widgets/Components'
 
 // 插件
 import utils from './widgets/utils'
-import Toast from './widgets/Toast'
 
+import Toast from './widgets/Toast'
 Vue.use(Toast)
+import Dialog from './widgets/Dialog'
+Vue.use(Dialog)
 
 Vue.config.productionTip = false
 

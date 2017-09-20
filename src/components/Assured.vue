@@ -44,6 +44,10 @@
   </div>
 </template>
 <script>
+  /**
+   * 被保人
+   * @vue
+   */
   import utils from '../widgets/utils'
 
   export default {

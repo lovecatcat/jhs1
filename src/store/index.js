@@ -28,11 +28,11 @@ export default new Vuex.Store({
   getters: {
     assu: state => {
       let plans = state.plans
-      return plans ? plans[state.activePlan].assu : {}
+      return plans && plans[state.activePlan] ? plans[state.activePlan].assu : {}
     },
     ins: state => {
       let plans = state.plans
-      return plans ? plans[state.activePlan].ins : [{}]
+      return plans && plans[state.activePlan] ? plans[state.activePlan].ins : [{}]
     }
   },
   mutations: {
@@ -64,7 +64,7 @@ export default new Vuex.Store({
     },
     RMV_INS (state, index) {
       console.log('commit mutation: RMV_INS')
-      state.plans[state.activePlan].ins[index] = null
+      state.plans[state.activePlan].ins[index] = ''
     },
     ADD_PLAN (state) {
       console.log('commit mutation: ADD_PLAN')

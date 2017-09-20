@@ -20,7 +20,10 @@
         <button type="button" class="am-button add" @click="addIns">
           <i class="iconfont icon-tianjia"></i> 添加险种
         </button>
-        <button type="button" class="am-button add" @click="savePlan">
+        <button type="button" class="am-button save" @click="removePlan" v-if="index !== 0">
+          <i class="am-icon-clear am-icon"></i> 删除 方案{{index + 1}}
+        </button>
+        <button type="button" class="am-button remove" @click="savePlan">
           <i class="iconfont icon-baocun"></i> 保存 方案{{index + 1}}
         </button>
       </div>
@@ -36,6 +39,10 @@
 </template>
 
 <script>
+  /**
+   * 方案
+   * @vue
+   */
   import Applicant from './components/Applicant'
   import Assured from './components/Assured'
   import Insurance from './components/Insurance'
@@ -70,6 +77,11 @@
       addIns () {
         console.info('addIns')
         this.$store.commit('ADD_INS')
+      },
+      removePlan () {
+        this.$dialog.open('确认删除【方案' + (this.activePlan + 1) + '】吗？', () => {
+          this.$dialog.close()
+        })
       },
       savePlan () {
         console.info('savePlan')
@@ -153,7 +165,6 @@
             admin_id: this.admin_id,
             pl_id: this.pl_id,
             scb: () => {
-              console.log(2)
               this.$forceUpdate()
             },
             ecb: this.errorCb

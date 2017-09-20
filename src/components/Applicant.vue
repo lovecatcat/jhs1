@@ -56,6 +56,10 @@
   </div>
 </template>
 <script>
+  /**
+   * 投保人
+   * @vue
+   */
   import utils from '../widgets/utils'
 
   export default {

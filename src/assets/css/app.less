@@ -115,22 +115,38 @@
   &.save{
     border-top: 1px solid #eee ;
     border-bottom: 1px solid #eee ;
-    color: #707dfe ;
+    color: #f71010 ;
     border-radius: 0 ;
     background-color: #fff;
+    .am-icon{
+      display: inline-block;
+      height: .15rem;
+      width: .15rem;
+      &:before{
+        -webkit-background-size: .15rem auto;
+        background-size: .15rem auto;
+      }
+    }
   }
   &.add{
     border-top: 1px solid #eee ;
     border-bottom: 1px solid #eee ;
-    color: #f71010 ;
+    color: #707dfe ;
     border-radius: 0 ;
     background-color: #fff;
   }
-  &.created{
+  &.remove, &.created{
     border-top: 1px solid #eee ;
     border-bottom: 1px solid #eee ;
     color: #fff ;
     border-radius: 0 ;
-    background-color: #febe14;
+    background-color: #FEBE14;
   }
+}
+
+.app-dialog{
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 100%;
 }
