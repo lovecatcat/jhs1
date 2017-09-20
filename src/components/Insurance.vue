@@ -1694,7 +1694,6 @@
           toastText = this.insurance.money === 0 ? '超出费率表计算范围，无法投保' : '请计算主险基本保额'
         }
         if (toastText) {
-          // this.log(toastText, STRING)
           this.$toast.open(toastText)
           return false
         }
@@ -1728,7 +1727,6 @@
             break
         }
         if (toastText) {
-          // this.log(toastText, INFO)
           this.$toast.open(toastText)
           setTimeout(() => {
             this.insurance.period_money = ''

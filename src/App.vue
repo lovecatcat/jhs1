@@ -115,8 +115,14 @@
           let planIns = this.plans[i].ins
           for (let j in planIns) {
             let item = planIns[j]
+            item.main.is_save = 1
+            item.main.warranty_year = 105
+            item.main.need_packet = 1
             data.push(item.main)
             for (let k in item.addon) {
+              item.addon[k].is_save = 1
+              item.addon[k].warranty_year = 105
+              item.addon[k].need_packet = 1
               data.push(item.addon[k])
             }
           }
