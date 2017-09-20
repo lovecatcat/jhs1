@@ -20,17 +20,20 @@
         <button type="button" class="am-button add" @click="addIns">
           <i class="iconfont icon-tianjia"></i> 添加险种
         </button>
-        <button type="button" class="am-button save" @click="removePlan" v-if="index !== 0">
+        <button type="button" class="am-button remove" @click="removePlan" v-if="index !== 0">
           <i class="am-icon-clear am-icon"></i> 删除 方案{{index + 1}}
         </button>
-        <button type="button" class="am-button remove" @click="savePlan">
+        <button type="button" class="am-button save" @click="savePlan">
           <i class="iconfont icon-baocun"></i> 保存 方案{{index + 1}}
         </button>
       </div>
     </div>
 
-    <div class="am-button-group">
-      <button type="button" class="am-button created" @click="pushPlan">
+    <div class="am-fixed am-fixed-bottom am-flexbox" style="background-color:#fff;border-top: 1px solid #eee">
+      <div class="am-flexbox-item">
+        <span style="padding-left: .15rem;">首期保费: <span class="color-red">￥{{count}}元</span></span>
+      </div>
+      <button type="button" class="am-button created" @click="pushPlan" style="width: 150px">
         生成计划书
       </button>
     </div>
@@ -61,6 +64,11 @@
       Assured,
       Insurance
     },
+    data () {
+      return {
+        count: 0
+      }
+    },
     computed: {
       ...mapState([
         'appl',
@@ -74,6 +82,28 @@
       ])
     },
     methods: {
+      countMoney () {
+        let count = 0
+        let plansLen = this.plans.length
+        for (let p = 0; p < plansLen; p++) {
+          let crtIns = this.$refs['ins_' + p]
+          for (let i in crtIns) {
+            let item = crtIns[i]
+            if (!item.showAll) {
+              count += item.insurance.period_money
+              for (let j in item.addonsSelected) {
+                if (item.addonsSelected[j]) {
+                  let pm = item.addonRes[j]['年缴保费']
+                  if (pm) {
+                    count += pm
+                  }
+                }
+              }
+            }
+          }
+        }
+        this.count = count.toFixed(2)
+      },
       addIns () {
         console.info('addIns')
         this.$store.commit('ADD_INS')
@@ -100,6 +130,7 @@
         }
         this.$store.commit('CHG_PLAN_STATUS', true)
         this.$forceUpdate()
+        this.countMoney()
       },
       pushPlan () {
         console.info('pushPlan')

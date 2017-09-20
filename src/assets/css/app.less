@@ -38,7 +38,9 @@
     }
   }
 }
-
+.plan{
+  margin-bottom: .5rem;
+}
 .add-plan {
   height: 96%;
 }
@@ -68,8 +70,26 @@
 }
 
 //颜色
-.color-blank {
-  color: #000;
+.color{
+  &-blank {
+    color: #000;
+  }
+  &-red{
+    color: red;
+  }
+  &-main{
+    color: #FEBE14;
+    .am-tab-item &{
+
+    }
+  }
+}
+.am-tab .am-tab-item{
+  &.color-main{
+    background-color: #FEBE14;
+    border-bottom-color: #FEBE14;
+    color: #fff;
+  }
 }
 
 //性别
@@ -112,9 +132,8 @@
   background-color: transparent!important;
 }
 .am-button:not([am-version]){
-  &.save{
-    border-top: 1px solid #eee ;
-    border-bottom: 1px solid #eee ;
+  &.remove{
+    border: 1px solid #eee ;
     color: #f71010 ;
     border-radius: 0 ;
     background-color: #fff;
@@ -129,15 +148,21 @@
     }
   }
   &.add{
-    border-top: 1px solid #eee ;
-    border-bottom: 1px solid #eee ;
+    border: 1px solid #eee ;
+    border-left:none;
     color: #707dfe ;
     border-radius: 0 ;
     background-color: #fff;
   }
-  &.remove, &.created{
-    border-top: 1px solid #eee ;
-    border-bottom: 1px solid #eee ;
+  &.created{
+    border: none;
+    color: #fff ;
+    border-radius: 0 ;
+    background-color: #FEBE14;
+  }
+  &.save{
+    border: 1px solid #eee;
+    border-right: none;
     color: #fff ;
     border-radius: 0 ;
     background-color: #FEBE14;

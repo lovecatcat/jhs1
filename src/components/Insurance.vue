@@ -1849,7 +1849,7 @@
           assured: this.assu.name,
           assu_sex: this.assu.sex === true ? 1 : 2,
           assu_age: this.assu.age,
-          safe_year: this.mainSafeYear === 999 || this.mainSafeYear === '999' ? 0 : this.mainSafeYear,
+          safe_year: this.mainSafeYear === 999 ? 0 : this.mainSafeYear,
           pay_year: this.mainPayYear,
           warranty_year: 1,
           genre: safeid,

@@ -14,8 +14,11 @@ import './widgets/Components'
 import utils from './widgets/utils'
 
 import Toast from './widgets/Toast'
+
 Vue.use(Toast)
+
 import Dialog from './widgets/Dialog'
+
 Vue.use(Dialog)
 
 Vue.config.productionTip = false
@@ -30,11 +33,15 @@ Vue.mixin({
         this.$toast.open('网络出现错误', 'error')
       }
     },
-    log (msg) {
-      if (typeof msg !== 'string') {
-        msg = JSON.stringify(msg)
+    log () {
+      for (let i in arguments) {
+        let msg = arguments[i]
+        console.log(msg)
+        if (typeof msg !== 'string') {
+          msg = JSON.stringify(msg)
+        }
+        console.log(msg)
       }
-      console.log(msg)
     },
     checkName (name, owner) {
       let toastText = utils.checkName(name, owner)

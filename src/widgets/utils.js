@@ -76,7 +76,7 @@ export default {
       assured,
       assu_sex: assuSex,
       assu_age: assuAge,
-      safe_year,
+      safe_year: safeYear,
       pay_year,
       base_money,
       year_fee,
@@ -96,7 +96,7 @@ export default {
       },
       ins: {
         safe_id: genre,
-        safe_year,
+        safe_year: (safeYear === 0 ? 999 : safeYear),
         pay_year,
         base_money,
         year_fee,
