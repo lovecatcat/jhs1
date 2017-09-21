@@ -143,10 +143,10 @@
       </div>
     </div>
     <app-dropdown
-      :ref="'applicant_'+item.safe_id"
+      :ref="'applicant_' + item.safe_id"
       v-for="item,index in Addons"
       :key="item.safe_id"
-      :id="'fj'+item.safe_id"
+      :id="'ins-' + insIndex + '-fj-' + item.safe_id"
       v-show="showAll">
       <template slot="header">
         <div class="am-ft-md"> {{item.name}}</div>
@@ -732,7 +732,7 @@
   export default {
     name: 'insurance',
     props: {
-      index: Number,
+      insIndex: Number,
       edit: Object
     },
     data () {
@@ -814,8 +814,8 @@
         }
 
         this.$dialog.open('确认删除该险种吗？', () => {
-          console.info('delIns: ', this.index)
-          this.$store.commit('RMV_INS', this.index)
+          console.info('delIns: ', this.insIndex)
+          this.$store.commit('RMV_INS', this.insIndex)
           this.$parent.$forceUpdate()
         }, this.mainInsurance.name)
       },
@@ -1304,15 +1304,16 @@
         if (!this.checkAssu()) {
           return false
         }
-        console.log(this.sc_id)
         if (this.sc_id === '0') {
           toastText = '请选择公司'
-        } else if (this.insurance.safe_id === '0') {
+        } else if (!this.insurance.safe_id) {
           toastText = '请选择主险'
-        } else if (this.insurance.safe_year === '00') {
+        } else if (!this.insurance.safe_year) {
           toastText = '请选择主险保险期间'
-        } else if (this.insurance.pay_year === '0') {
+        } else if (!this.insurance.pay_year) {
           toastText = '请选择主险交费期间'
+        } else if (safeid === '292' && !this.insurance.money) {
+          toastText = '请选择投保份数'
         } else if (safeid === '205' && !this.flag[safeid]) {
           toastText = '请选择主险领取年龄'
         } else if (safeid === '352' && !this.flag[safeid]) {
@@ -1327,7 +1328,7 @@
           toastText = '请先完善附加乐行天下意外伤害保险'
         } else if (this.isBaseMoney && !this.insurance.period_money && this.fuBaseMoney && this.cache.pay_money333 === '') {
           toastText = '请先完善附加乐行天下意外住院津贴医疗保险'
-        } else if (this.prospectus_types.length > 0 && this.prospectus_type === 0) {
+        } else if (this.prospectus_types.length > 0 && !this.prospectus_type) {
           toastText = '请选择计划类型'
         }
         if (toastText) {
@@ -2058,6 +2059,15 @@
           data.base_money = 0
         }
 
+        if (isMain) {
+          this.mainInsData = data
+        } else {
+          this.addonInsData[safeid] = data
+          if (safeid === '291') {
+            return false
+          }
+        }
+
         utils.post('Prospectus/CreateBook3', qs.stringify({
           safes: JSON.stringify([data])
         })).then(ret => {
@@ -2096,16 +2106,10 @@
             this.$toast.open('计算出错', 'error')
           }
         })
-
-        if (isMain) {
-          this.mainInsData = data
-        } else {
-          this.addonInsData[safeid] = data
-        }
       },
       saveIns () {
-        console.info('saveIns:', this.index)
-        this.ins[this.index] = {
+        console.info('saveIns:', this.insIndex)
+        this.ins[this.insIndex] = {
           main: this.mainInsData,
           insurance: this.insurance,
           addon: this.addonInsData

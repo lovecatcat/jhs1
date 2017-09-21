@@ -15,7 +15,7 @@
     <div class="plan" v-show="plan.id === activePlan" v-for="plan,index in plans" :key="plan.id">
       <assured :ref="'assu_' + plan.id" :edit="plan.assu"></assured>
       <insurance :ref="'ins_' + plan.id" :edit="ins" v-for="ins,i in plan.ins" v-if="ins" :key="i"
-                 :index="i"></insurance>
+                 :insIndex="i"></insurance>
 
       <div class="am-button-group" v-show="saveStatus[plan.id] !== true">
         <button type="button" class="am-button add" @click="addIns">
@@ -164,34 +164,15 @@
           safes: JSON.stringify(data)
         })).then(ret => {
           ret = ret.data
-          console.log(ret)
-          let plId = []
-          let parentId = []
-          let prospectusType = []
-          for (let i = 0; i < ret.data.length; i++) {
-            let j
-            let type
-            let parent
-
-            for (j in ret.data[i]) {
-              console.log(j)
-              if (ret.status && ret.data[i].hasOwnProperty(j) === true && !isNaN(j)) {
-                type = ret.data[i][j].type
-                parent = j
-              }
-            }
-            plId.push(ret.data[i].pl_id)
-            prospectusType.push(type)
-            parentId.push(parent)
+          if (ret.data.length > 0) {
+            let plId = ret.data[0].pl_id
+            let url = '/wechat/prospectus-group?param=' + JSON.stringify({
+              admin_id: this.admin_id,
+              pl_id: plId
+            })
+            console.log(url)
+            location.href = url
           }
-          let url = '/wechat/prospectus-group?param=' + JSON.stringify({
-            admin_id: this.admin_id,
-            pl_id: plId,
-            parent_id: parentId,
-            prospectus_type: prospectusType
-          })
-          console.log(url)
-          location.href = url
         }).catch(this.errorCb)
       }
     },
