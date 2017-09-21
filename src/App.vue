@@ -3,24 +3,25 @@
 
     <div class="am-tab">
       <a href="javascript:;" class="am-tab-item"
-         :class="{selected:activePlan===index}"
-         @click="$store.commit('CHG_PLAN',index)"
-         v-for="plan,index in plans" :key="index">
+         :class="{selected:activePlan===plan.id}"
+         @click="$store.commit('CHG_PLAN', plan.id)"
+         v-for="plan,index in plans" :key="plan.id">
         方案{{index + 1}}
       </a>
     </div>
 
     <applicant :edit="applData"></applicant>
 
-    <div class="plan" v-show="index === activePlan" v-for="plan,index in plans" :key="index">
-      <assured :ref="'assu_' + index" :edit="plan.assu"></assured>
-      <insurance :ref="'ins_' + index" :edit="ins" v-for="ins,i in plan.ins" v-if="ins" :key="i" :index="i"></insurance>
+    <div class="plan" v-show="plan.id === activePlan" v-for="plan,index in plans" :key="plan.id">
+      <assured :ref="'assu_' + plan.id" :edit="plan.assu"></assured>
+      <insurance :ref="'ins_' + plan.id" :edit="ins" v-for="ins,i in plan.ins" v-if="ins" :key="i"
+                 :index="i"></insurance>
 
-      <div class="am-button-group" v-show="saveStatus[index] !== true">
+      <div class="am-button-group" v-show="saveStatus[plan.id] !== true">
         <button type="button" class="am-button add" @click="addIns">
           <i class="iconfont icon-tianjia"></i> 添加险种
         </button>
-        <button type="button" class="am-button remove" @click="removePlan" v-if="index !== 0">
+        <button type="button" class="am-button remove" @click="removePlan(index)">
           <i class="am-icon-clear am-icon"></i> 删除 方案{{index + 1}}
         </button>
         <button type="button" class="am-button save" @click="savePlan">
@@ -74,7 +75,6 @@
         'appl',
         'plans',
         'applData',
-        'plansData',
         'pl_id',
         'admin_id',
         'activePlan',
@@ -84,9 +84,8 @@
     methods: {
       countMoney () {
         let count = 0
-        let plansLen = this.plans.length
-        for (let p = 0; p < plansLen; p++) {
-          let crtIns = this.$refs['ins_' + p]
+        for (let p in this.plans) {
+          let crtIns = this.$refs['ins_' + this.plans[p].id]
           for (let i in crtIns) {
             let item = crtIns[i]
             if (!item.showAll) {
@@ -108,9 +107,13 @@
         console.info('addIns')
         this.$store.commit('ADD_INS')
       },
-      removePlan () {
-        this.$dialog.open('确认删除【方案' + (this.activePlan + 1) + '】吗？', () => {
-          this.$dialog.close()
+      removePlan (index) {
+        if (this.plans.length < 2) {
+          this.$toast.open('只剩一个方案，不能删除')
+          return false
+        }
+        this.$dialog.open('确认删除【方案' + (index + 1) + '】吗？', () => {
+          this.$store.commit('RMV_PLAN', index)
         })
       },
       savePlan () {
@@ -118,7 +121,6 @@
         let crtIns = this.$refs['ins_' + this.activePlan]
         for (let i in crtIns) {
           let item = crtIns[i]
-          // TODO 校验所有险种 填写完整
           // 主险费用
           if (!item.checkMainFee(item.insurance.safe_id)) {
             return
@@ -134,18 +136,17 @@
       },
       pushPlan () {
         console.info('pushPlan')
-        for (let s = 0; s < this.saveStatus.length; s++) {
-          if (this.saveStatus[s] === false) {
-            this.$toast.open('请保存 方案' + (s + 1))
-            return false
-          }
-        }
 
         let data = []
         for (let i in this.plans) {
+          let id = this.plans[i].id
+          if (!this.saveStatus[id]) {
+            this.$toast.open('请保存 方案' + (Number(i) + 1))
+            return false
+          }
           let planIns = this.plans[i].ins
           for (let j in planIns) {
-            let item = planIns[j]
+            let item = utils.parseVueObj(planIns[j])
             item.main.is_save = 1
             item.main.warranty_year = 105
             item.main.need_packet = 1
@@ -164,7 +165,6 @@
         })).then(ret => {
           ret = ret.data
           console.log(ret)
-          let url = ''
           let plId = []
           let parentId = []
           let prospectusType = []
@@ -184,8 +184,12 @@
             prospectusType.push(type)
             parentId.push(parent)
           }
-          url += 'admin_id=' + this.admin_id + '&pl_id=' + plId + '&parent_id=' + parentId + '&prospectus_type=' + prospectusType + '/'
-          url = '/wechat/prospectus_group?' + url + '/' + this.appl.name + '/' + (this.appl.sex === true ? 1 : 2)
+          let url = '/wechat/prospectus-group?param=' + JSON.stringify({
+            admin_id: this.admin_id,
+            pl_id: plId,
+            parent_id: parentId,
+            prospectus_type: prospectusType
+          })
           console.log(url)
           location.href = url
         }).catch(this.errorCb)
@@ -211,6 +215,7 @@
       if (!this.pl_id) {
         this.$store.commit('SET_PARAM', {
           plans: [{
+            id: 1,
             ins: [{
               main: {},
               addon: {}

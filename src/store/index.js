@@ -10,29 +10,40 @@ import qs from 'qs'
 
 const debug = process.env.NODE_ENV !== 'production'
 
+const adminId = document.getElementById('admin_id').value
+
+const getPlanIndex = state => {
+  return state.plans.findIndex(item => item.id === state.activePlan)
+}
+
 export default new Vuex.Store({
   strict: debug,
   state: {
     insList: null, // 所有险种相关列表
-    admin_id: document.getElementById('admin_id').value || $_GET['admin_id'] || '1846', // 用户ID
+    admin_id: (adminId !== '$admin_id' && adminId) || $_GET['admin_id'] || '1846', // 用户ID
     pl_id: $_GET['pl_id'] || '', // 计划书ID
 
     plans: [], // 所有方案
-    activePlan: 0, // 当前方案
+    activePlan: 1, // 当前方案
+    // planIndex: [], //
     appl: {}, // 投保人
     // 编辑数据
-    plansData: null, // 所有方案
+    // plansData: null, // 所有方案
     applData: {}, // 投保人
-    saveStatus: [false] // 方案保存状态
+    saveStatus: { // 方案保存状态
+      1: false
+    }
   },
   getters: {
     assu: state => {
       let plans = state.plans
-      return plans && plans[state.activePlan] ? plans[state.activePlan].assu : {}
+      let plan = getPlanIndex(state)
+      return plans && plans[plan] ? plans[plan].assu : {}
     },
     ins: state => {
       let plans = state.plans
-      return plans && plans[state.activePlan] ? plans[state.activePlan].ins : [{}]
+      let plan = getPlanIndex(state)
+      return plans && plans[plan] ? plans[plan].ins : [{}]
     }
   },
   mutations: {
@@ -56,28 +67,36 @@ export default new Vuex.Store({
     },
     SET_ASSU (state, payload) {
       console.log('commit mutation: SET_ASSU')
-      state.plans[state.activePlan].assu = utils.parseVueObj(payload)
+      state.plans[getPlanIndex(state)].assu = utils.parseVueObj(payload)
     },
     ADD_INS (state) {
       console.log('commit mutation: ADD_INS')
-      state.plans[state.activePlan].ins.push({})
+      state.plans[getPlanIndex(state)].ins.push({})
     },
     RMV_INS (state, index) {
       console.log('commit mutation: RMV_INS')
-      state.plans[state.activePlan].ins[index] = ''
+      state.plans[getPlanIndex(state)].ins[index] = ''
     },
     ADD_PLAN (state) {
       console.log('commit mutation: ADD_PLAN')
+      let id = state.plans.length + 1
+
       state.plans.push({
+        id,
         ins: [{}],
         assu: {}
       })
-      state.activePlan = state.plans.length - 1
-      state.saveStatus.push(false)
+      state.activePlan = id
+      state.saveStatus[id] = false
     },
     SET_PLAN (state, payload) {
       console.log('commit mutation: SET_PLAN')
-      state.plans[state.activePlan].ins = utils.parseVueObj(payload)
+      state.plans[getPlanIndex(state)].ins = utils.parseVueObj(payload)
+    },
+    RMV_PLAN (state, index) {
+      console.log('commit mutation: SET_PLAN')
+      state.plans.splice(index, 1)
+      state.activePlan = state.plans[index - 1].id
     },
     CHG_PLAN_STATUS (state, payload) {
       state.saveStatus[state.activePlan] = payload
@@ -121,6 +140,7 @@ export default new Vuex.Store({
             })
           }
           plans.push({
+            id: plans.length + 1,
             assu: plan.assu,
             ins
           })
@@ -135,6 +155,7 @@ export default new Vuex.Store({
                   addon: addons
                 })
                 plans.push({
+                  id: plans.length + 1,
                   assu: plan.assu,
                   ins
                 })

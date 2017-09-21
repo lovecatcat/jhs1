@@ -42,7 +42,7 @@
 
       lifted () {
         this.title = ''
-        if (typeof this.cancel !== 'function') {
+        if (typeof this.cancel === 'function') {
           this.cancel()
         }
       },

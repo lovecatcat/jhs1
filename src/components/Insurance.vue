@@ -142,9 +142,6 @@
         </div>
       </div>
     </div>
-    <!--    <app-dropdown :label="plan_name ? plan_name : '险种信息'" ref="dropdown" :up="showAll" :func="toggle" v-if="insList">
-
-        </app-dropdown>-->
     <app-dropdown
       :ref="'applicant_'+item.safe_id"
       v-for="item,index in Addons"
@@ -742,6 +739,7 @@
       return {
         plan_name: '',
         showAll: true,
+        editLoaded: false, // 编辑状态
         sc_id: '',
         insurance: { // 主险投保信息
           safe_id: '',
@@ -806,7 +804,11 @@
     },
     methods: {
       delIns () {
-        if (this.ins.length === 1) {
+        let length = 0
+        this.ins.forEach(item => {
+          if (item) length++
+        })
+        if (length === 1) {
           this.$toast.open('本方案的最后一个险种，不能删除')
           return false
         }
@@ -936,9 +938,7 @@
         }
 
         // 保费、保额
-        if (safeid === '292') {
-          this.insurance.money = ''
-        } else if (safeid === '280' || safeid === '309') { // 平安e生保，安联无忧
+        if (safeid === '280' || safeid === '309') { // 平安e生保，安联无忧
           this.insurance.money = 1
         } else {
           this.insurance.money = ''
@@ -949,7 +949,7 @@
         this.isBaseMoney = calMoneyIns.indexOf(safeid) === -1
         this.fuBaseMoney = fuMoneyIns.indexOf(safeid) !== -1
 
-        if (this.pl_id && this.edit.main) {
+        if (this.pl_id && this.edit.main && !this.editLoaded) {
           let main = this.edit.main
           let money = ''
           switch (safeid) {
@@ -966,6 +966,7 @@
           this.insurance.period_money = main.year_fee || '' // 年交保费
           this.$forceUpdate()
           this.resetAddon()
+          this.editLoaded = true
         }
       },
       // 重置主险费用及附加险
