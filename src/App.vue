@@ -9,6 +9,20 @@
         方案{{index + 1}}
       </a>
     </div>
+    <div class="am-list am-list-6lb form">
+      <app-input label="计划名称">
+        <input slot="input"
+               type="text"
+               placeholder="请填写计划名称"
+               v-model.lazy.trim="name">
+        <div slot="icon"
+             class="am-list-clear"
+             @click="name = '' "
+             v-show="name != '' ">
+          <i class="am-icon-clear am-icon"></i>
+        </div>
+      </app-input>
+    </div>
 
     <applicant :edit="applData"></applicant>
 
@@ -76,6 +90,7 @@
     },
     data () {
       return {
+        name: '',
         count: 0
       }
     },
