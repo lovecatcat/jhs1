@@ -12,8 +12,10 @@ const debug = process.env.NODE_ENV !== 'production'
 
 const adminId = document.getElementById('admin_id').value
 
-const getPlanIndex = state => {
-  return state.plans.findIndex(item => item.id === state.activePlan)
+const getPlanIndex = (state, id = '') => {
+  return state.plans.findIndex(item => {
+    return item.id === (id || state.activePlan)
+  })
 }
 
 export default new Vuex.Store({
@@ -25,10 +27,8 @@ export default new Vuex.Store({
 
     plans: [], // 所有方案
     activePlan: 1, // 当前方案
-    // planIndex: [], //
     appl: {}, // 投保人
     // 编辑数据
-    // plansData: null, // 所有方案
     applData: {}, // 投保人
     saveStatus: { // 方案保存状态
       1: false
@@ -67,7 +67,7 @@ export default new Vuex.Store({
     },
     SET_ASSU (state, payload) {
       console.log('commit mutation: SET_ASSU')
-      state.plans[getPlanIndex(state)].assu = utils.parseVueObj(payload)
+      state.plans[getPlanIndex(state, payload.id)].assu = utils.parseVueObj(payload.assu)
     },
     ADD_INS (state) {
       console.log('commit mutation: ADD_INS')
@@ -96,7 +96,8 @@ export default new Vuex.Store({
     RMV_PLAN (state, index) {
       console.log('commit mutation: SET_PLAN')
       state.plans.splice(index, 1)
-      state.activePlan = state.plans[index - 1].id
+      index = index - 1 < 0 ? 0 : (index - 1) // fix 删除第一个
+      state.activePlan = state.plans[index].id
     },
     CHG_PLAN_STATUS (state, payload) {
       state.saveStatus[state.activePlan] = payload
@@ -162,10 +163,13 @@ export default new Vuex.Store({
               }
             })
           }
+          console.log(JSON.stringify(plans))
           commit('SET_PARAM', {
             plans
           })
           payload.scb && payload.scb()
+        } else {
+          payload.ecb(ret.data.message)
         }
       }).catch(payload.ecb)
     },

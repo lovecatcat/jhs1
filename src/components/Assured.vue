@@ -7,9 +7,17 @@
       </div>
       <div class="am-list-body" v-if="assu">
         <app-input label="姓名">
-          <input slot="input" type="text" placeholder="请填写被投保人姓名" v-model.lazy.trim="assu.name">
-          <div slot="icon" class="am-list-clear" @click="assu.name = ''" v-show="assu.name != '' "><i
-            class="am-icon-clear am-icon"></i></div>
+          <input slot="input"
+                 type="text"
+                 @change="checkName(assu.name, '被投保人')"
+                 placeholder="请填写被投保人姓名"
+                 v-model.lazy.trim="assu.name">
+          <div slot="icon"
+               class="am-list-clear"
+               @click="assu.name = ''"
+               v-show="assu.name != '' ">
+            <i class="am-icon-clear am-icon"></i>
+          </div>
         </app-input>
         <app-input label="年龄">
           <input slot="input" type="number" placeholder="请填写被投保人年龄" v-model.number.lazy="assu.age"
@@ -53,7 +61,8 @@
   export default {
     name: 'assured',
     props: {
-      'edit': Object
+      id: Number,
+      edit: Object
     },
     data () {
       return {
@@ -64,7 +73,10 @@
     watch: {
       assu: {
         handler (val) {
-          this.$store.commit('SET_ASSU', val)
+          this.$store.commit('SET_ASSU', {
+            id: this.id,
+            assu: val
+          })
         },
         deep: true
       }
@@ -75,20 +87,20 @@
         this.assu = Object.assign({}, this.assu, utils.parseVueObj(appl))
       },
       ageChanged () {
-        if (this.assu.age < 1) {
+        if (this.assu.age < 0) {
           this.$toast.open('被投保人年龄不能小于0周岁')
         }
       },
       birthDayChagned () {
         let age = utils.getAge(this.birthday)
-        if (age < 1) {
+        if (age < 0) {
           this.$toast.open('被投保人年龄不能小于0周岁')
         }
         this.assu.age = age
       }
     },
     created () {
-      if (this.$store.state.pl_id) {
+      if (this.$store.state.pl_id && this.edit.name) {
         this.assu = Object.assign({}, this.edit)
       } else {
         this.assu = {

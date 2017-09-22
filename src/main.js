@@ -28,8 +28,9 @@ Vue.mixin({
   methods: {
     errorCb (error) { // 网络错误
       this.log(error)
-      this.$toast.close()
-      if (error.name && error.name.indexOf('Error') > -1) {
+      if (typeof error === 'string') {
+        this.$toast.open(error, 'error')
+      } else if (error.name && error.name.indexOf('Error') > -1) {
         this.$toast.open('网络出现错误', 'error')
       }
     },
@@ -43,7 +44,7 @@ Vue.mixin({
         console.log(msg)
       }
     },
-    checkName (name, owner) {
+    checkName (name, owner = '') {
       let toastText = utils.checkName(name, owner)
       if (toastText) {
         this.$toast.open(toastText)

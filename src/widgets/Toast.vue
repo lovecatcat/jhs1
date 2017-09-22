@@ -17,7 +17,7 @@
       }
     },
     methods: {
-      open (text, type, cb = function () {}, time = 3000) {
+      open (text, type, cb = function () {}, time = 2500) {
         this.timer && window.clearTimeout(this.timer) // 清除定时器
         if (text || type) {
           this.text = text

@@ -39,7 +39,7 @@ export default {
   parseVueObj (Obj) {
     return JSON.parse(JSON.stringify(Obj))
   },
-  checkName (name, owner = '') {
+  checkName (name, owner) {
     let toastText = false
     if (!name) {
       toastText = owner + '姓名不能为空'

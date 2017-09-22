@@ -50,7 +50,9 @@
             <!-- 输入保额算保费 -->
             <template v-if="isBaseMoney&&!fuBaseMoney">
               <app-select label="计划类型" v-if="prospectus_types.length > 0">
-                <select v-model.number="prospectus_type" v-if="prospectus_types" @change="resetFee">
+                <select
+                  v-model.number="prospectus_type"
+                  v-if="prospectus_types" @change="resetFee">
                   <option disabled value=''>请选择</option>
                   <option v-for="item in prospectus_types" :value="item.value">{{item.name}}</option>
                 </select>
@@ -64,19 +66,27 @@
                   <option value="75">75岁</option>
                 </select>
               </app-select>
-              <app-input label="基本保额" v-if="insurance.safe_id !== '292'"
-                         v-show="insurance.safe_id !== '309' && insurance.safe_id !== '280'">
-                <input slot="input" v-model.number.lazy="insurance.money" type="number" placeholder="请填写基本保险金额（元）"
+              <app-input label="基本保额"
+                         v-if="insurance.safe_id !== '292'"
+                         v-show="insurance.safe_id !== '309' &&
+                          insurance.safe_id !== '280'">
+                <input slot="input"
+                       v-model.number.lazy="insurance.money"
+                       type="number" placeholder="请填写基本保险金额（元）"
                        @change="resetFee">
-                <div slot="icon" v-show="insurance.money != ''" class="am-list-clear"><i class="am-icon-clear am-icon"
-                                                                                         @click="insurance.money = ''"></i>
+                <div slot="icon"
+                     @click="insurance.money = ''"
+                     v-show="insurance.money != ''"
+                     class="am-list-clear">
+                  <i class="am-icon-clear am-icon"></i>
                 </div>
               </app-input>
               <template v-else>
                 <app-select label="投保份数">
-                  <select v-model.number="insurance.money" @change="resetFee">
+                  <select
+                    v-model.number="insurance.money"
+                    @change="resetFee">
                     <option disabled value="">请选择份数</option>
-                    h
                     <option :value="n" v-for="n in 4">{{n}}</option>
                   </select>
                 </app-select>
@@ -85,7 +95,10 @@
                 </app-input>
               </template>
               <app-input label="年缴保费">
-                <input slot="input" readonly v-model.number.lazy="insurance.period_money" type="number"
+                <input slot="input"
+                       readonly
+                       v-model.number.lazy="insurance.period_money"
+                       type="number"
                        placeholder="年缴保费（元）">
                 <div slot="button" class="am-list-button">
                   <button type="button" @click="calMoney(true)">点击计算</button>
@@ -96,10 +109,15 @@
             <!-- 泰康乐行天下 -->
             <template v-else-if="isBaseMoney&&fuBaseMoney">
               <app-input label="基本保额">
-                <input slot="input" readonly v-model.number.lazy="insurance.money" type="number" placeholder="完善附加险再计算">
+                <input slot="input" readonly
+                       v-model.number.lazy="insurance.money"
+                       type="number"
+                       placeholder="完善附加险再计算">
               </app-input>
               <app-input label="年缴保费">
-                <input slot="input" readonly v-model.number.lazy="insurance.period_money" type="number"
+                <input slot="input" readonly
+                       v-model.number.lazy="insurance.period_money"
+                       type="number"
                        placeholder="完善附加险再计算">
                 <div slot="button" class="am-list-button">
                   <button type="button" @click="calMoney(true)">点击计算</button>
@@ -110,7 +128,9 @@
             <!-- 输入保费算保额 -->
             <template v-else>
               <app-select label="计划类型" v-if="prospectus_types.length > 0">
-                <select v-model.number="prospectus_type" v-if="prospectus_types" @change="resetFee">
+                <select v-model.number="prospectus_type"
+                        v-if="prospectus_types"
+                        @change="resetFee">
                   <option disabled value=''>请选择</option>
                   <option v-for="item in prospectus_types" :value="item.value">{{item.name}}</option>
                 </select>
@@ -124,13 +144,22 @@
                 </select>
               </app-select>
               <app-input label="年缴保费">
-                <input slot="input" v-model.number.lazy="insurance.period_money" type="number" placeholder="请填写年缴保费（元）"
+                <input slot="input"
+                       v-model.number.lazy="insurance.period_money"
+                       type="number" placeholder="请填写年缴保费（元）"
                        @change="resetFee">
-                <div slot="icon" v-show="insurance.period_money != ''" class="am-list-clear"><i
-                  class="am-icon-clear am-icon" @click="insurance.period_money = ''"></i></div>
+                <div slot="icon"
+                     v-show="insurance.period_money != ''"
+                     @click="insurance.period_money = ''"
+                     class="am-list-clear">
+                  <i class="am-icon-clear am-icon"></i>
+                </div>
               </app-input>
               <app-input label="基本保额">
-                <input slot="input" readonly v-model.number.lazy="insurance.money" type="number"
+                <input slot="input"
+                       readonly
+                       v-model.number.lazy="insurance.money"
+                       type="number"
                        placeholder="基本保险金额（元）">
                 <div slot="button" class="am-list-button">
                   <button type="button" @click="calMoney(true)">点击计算</button>
@@ -146,27 +175,57 @@
       :ref="'applicant_' + item.safe_id"
       v-for="item,index in Addons"
       :key="item.safe_id"
-      :id="'ins-' + insIndex + '-fj-' + item.safe_id"
+      :id="'ins-' + insIndex + '_fj-' + item.safe_id"
       v-show="showAll">
       <template slot="header">
-        <div class="am-ft-md"> {{item.name}}</div>
+        <div class="am-ft-md" style="width: 70%"> {{item.name}}</div>
         <div class="am-list-extra" style="min-width:.44rem">投保&nbsp;</div>
         <div class="am-switch">
           <input type="checkbox" @change="chAddonState(item.safe_id)" v-model="addonsSelected[item.safe_id]"
-                 class="am-switch-checkbox" :id="'applicant_'+item.safe_id">
-          <label class="am-switch-label" :for="'applicant_'+item.safe_id">
+                 class="am-switch-checkbox" :id="'ins-' + insIndex + '_applicant-'+item.safe_id">
+          <label class="am-switch-label" :for="'ins-' + insIndex + 'applicant_'+item.safe_id">
             <div class="am-switch-inner"></div>
             <div class="am-switch-switch"></div>
           </label>
         </div>
       </template>
+      <!-- 附加健康两全保险 -->
+      <template v-if="item.safe_id==='362'">
+        <app-select label="保障期间">
+          <select v-model.number="flag[item.safe_id]" @change="flagChanged(item.safe_id)">
+            <option disabled value='0'>请选择</option>
+            <option value="70">70年</option>
+            <option value="75">75年</option>
+            <option value="79">79年</option>
+          </select>
+        </app-select>
+        <template v-if="addonRes[item.safe_id]">
+
+          <div class="am-list-item">
+            <div class="am-list-content">缴费期间</div>
+            <div class="am-ft-black">{{mainPay_year}}年</div>
+          </div>
+          <div class="am-list-item">
+            <div class="am-list-content">年缴保费</div>
+            <div class="am-ft-orange">{{addonRes[item.safe_id]['年缴保费']}}</div>
+          </div>
+        </template>
+      </template>
+      <!-- 附加健康两全保险 -->
       <!-- 附加品质生活年金保险 -->
       <template v-if="item.safe_id==='354'">
         <app-input label="年缴保费">
-          <input slot="input" v-model.number="cache.derate_money354" type="number" placeholder="基本保险金额（元）"
+          <input slot="input"
+                 v-model.number="cache.derate_money354"
+                 type="number"
+                 placeholder="基本保险金额（元）"
                  @change="chAddonState(item.safe_id)">
-          <div slot="icon" v-show="cache.derate_money354 !== ''" class="am-list-clear"><i
-            class="am-icon-clear am-icon" @click="cache.derate_money354 = ''"></i></div>
+          <div slot="icon"
+               v-show="cache.derate_money354 !== ''"
+               @click="cache.derate_money354 = ''"
+               class="am-list-clear">
+            <i class="am-icon-clear am-icon"></i>
+          </div>
         </app-input>
         <div class="am-notice" role="alert">
           <div class="am-notice-content">年缴保费为1000元整数倍，可为0</div>
@@ -176,10 +235,17 @@
       <!-- 附加金账户年金保险 -->
       <template v-if="item.safe_id==='349'">
         <app-input label="年缴保费">
-          <input slot="input" v-model.number="cache.derate_money349" type="number" placeholder="基本保险金额（元）"
+          <input slot="input"
+                 v-model.number="cache.derate_money349"
+                 type="number"
+                 placeholder="基本保险金额（元）"
                  @change="chAddonState(item.safe_id)">
-          <div slot="icon" v-show="cache.derate_money349 !== ''" class="am-list-clear"><i
-            class="am-icon-clear am-icon" @click="cache.derate_money349 = ''"></i></div>
+          <div slot="icon"
+               v-show="cache.derate_money349 !== ''"
+               @click="cache.derate_money349 = ''"
+               class="am-list-clear">
+            <i class="am-icon-clear am-icon"></i>
+          </div>
         </app-input>
         <div class="am-notice" role="alert">
           <div class="am-notice-content">年缴保费为1000元整数倍，可为0</div>
@@ -237,10 +303,15 @@
       <!-- 附加恒祥 -->
       <template v-if="item.safe_id === '295'">
         <app-input label="保险金额">
-          <input slot="input" v-model.number="cache.base_money295" type="number" placeholder="保险金额(元)"
+          <input slot="input"
+                 v-model.number="cache.base_money295"
+                 type="number" placeholder="保险金额(元)"
                  @change="addonRes[item.safe_id]=null,addonsSelected[item.safe_id]=false">
-          <div slot="icon" v-show="cache.base_money295 != ''" class="am-list-clear"><i class="am-icon-clear am-icon"
-                                                                                       @click="cache.base_money295 = ''"></i>
+          <div slot="icon"
+               @click="cache.base_money295 = ''"
+               v-show="cache.base_money295 != ''"
+               class="am-list-clear">
+            <i class="am-icon-clear am-icon"></i>
           </div>
         </app-input>
         <div class="am-list-footer"><span class='am-ft-orange'>最低50元,10的整数倍。累计不超过100元/天</span>
@@ -338,8 +409,11 @@
           <div class="am-ft-black">趸交</div>
         </div>
         <app-input label="年缴保费">
-          <input slot="input" v-model.number="cache.derate_money291" type="number" placeholder="基本保险金额（元）"
-                 @change="chAddonState(item.safe_id)">
+          <input slot="input"
+                 v-model.number="cache.derate_money291"
+                 type="number"
+                 placeholder="基本保险金额（元）"
+                 @change="addonsSelected[item.safe_id] = true, chAddonState(item.safe_id)">
           <div slot="icon" v-show="cache.derate_money291 !== ''" class="am-list-clear"><i
             class="am-icon-clear am-icon" @click="cache.derate_money291 = ''"></i></div>
         </app-input>
@@ -439,7 +513,7 @@
       <!-- 附加投保人保费豁免重大疾病保险 -->
       <!-- 附加住院费用医疗（社保和非社保型）235-236 -->
       <template v-else-if="(item.safe_id === '235' || item.safe_id === '236' || item.safe_id === '237')">
-        <app-select label="保险金额">
+        <app-select label="投保份数">
           <select v-model.number="flag[item.safe_id]" @change="flagChanged(item.safe_id)">
             <option disabled value=''>请选择</option>
             <option value="1" v-if="(insurance.period_money > 1000 && insurance.period_money <= 1499)">1份</option>
@@ -554,10 +628,16 @@
       <!-- 附加综合意外伤害保险 -->
       <template v-else-if="item.safe_id === '148'">
         <app-input label="保险金额">
-          <input slot="input" v-model.number="cache.base_money148" type="number" placeholder="基本保险金额（元）"
+          <input slot="input"
+                 v-model.number="cache.base_money148"
+                 type="number"
+                 placeholder="基本保险金额（元）"
                  @change="addonRes[item.safe_id]=null,addonsSelected[item.safe_id]=false">
-          <div slot="icon" v-show="cache.base_money148 != ''" class="am-list-clear"><i class="am-icon-clear am-icon"
-                                                                                       @click="cache.base_money148 = ''"></i>
+          <div slot="icon"
+               v-show="cache.base_money148 != ''"
+               @click="cache.base_money148 = ''"
+               class="am-list-clear">
+            <i class="am-icon-clear am-icon"></i>
           </div>
           <span slot="button" class="am-ft-orange am-ft-sm">(5万~300万)</span>
         </app-input>
@@ -584,15 +664,37 @@
       <!-- 附加综合意外伤害保险 -->
       <!-- 附加住院费用医疗保险 -->
       <template v-else-if="item.safe_id === '147'">
-        <app-input label="投保份数">
+<!--        <app-input label="投保份数">
           <input slot="input" v-model.number="cache.quota147" type="number" placeholder="请输入投保份数"
                  @change="flagChanged(item.safe_id)">
-          <div slot="icon" v-show="cache.quota147 != ''" class="am-list-clear"><i class="am-icon-clear am-icon"
-                                                                                  @click="cache.quota147 = ''"></i>
+          <div slot="icon"
+               class="am-list-clear"
+               v-show="cache.quota147 != ''"
+               @click="cache.quota147 = ''">
+            <i class="am-icon-clear am-icon"></i>
           </div>
-          <span slot="button"
-                class="am-ft-orange am-ft-sm">({{insurance.period_money > 3000 ? '2-30' : '2-10'}}份)</span>
-        </app-input>
+          <span slot="button" class="am-ft-orange am-ft-sm">
+            ({{insurance.period_money > 3000 ? '2-30' : '2-10'}}份)
+          </span>
+        </app-input>-->
+        <app-select label="投保金额">
+          <select v-model.number="cache.quota147" @change="flagChanged(item.safe_id)">
+            <option disabled value='0'>请选择金额</option>
+            <option value="2000">2000元</option>
+            <option value="3000">3000元</option>
+            <option value="4000">4000元</option>
+            <option value="5000">5000元</option>
+            <option value="6000">6000元</option>
+            <option value="7000">7000元</option>
+            <option value="8000">8000元</option>
+            <option value="9000">9000元</option>
+            <option value="10000">10000元</option>
+            <option value="15000" v-show="insurance.period_money > 3000">15000元</option>
+            <option value="20000" v-show="insurance.period_money > 3000">20000元</option>
+            <option value="25000" v-show="insurance.period_money > 3000">25000元</option>
+            <option value="30000" v-show="insurance.period_money > 3000">30000元</option>
+          </select>
+        </app-select>
         <div class="am-list-item">
           <div class="am-list-content">保险金额</div>
           <div class="am-ft-black">{{flag[item.safe_id]}}</div>
@@ -665,7 +767,7 @@
       <!-- 附加乐相伴豁免保险费重大疾病保险 -->
       <!-- 附加如意尊享住院费用B款医疗保险 -->
       <template v-else-if="item.safe_id === '121' && addonRes[item.safe_id]">
-        <div class="am-list-item" v-for="(value,key) in addonRes[item.safe_id]">
+        <div class="am-list-item" v-for="value,key in addonRes[item.safe_id]">
           <div class="am-list-content">{{key}}</div>
           <div class="am-ft-orange">{{value}}</div>
         </div>
@@ -728,10 +830,12 @@
   // 附加险上线产品
   const addonFilter = ['8', '11', '86', '94', '121', '131', '146', '147', '148', '175', '177', '196', '235', '236', '237', '273', '281', '284', '285', '289', '291', '293', '294', '295', '348']
   const mustSelected = ['291', '177', '11', '333', '332', '349', '354'] // 必须附加的附加险
+  const noNeedCal = ['291', '11'] // 不需要计算的险种
 
   export default {
     name: 'insurance',
     props: {
+      id: Number,
       insIndex: Number,
       edit: Object
     },
@@ -952,18 +1056,23 @@
         if (this.pl_id && this.edit.main && !this.editLoaded) {
           let main = this.edit.main
           let money = ''
+          let periodMoney = ''
           switch (safeid) {
             case '292':
               money = main.base_money / 50000
               break
+            case '290':
+              periodMoney = main.year_fee
+              break
             default:
+              periodMoney = main.year_fee
               money = main.base_money
               break
           }
           this.insurance.safe_year = Number(main.safe_year)
           this.insurance.pay_year = Number(main.pay_year)
-          this.insurance.money = money || '' // 基本保险金额
-          this.insurance.period_money = main.year_fee || '' // 年交保费
+          this.insurance.money = money // 基本保险金额
+          this.insurance.period_money = periodMoney // 年交保费
           this.$forceUpdate()
           this.resetAddon()
           this.editLoaded = true
@@ -984,7 +1093,7 @@
         if (this.uploading) {
           this.addonsSelected[index] = !this.addonsSelected[index]
           this.$forceUpdate()
-          // return false
+          return false
         }
         console.log(this.addonsSelected[index])
         this.checkRS()
@@ -1002,8 +1111,8 @@
           switch (this.insurance.safe_id) {
             case '288':
               if (['295', '294', '293'].indexOf(index) > -1) {
-                if (this.insurance.money < 250000) {
-                  toastText = '主险保额小于25万元时不可附加该险种'
+                if (this.insurance.money < 200000) {
+                  toastText = '主险保额小于20万元时不可附加该险种'
                 }
               }
               break
@@ -1028,6 +1137,11 @@
           }
 
           switch (index) {
+            case '362': // 附加百万健康两全保险
+              if (!flag) {
+                toastText = '请先选择保障期间'
+              }
+              break
             case '354': // 附加品质生活年金-中国人保
               if (toastText) break
               if (this.cache.derate_money354 === '') {
@@ -1050,7 +1164,7 @@
               break
             case '332': // 乐行天下
               if (toastText) break
-              if (flag) {
+              if (!flag) {
                 toastText = '请先选择保险金额'
               }
               break
@@ -1107,7 +1221,7 @@
               break
             case '273':
             case '175':
-              if (flag) {
+              if (!flag) {
                 toastText = '请先选择计划'
               }
               break
@@ -1118,26 +1232,24 @@
                 toastText = '保险金额范围为5万~300万'
               } else if (this.cache.base_money148 > this.insurance.money * 5) {
                 toastText = '保额不得超过主险保额的5倍'
-              } else if (flag) {
+              } else if (!flag) {
                 toastText = '请先选择职业分类'
               }
               break
             case '147':
               if (periodMoney < 1000) {
                 toastText = '主险年交保费小于1000元不可附加该险种'
-              } else if (periodMoney <= 3000 && (this.cache.quota147 < 2 || this.cache.quota147 > 10)) {
-                toastText = '主险保费对应份额为2-10份'
-              } else if (this.cache.quota147 < 2 || this.cache.quota147 > 30) {
-                toastText = '主险保费对应份额为2-30份'
+              } else if (!flag) {
+                toastText = '请先选择保险金额'
               }
               break
             case '146':
-              if (flag) {
+              if (!flag) {
                 toastText = '请先选择保险金额'
               }
               break
             case '131':
-              if (periodMoney === '') {
+              if (!periodMoney) {
                 toastText = '请先完善其他附加险，算出主险年缴保费'
               }
               if (this.samePerson) {
@@ -1163,20 +1275,19 @@
             case '235': // 附加住院费用医疗（非社保型）
               if (this.addonsSelected[236]) {
                 toastText = '社保与非社保只能选择一个'
-              } else if (flag) {
+              } else if (!flag) {
                 toastText = '请先选择保险金额'
               }
               break
-
             case '236': // 附加住院费用医疗（社保型）
               if (this.addonsSelected[235]) {
                 toastText = '社保与非社保只能选择一个'
-              } else if (flag) {
+              } else if (!flag) {
                 toastText = '请先选择保险金额'
               }
               break
             case '237': // 附加住院费用医疗（社保型）
-              if (flag) {
+              if (!flag) {
                 toastText = '请先选择保险金额'
               }
               break
@@ -1193,9 +1304,12 @@
             toastText = '该附加险必须附加，不能取消'
             this.$toast.open(toastText)
             this.addonsSelected[index] = true
-            this.$forceUpdate()
             this.calMoney(false, index)// 试算附加险
+          } else {
+//            取消时 清除缓存的提交数据
+            this.$delete(this.addonInsData, index)
           }
+          this.$forceUpdate()
         }
       },
       // 重置附加险默认信息
@@ -1228,8 +1342,6 @@
           for (let i in this.Addons[safeid]) {
             const j = this.Addons[safeid][i].safe_id
             this.addonsSelected[j] = false
-            if (mustSelected.indexOf(j) > -1) {
-            }
           }
         }
         this.addonRes = {}
@@ -1239,10 +1351,7 @@
         this.addonRes[index] = null
         this.addonsSelected[index] = false
         if (index === '147') {
-          if (this.cache.quota147 < 2 || this.cache.quota147 > 30) {
-            this.$toast.open()
-          }
-          this.flag[index] = this.cache.quota147 * 1000
+          this.flag[index] = this.cache.quota147
         }
         this.$forceUpdate()
       },
@@ -1252,20 +1361,14 @@
       // 校验投保人
       checkAppl () {
         let toastText = null
-        let pat = /^[\u4e00-\u9fa5a-zA-Z]+$/
-        let exp = /^(([1-9]\d{0,12})|0)(\.\d{1,2})?$/
-        if (!this.appl.name) {
-          toastText = '投保人姓名不能为空'
-        } else if (pat.test(this.appl.name) === false) {
-          toastText = '投保人姓名应为汉字或英文，请重新输入'
+        if (!this.checkName(this.appl.name, '投保人')) {
+          return false
+        } else if (!this.appl.age) {
+          toastText = '投保人年龄不能为空'
         } else if (this.appl.age < 18) {
           toastText = '投保人年龄不能小于18周岁'
         } else if (this.appl.age > 100) {
           toastText = '投保人年龄不能大于100周岁'
-        } else if (!this.appl.age) {
-          toastText = '投保人年龄不能为空'
-        } else if (exp.test(this.appl.age) === false) {
-          toastText = '保险人年龄格式不规范，请重新输入'
         }
         if (toastText) {
           this.$toast.open(toastText)
@@ -1276,16 +1379,10 @@
       // 校验被保险人
       checkAssu () {
         let toastText = null
-        let pat = /^[\u4e00-\u9fa5a-zA-Z]+$/
-        let exp = /^(([1-9]\d{0,12})|0)(\.\d{1,2})?$/
-        if (!this.assu.name) {
-          toastText = '被保人姓名不能为空'
-        } else if (pat.test(this.assu.name) === false) {
-          toastText = '被投保人姓名应为汉字或英文，请重新输入'
+        if (!this.checkName(this.assu.name, '被投保人')) {
+          return false
         } else if (!this.assu.age) {
-          toastText = '被保人年龄不能为空'
-        } else if (exp.test(this.assu.age) === false) {
-          toastText = '被保险人年龄格式不规范，请重新输入'
+          toastText = '被投保人年龄不能为空'
         }
         if (toastText) {
           this.$toast.open(toastText)
@@ -1346,6 +1443,13 @@
 
         let toastText = null
         switch (safeid) {
+          case '361': // 信泰百万健康重大疾病
+            if (assuAge > 60) {
+              toastText = '被保人年龄不能大于60周岁'
+            } else if (assuAge < 1) {
+              toastText = '被保人年龄不能小于28天'
+            }
+            break
           case '360': // 恒大鑫福年
             if (assuAge > 54) {
               toastText = '被保人年龄不能大于54周岁'
@@ -1401,6 +1505,11 @@
               toastText = '被保人年龄不能小于18周岁'
             } else if (assuAge > 50 && mainSafeYear === 30) {
               toastText = '被保人大于50周岁时,只能选择20年交'
+            }
+            break
+          case '309': // 安联-出行无忧
+            if (assuAge < 18) {
+              toastText = '被保人年龄不能小于18周岁'
             }
             break
           case '292': // 千万护航两全保险
@@ -1497,7 +1606,17 @@
             }
             break
           case '74': // 盛世年年
-            if (payOverage > 60) {
+            if (mainPayYear === 1 && assuAge > 60) {
+              toastText = '被保人年龄不能大于60周岁'
+            } else if (mainPayYear === 3 && assuAge > 55) {
+              toastText = '3年交被保人年龄不能大于60周岁'
+            } else if (mainPayYear === 5 && assuAge > 55) {
+              toastText = '5年交被保人年龄不能大于55周岁'
+            } else if (mainPayYear === 8 && assuAge > 50) {
+              toastText = '10年交被保人年龄不能大于50周岁'
+            } else if (mainPayYear === 10 && assuAge > 50) {
+              toastText = '10年交被保人年龄不能大于50周岁'
+            } else if (payOverage > 60) {
               toastText = '被保人交费期满不能大于60岁'
             }
             break
@@ -1548,7 +1667,7 @@
         }
 
         if (toastText) {
-          this.$toast.open('【' + this.insurance.name + '】' + toastText)
+          this.$toast.open('【' + this.mainInsurance.name + '】' + toastText)
           return false
         }
         return true
@@ -1562,6 +1681,11 @@
         let toastText = null
 
         switch (safeid) {
+          case '361': // 信泰百万健康重大疾病
+            if (money < 50000 || money % 1000 !== 0) {
+              toastText = '【' + name + '】最低保额5万元，且为1千元整数倍！'
+            }
+            break
           case '348': // 泰康乐赢家
             if (money < 200000 || money % 10000 !== 0) {
               toastText = '【' + name + '】最低保额20万元，且为1万元整数倍！'
@@ -1861,7 +1985,7 @@
           need_packet: 0
         }
         // 添加特殊参数
-        let filterSafeid = ['74', '182', '290', '348', '172', '352', '360']
+        let filterSafeid = ['74', '182', '290', '348', '172', '352', '360', '362']
         if (filterSafeid.indexOf(safeid) > -1) {
           data = Object.assign(data, {
             assume_rate: '0',
@@ -1924,8 +2048,14 @@
         let py = this.mainPayYear === 1 ? 1 : this.mainPayYear - 1 // 主险缴费期间减一年
         let periodMoney = this.insurance.period_money
         let money = this.insurance.money
+
         // 险种参数
-        if (safeid === '360') {
+        if (safeid === '362') {
+          // 信泰百万健康重大疾病
+          data.pay_year = this.mainPayYear
+          data.safe_year = this.flag[safeid]
+          data.flag = 0
+        } else if (safeid === '360') {
           // 恒大鑫福年金
           data.pay_year = this.mainPayYear
           data.safe_year = this.mainSafeYear
@@ -1975,6 +2105,9 @@
         } else if (safeid === '291') { // 附加金管家年金保险
           data.pay_year = 1
           data.safe_year = 1
+          data.derate_money = this.cache.derate_money291
+        } else if (safeid === '290') { // 金财D
+          data.level = 2
           data.derate_money = this.cache.derate_money291
         } else if (safeid === '289') {
           // 附加投保人豁免2017
@@ -2063,7 +2196,7 @@
           this.mainInsData = data
         } else {
           this.addonInsData[safeid] = data
-          if (safeid === '291') {
+          if (noNeedCal.indexOf(safeid) > -1) {
             return false
           }
         }
@@ -2096,9 +2229,9 @@
             } else {
               this.addonRes[safeid] = ret.data.data[safeid].main.list[1]
               if (safeid === '332') {
-                this.cache.pay_money332 = this.addonRes[safeid]['年缴保费']
+                this.cache.pay_money332 = this.addonRes[safeid]['年缴保费'] || this.addonRes[safeid]['年缴保费(元)']
               } else if (safeid === '333') {
-                this.cache.pay_money333 = this.addonRes[safeid]['年缴保费']
+                this.cache.pay_money333 = this.addonRes[safeid]['年缴保费'] || this.addonRes[safeid]['年缴保费(元)']
               }
               this.$forceUpdate()
             }
@@ -2106,6 +2239,22 @@
             this.$toast.open('计算出错', 'error')
           }
         })
+      },
+      checkIns () {
+        if (!this.checkMainForm()) {
+          return false
+        } else if (!this.checkMainFee(this.insurance.safe_id)) {
+          return false
+        }
+        let bool = true
+        mustSelected.forEach(item => {
+          if (this.Addons[item] && !this.addonsSelected[item]) {
+            let name = this.Addons[item].name
+            this.$toast.open('【' + name + '】为必选')
+            bool = false
+          }
+        })
+        return bool
       },
       saveIns () {
         console.info('saveIns:', this.insIndex)

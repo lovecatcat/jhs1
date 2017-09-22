@@ -13,9 +13,18 @@
     <applicant :edit="applData"></applicant>
 
     <div class="plan" v-show="plan.id === activePlan" v-for="plan,index in plans" :key="plan.id">
-      <assured :ref="'assu_' + plan.id" :edit="plan.assu"></assured>
-      <insurance :ref="'ins_' + plan.id" :edit="ins" v-for="ins,i in plan.ins" v-if="ins" :key="i"
-                 :insIndex="i"></insurance>
+      <assured
+        :ref="'assu_' + plan.id"
+        :id="plan.id"
+        :edit="plan.assu"/>
+      <insurance
+        :ref="'ins_' + plan.id"
+        :edit="ins"
+        v-for="ins,i in plan.ins"
+        v-if="ins"
+        :key="i"
+        :id="plan.id"
+        :insIndex="i"/>
 
       <div class="am-button-group" v-show="saveStatus[plan.id] !== true">
         <button type="button" class="am-button add" @click="addIns">
@@ -91,8 +100,8 @@
             if (!item.showAll) {
               count += item.insurance.period_money
               for (let j in item.addonsSelected) {
-                if (item.addonsSelected[j]) {
-                  let pm = item.addonRes[j]['年缴保费']
+                if (item.addonsSelected[j] && item.addonRes[j]) {
+                  let pm = item.addonRes[j]['年缴保费'] || item.addonRes[j]['年缴保费(元)']
                   if (pm) {
                     count += pm
                   }
@@ -122,8 +131,8 @@
         for (let i in crtIns) {
           let item = crtIns[i]
           // 主险费用
-          if (!item.checkMainFee(item.insurance.safe_id)) {
-            return
+          if (!item.checkIns(item.insurance.safe_id)) {
+            return false
           }
           if (item.showAll === true) { // 收缩险种信息
             item.toggle()
@@ -146,12 +155,14 @@
           }
           let planIns = this.plans[i].ins
           for (let j in planIns) {
+            if (!planIns[j]) continue
             let item = utils.parseVueObj(planIns[j])
             item.main.is_save = 1
             item.main.warranty_year = 105
             item.main.need_packet = 1
             data.push(item.main)
             for (let k in item.addon) {
+              if (!item.addon[k]) continue
               item.addon[k].is_save = 1
               item.addon[k].warranty_year = 105
               item.addon[k].need_packet = 1

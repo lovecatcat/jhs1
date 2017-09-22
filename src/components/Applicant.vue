@@ -9,10 +9,14 @@
         <app-input label="姓名">
           <input slot="input"
                  type="text"
+                 @change="checkName(appl.name, '投保人')"
                  placeholder="请填写投保人姓名"
                  v-model.lazy.trim="appl.name">
-          <div slot="icon" class="am-list-clear" v-show="appl.name != '' ">
-            <i class="am-icon-clear am-icon" @click="appl.name = '' "></i>
+          <div slot="icon"
+               class="am-list-clear"
+               @click="appl.name = '' "
+               v-show="appl.name != '' ">
+            <i class="am-icon-clear am-icon"></i>
           </div>
         </app-input>
         <app-input label="年龄">
