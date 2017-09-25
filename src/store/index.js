@@ -1,7 +1,13 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-
 Vue.use(Vuex)
+
+import Promise from 'promise-polyfill'
+
+// To add to window
+if (!window.Promise) {
+  window.Promise = Promise
+}
 
 import utils from '../widgets/utils'
 import $_GET from '../widgets/Get'
