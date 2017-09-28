@@ -2,15 +2,15 @@
   <div class="assured">
     <div class="am-list am-list-6lb form">
       <div class="form-header">
-        <span class="fn-left">被投保人信息</span>
-        <span class="fn-right color-blank" @click="keepSame">同投保人</span>
+        <span class="fn-left">被保人信息</span>
+        <span class="fn-right color-blank" @click="keepSame"><input type="radio">同投保人</span>
       </div>
       <div class="am-list-body" v-if="assu">
         <app-input label="姓名">
           <input slot="input"
                  type="text"
-                 @change="checkName(assu.name, '被投保人')"
-                 placeholder="请填写被投保人姓名"
+                 @change="checkName(assu.name, '被保人')"
+                 placeholder="请填写被保人姓名"
                  v-model.lazy.trim="assu.name">
           <div slot="icon"
                class="am-list-clear"
@@ -20,7 +20,7 @@
           </div>
         </app-input>
         <app-input label="年龄">
-          <input slot="input" type="number" placeholder="请填写被投保人年龄" v-model.number.lazy="assu.age"
+          <input slot="input" type="number" placeholder="请填写被保人年龄" v-model.number.lazy="assu.age"
                  @change="ageChanged">
           <div slot="icon" class="am-list-clear" @click="assu.age = '' " v-show="assu.age != '' "><i
             class="am-icon-clear am-icon"></i></div>

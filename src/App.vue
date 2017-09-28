@@ -1,56 +1,65 @@
 <template>
   <div id="app">
 
-    <div class="am-tab">
-      <a href="javascript:;" class="am-tab-item"
+    <div class="am-tab am-fixed am-fixed-top" style="overflow-x: auto;">
+      <a href="javascript:;" style="border-right: solid 1px #eee;min-width: 100px;" class="am-tab-item"
          :class="{selected:activePlan===plan.id}"
          @click="$store.commit('CHG_PLAN', plan.id)"
          v-for="plan,index in plans" :key="plan.id">
-        方案{{index + 1}}
+        <span v-if="!plans[index].assu.name">保障计划</span>
+        {{plans[index].assu.name}}
       </a>
     </div>
-    <div class="am-list am-list-6lb form">
-      <app-input label="计划名称">
-        <input slot="input"
-               type="text"
-               placeholder="请填写计划名称"
-               v-model.lazy.trim="name">
-        <div slot="icon"
-             class="am-list-clear"
-             @click="name = '' "
-             v-show="name != '' ">
-          <i class="am-icon-clear am-icon"></i>
-        </div>
-      </app-input>
-    </div>
-
-    <applicant :edit="applData"></applicant>
-
-    <div class="plan" v-show="plan.id === activePlan" v-for="plan,index in plans" :key="plan.id">
-      <assured
-        :ref="'assu_' + plan.id"
-        :id="plan.id"
-        :edit="plan.assu"/>
-      <insurance
-        :ref="'ins_' + plan.id"
-        :edit="ins"
-        v-for="ins,i in plan.ins"
-        v-if="ins"
-        :key="i"
-        :id="plan.id"
-        :insIndex="i"/>
-
-      <div class="am-button-group" v-show="saveStatus[plan.id] !== true">
-        <button type="button" class="am-button add" @click="addIns">
-          <i class="iconfont icon-tianjia"></i> 添加险种
-        </button>
-        <button type="button" class="am-button remove" @click="removePlan(index)">
-          <i class="am-icon-clear am-icon"></i> 删除 方案{{index + 1}}
-        </button>
-        <button type="button" class="am-button save" @click="savePlan">
-          <i class="iconfont icon-baocun"></i> 保存 方案{{index + 1}}
-        </button>
+    <div style="width:100%;height:auto;position:absolute;top:.42rem;bottom:.47rem;overflow-y:scroll;">
+      <div class="am-list am-list-6lb form">
+        <app-input label="计划名称">
+          <input slot="input"
+                 type="text"
+                 placeholder="请填写计划名称"
+                 v-model.lazy.trim="alias">
+          <div slot="icon"
+               class="am-list-clear"
+               @click="alias = '' "
+               v-show="alias != '' ">
+            <i class="am-icon-clear am-icon"></i>
+          </div>
+        </app-input>
       </div>
+
+      <applicant :edit="applData"></applicant>
+      
+      <div class="plan" v-show="plan.id === activePlan" v-for="plan,index in plans" :key="plan.id">
+        <assured
+          :ref="'assu_' + plan.id"
+          :id="plan.id"
+          :edit="plan.assu"/>
+        <insurance
+          :ref="'ins_' + plan.id"
+          :edit="ins"
+          v-for="ins,i in plan.ins"
+          v-if="ins"
+          :key="i"
+          :id="plan.id"
+          :insIndex="i"/>
+        
+        <div class="am-button-group" v-show="saveStatus[plan.id] !== true">
+          <button type="button" class="am-button add" @click="addIns">
+            <i class="iconfont icon-tianjia"></i> 添加险种
+          </button>
+        </div>
+        <div class="am-button-group" v-show="saveStatus[plan.id] !== true">
+         <!--  <button type="button" class="am-button add" @click="addIns">
+            <i class="iconfont icon-tianjia"></i> 添加险种
+          </button> -->
+          <button type="button" class="am-button remove" @click="removePlan(index)">
+            <i class="am-icon-clear am-icon"></i> 删除方案{{index + 1}}
+          </button>
+          <button type="button" class="am-button save" @click="savePlan" style="background-color: #fff;color: #707dfe;">
+            <i class="iconfont icon-baocun"></i> 保存方案{{index + 1}}
+          </button>
+        </div>
+      </div>
+
     </div>
 
     <div class="am-fixed am-fixed-bottom am-flexbox" style="background-color:#fff;border-top: 1px solid #eee">
@@ -90,7 +99,7 @@
     },
     data () {
       return {
-        name: '',
+        alias: '',
         count: 0
       }
     },
@@ -172,6 +181,7 @@
           for (let j in planIns) {
             if (!planIns[j]) continue
             let item = utils.parseVueObj(planIns[j])
+            item.main.alias = this.alias
             item.main.is_save = 1
             item.main.warranty_year = 105
             item.main.need_packet = 1
@@ -186,20 +196,36 @@
           }
         }
         this.log(data)
-        utils.post('Prospectus/CreateBook4', qs.stringify({
-          safes: JSON.stringify(data)
-        })).then(ret => {
-          ret = ret.data
-          if (ret.data.length > 0) {
-            let plId = ret.data[0].pl_id
-            let url = '/wechat/prospectus-group?param=' + JSON.stringify({
-              admin_id: this.admin_id,
-              pl_id: plId
+        if (this.pl_id) {
+          alert('aaa')
+          let baseUrl = 'http://ts-open.ehuimeng.com/api/index/invoke'
+          utils.post(baseUrl, qs.stringify({
+            module: 'Prospectus',
+            method: 'edit',
+            params: JSON.stringify({
+              pl_id: this.pl_id,
+              safes: JSON.stringify(data)
             })
-            console.log(url)
-            location.href = url
-          }
-        }).catch(this.errorCb)
+          })).then(ret => {
+            ret = ret.data
+            console.log('111')
+          }).catch(this.errorCb)
+        } else {
+          utils.post('Prospectus/CreateBook4', qs.stringify({
+            safes: JSON.stringify(data)
+          })).then(ret => {
+            ret = ret.data
+            if (ret.data.length > 0) {
+              let plId = ret.data[0].pl_id
+              let url = '/wechat/prospectus-group?param=' + JSON.stringify({
+                admin_id: this.admin_id,
+                pl_id: plId
+              })
+              console.log(url)
+              location.href = url
+            }
+          }).catch(this.errorCb)
+        }
       }
     },
     created () {

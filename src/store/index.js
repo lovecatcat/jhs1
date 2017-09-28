@@ -79,7 +79,15 @@ export default new Vuex.Store({
     },
     ADD_PLAN (state) {
       console.log('commit mutation: ADD_PLAN')
-      let id = state.plans.length + 1
+      let idArr = []
+      state.plans.forEach(item => {
+        idArr.push(item.id)
+      })
+      let id = Math.max.apply(null, idArr) + 1
+      console.log(idArr)
+      console.log(id)
+      // let id = state.plans.length + 1
+      // todo id 取出ID Math.max()
 
       state.plans.push({
         id,
