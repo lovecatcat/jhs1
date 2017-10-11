@@ -193,7 +193,7 @@
       <template v-if="item.safe_id==='362' && addonsSelected[item.safe_id]">
         <app-select label="保障期间">
           <select v-model.number="flag[item.safe_id]" @change="flagChanged(item.safe_id)">
-            <option disabled value='0'>请选择</option>
+            <option disabled value=''>请选择</option>
             <option value="70">70岁</option>
             <option value="75">75岁</option>
             <option value="79">79岁</option>
@@ -1039,7 +1039,7 @@
         // 部分险种输入 保额， 算保费
         this.isBaseMoney = calMoneyIns.indexOf(safeid) === -1
         this.fuBaseMoney = fuMoneyIns.indexOf(safeid) !== -1
-
+        this.resetAddon()
         if (this.pl_id && this.edit.main && !this.editLoaded) {
           let main = this.edit.main
           let money = ''
@@ -1061,13 +1061,16 @@
           this.insurance.money = money // 基本保险金额
           this.insurance.period_money = periodMoney // 年交保费
           this.$forceUpdate()
-          this.resetAddon()
           this.editLoaded = true
         }
       },
       // 重置主险费用及附加险
       resetFee () {
         this.isBaseMoney ? this.insurance.period_money = '' : this.insurance.money = ''
+        if (this.fuBaseMoney) {
+          this.insurance.period_money = ''
+          this.insurance.money = ''
+        }
         this.resetAddon()
       },
       /**
@@ -1179,7 +1182,7 @@
             this.$toast.open(toastText)
             this.addonsSelected[index] = false
             this.$forceUpdate()
-          } else if (index === '121' || index === '131' || index === '333' || index === '94' || index === '11' || index === '177' || index === '196' || index === '285' || index === '284' || index === '281') {
+          } else if (index === '121' || index === '131' || index === '333' || index === '94' || index === '11' || index === '177' || index === '196' || index === '285' || index === '284' || index === '281' || index === '289') {
             this.calMoney(false, index) // 试算附加险
           }
         } else {
@@ -1190,7 +1193,9 @@
             this.calMoney(false, index)// 试算附加险
           } else {
 //            取消时 清除缓存的提交数据
+            this.flag[index] = ''
             this.$delete(this.addonInsData, index)
+            this.$delete(this.addonRes, index)
           }
           this.$forceUpdate()
         }
@@ -1205,6 +1210,7 @@
         } else if (safeid === '288' || safeid === '290' || safeid === '292') {
           this.flag[294] = ''
           this.flag[293] = ''
+          this.cache.base_money295 = ''
         } else if (safeid === '283') {
           this.flag[146] = ''
           this.flag[147] = ''
@@ -1336,8 +1342,20 @@
             }
             break
           case '361': // 信泰百万健康重大疾病
-            if (assuAge > 60) {
+            if (mainPayYear === 1 && assuAge > 60) {
               toastText = '被保人年龄不能大于60周岁'
+            } else if (mainPayYear === 3 && assuAge > 60) {
+              toastText = '3年交被保人年龄不能大于60周岁'
+            } else if (mainPayYear === 5 && assuAge > 60) {
+              toastText = '5年交被保人年龄不能大于60周岁'
+            } else if (mainPayYear === 10 && assuAge > 60) {
+              toastText = '10年交被保人年龄不能大于60周岁'
+            } else if (mainPayYear === 15 && assuAge > 55) {
+              toastText = '20年交被保人年龄不能大于55周岁'
+            } else if (mainPayYear === 20 && assuAge > 50) {
+              toastText = '30年交被保人年龄不能大于50周岁'
+            } else if (mainPayYear === 30 && assuAge > 40) {
+              toastText = '30年交被保人年龄不能大于40周岁'
             } else if (assuAge < 1) {
               toastText = '被保人年龄不能小于28天'
             }
@@ -1380,7 +1398,7 @@
             } else if (mainPayYear === 15 && assuAge > 54) {
               toastText = '20年交被保人年龄不能大于54周岁'
             } else if (mainPayYear === 20 && assuAge > 50) {
-              toastText = '30年交被保人年龄不能大于35周岁'
+              toastText = '30年交被保人年龄不能大于50周岁'
             }
             break
           case '316': // 华宝安行
@@ -1762,6 +1780,7 @@
       checkExtraAge (safeid) {
         let assuAge = Number(this.assu.age)
         let applAge = Number(this.appl.age)
+        let mainPayYear = this.mainPayYear
         let payOverage = Number(this.insurance.pay_year) - 1 + applAge // 期满年龄
         let toastText = null
 
@@ -1816,6 +1835,23 @@
           case '295': // 恒祥
             if (assuAge > 65) {
               toastText = '被保人年龄不能大于65周岁'
+            }
+            break
+          case '362': // 附加信泰百万健康重大疾病
+            if (mainPayYear === 1 && assuAge > 50) {
+              toastText = '被保人年龄不能大于50周岁'
+            } else if (mainPayYear === 3 && assuAge > 50) {
+              toastText = '3年交被保人年龄不能大于50周岁'
+            } else if (mainPayYear === 5 && assuAge > 50) {
+              toastText = '5年交被保人年龄不能大于50周岁'
+            } else if (mainPayYear === 10 && assuAge > 50) {
+              toastText = '10年交被保人年龄不能大于50周岁'
+            } else if (mainPayYear === 15 && assuAge > 45) {
+              toastText = '20年交被保人年龄不能大于45周岁'
+            } else if (mainPayYear === 20 && assuAge > 40) {
+              toastText = '30年交被保人年龄不能大于40周岁'
+            } else if (mainPayYear === 30 && assuAge > 30) {
+              toastText = '30年交被保人年龄不能大于30周岁'
             }
             break
         }
@@ -1971,19 +2007,19 @@
             if (this.addonsSelected[236]) {
               toastText = '社保与非社保只能选择一个'
             } else if (!flag) {
-              toastText = '请先选择保险金额'
+              toastText = '请先选择保险份数'
             }
             break
           case '236': // 附加住院费用医疗（社保型）
             if (this.addonsSelected[235]) {
               toastText = '社保与非社保只能选择一个'
             } else if (!flag) {
-              toastText = '请先选择保险金额'
+              toastText = '请先选择保险份数'
             }
             break
           case '237': // 附加住院费用医疗（社保型）
             if (!flag) {
-              toastText = '请先选择保险金额'
+              toastText = '请先选择保险份数'
             }
             break
         }
@@ -2173,6 +2209,7 @@
           data.pay_year = 1
           data.safe_year = 1
           data.derate_money = this.cache.derate_money291
+          data.flag = this.cache.derate_money291
         } else if (safeid === '290') { // 金财D
           data.level = 2
           data.derate_money = this.cache.derate_money291
@@ -2194,6 +2231,7 @@
           data.base_money = periodMoney
         } else if (safeid === '205') {
           data.flag = this.flag[safeid]
+          data.level = 0
         } else if (safeid === '273') {
           data.pay_year = 1
           data.safe_year = 1

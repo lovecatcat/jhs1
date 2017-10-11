@@ -62,7 +62,7 @@
 
     </div>
 
-    <div class="am-fixed am-fixed-bottom am-flexbox" style="background-color:#fff;border-top: 1px solid #eee">
+    <div class=" am-flexbox" style="background-color:#fff;border-top: 1px solid #eee;position: absolute;bottom: 0;width:100%">
       <div class="am-flexbox-item">
         <span style="padding-left: .15rem;">首期保费: <span class="color-red">￥{{count}}元</span></span>
       </div>
@@ -107,8 +107,10 @@
       ...mapState([
         'appl',
         'plans',
+        'plansFalse',
         'applData',
         'pl_id',
+        'parent_pl_id',
         'admin_id',
         'activePlan',
         'saveStatus'
@@ -171,33 +173,40 @@
         console.info('pushPlan')
 
         let data = []
-        for (let i in this.plans) {
+        for (let i = 0; i < this.plans.length; i++) {
           let id = this.plans[i].id
           if (!this.saveStatus[id]) {
             this.$toast.open('请保存 方案' + (Number(i) + 1))
             return false
           }
           let planIns = this.plans[i].ins
-          for (let j in planIns) {
+          // console.log(planIns)
+          for (let j = 0; j < planIns.length; j++) {
             if (!planIns[j]) continue
             let item = utils.parseVueObj(planIns[j])
             item.main.alias = this.alias
             item.main.is_save = 1
             item.main.warranty_year = 105
             item.main.need_packet = 1
+            if (this.pl_id) {
+              item.main.check = 0
+            }
             data.push(item.main)
             for (let k in item.addon) {
               if (!item.addon[k]) continue
               item.addon[k].is_save = 1
               item.addon[k].warranty_year = 105
               item.addon[k].need_packet = 1
+              if (this.pl_id) {
+                item.addon[k].check = 0
+                item.addon[k].flag = item.addon[k].flag ? item.addon[k].flag : 0
+              }
               data.push(item.addon[k])
             }
           }
         }
         this.log(data)
-        if (this.pl_id) {
-          alert('aaa')
+        if (this.pl_id && this.plansFalse) { // 编辑接口
           let baseUrl = 'http://ts-open.ehuimeng.com/api/index/invoke'
           utils.post(baseUrl, qs.stringify({
             module: 'Prospectus',
@@ -208,7 +217,15 @@
             })
           })).then(ret => {
             ret = ret.data
-            console.log('111')
+            if (ret.data.length > 0) {  // 如果是子pl_id就跳转到父级
+              let plId = this.parent_pl_id ? this.parent_pl_id : ret.data[0].pl_id
+              let url = '/wechat/prospectus-group?param=' + JSON.stringify({
+                admin_id: this.admin_id,
+                pl_id: plId
+              })
+              console.log(url)
+              location.href = url
+            }
           }).catch(this.errorCb)
         } else {
           utils.post('Prospectus/CreateBook4', qs.stringify({

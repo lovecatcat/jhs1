@@ -29,9 +29,10 @@ export default new Vuex.Store({
   state: {
     insList: null, // 所有险种相关列表
     admin_id: (adminId !== '$admin_id' && adminId) || $_GET['admin_id'] || '1846', // 用户ID
-    pl_id: $_GET['pl_id'] || '', // 计划书ID
-
+    pl_id: $_GET['pl_id'] || '', // 计划书ID(子)
+    parent_pl_id: $_GET['parent_pl_id'] || '', // 父级的ID
     plans: [], // 所有方案
+    plansFalse: false, // pl_id有没有数据
     activePlan: 1, // 当前方案
     appl: {}, // 投保人
     // 编辑数据
@@ -62,6 +63,10 @@ export default new Vuex.Store({
           state[index] = payload[index]
         }
       }
+    },
+    SET_PLANFALSE (state) {
+      console.log('commit mutation: SET_PLANFALSE')
+      state.plansFalse = true
     },
     CHG_PLAN (state, payload) {
       console.log('commit mutation: CHG_PLAN')
@@ -140,7 +145,7 @@ export default new Vuex.Store({
         let plans = []
         if (ret.data && ret.data.data && ret.data.data.content) {
           let content = ret.data.data.content
-          let child = ret.data.data.child
+          // let child = ret.data.data.child
           let plan = null
           let ins = []
           for (let i in content) {
@@ -154,36 +159,53 @@ export default new Vuex.Store({
               addon
             })
           }
+
           plans.push({
             id: plans.length + 1,
             assu: plan.assu,
             ins
           })
-          if (child) {
-            child.forEach(item => {
-              ins = []
-              for (let j in item.content) {
-                plan = utils.parsePlan(item.content[j])
-                let addons = utils.parseChildPlan(item.content[j].children)
-                ins.push({
-                  main: plan.ins,
-                  addon: addons
-                })
-                plans.push({
-                  id: plans.length + 1,
-                  assu: plan.assu,
-                  ins
-                })
-              }
-            })
-          }
+          // if (child) {
+          //   child.forEach(item => {
+          //     ins = []
+          //     for (let j in item.content) {
+          //       plan = utils.parsePlan(item.content[j])
+          //       let addons = utils.parseChildPlan(item.content[j].children)
+          //       ins.push({
+          //         main: plan.ins,
+          //         addon: addons
+          //       })
+          //       plans.push({
+          //         id: plans.length + 1,
+          //         assu: plan.assu,
+          //         ins
+          //       })
+          //     }
+          //   })
+          // }
           console.log(JSON.stringify(plans))
           commit('SET_PARAM', {
             plans
           })
+          commit('SET_PLANFALSE')
           payload.scb && payload.scb()
         } else {
-          payload.ecb(ret.data.message)
+          commit('SET_PARAM', {
+            plans: [{
+              id: 1,
+              ins: [{
+                main: {},
+                addon: {}
+              }],
+              assu: {
+                age: '',
+                name: '',
+                sex: ''
+              }
+            }]
+          })
+          // payload.ecb(ret.data.message)
+          // location.href = '/Wechat/prospectus'
         }
       }).catch(payload.ecb)
     },
