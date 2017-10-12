@@ -111,6 +111,8 @@
         'applData',
         'pl_id',
         'parent_pl_id',
+        'safe_id',
+        'insList',
         'admin_id',
         'activePlan',
         'saveStatus'
@@ -224,7 +226,7 @@
                 pl_id: plId
               })
               console.log(url)
-              location.href = url
+              // location.href = url
             }
           }).catch(this.errorCb)
         } else {
@@ -251,6 +253,26 @@
         admin_id: this.admin_id,
         ecb: this.errorCb,
         scb: () => {
+          if (this.safe_id) {
+            // var company = this.insList.company
+            var main = this.insList.main
+            // var children = this.insList.children
+            var sid = this.safe_id
+            var cid = 0
+            var mainInsurance = null
+            for (let i in main) {
+              for (let j = 0; j < main[i].length; j++) {
+                if (sid === main[i][j].safe_id) {
+                  mainInsurance = main[i][j]
+                  cid = main[i][j].sc_id
+                }
+              }
+            }
+            console.log(mainInsurance, cid)
+            this.$refs.ins_1[0].sc_id = cid
+            this.$refs.ins_1[0].mainInsurance = mainInsurance
+            this.$refs.ins_1[0].insChanged()
+          }
           // 获取编辑计划书信息
           this.pl_id && this.$store.dispatch('SET_PLANS', {
             admin_id: this.admin_id,
@@ -263,20 +285,7 @@
         }
       })
       if (!this.pl_id) {
-        this.$store.commit('SET_PARAM', {
-          plans: [{
-            id: 1,
-            ins: [{
-              main: {},
-              addon: {}
-            }],
-            assu: {
-              age: '',
-              name: '',
-              sex: ''
-            }
-          }]
-        })
+        this.$store.commit('SET_FIRST_PLAN')
       }
     }
   }

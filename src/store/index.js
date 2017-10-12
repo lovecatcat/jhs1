@@ -31,6 +31,7 @@ export default new Vuex.Store({
     admin_id: (adminId !== '$admin_id' && adminId) || $_GET['admin_id'] || '1846', // 用户ID
     pl_id: $_GET['pl_id'] || '', // 计划书ID(子)
     parent_pl_id: $_GET['parent_pl_id'] || '', // 父级的ID
+    safe_id: $_GET['safe_id'] || '',
     plans: [], // 所有方案
     plansFalse: false, // pl_id有没有数据
     activePlan: 1, // 当前方案
@@ -108,6 +109,21 @@ export default new Vuex.Store({
       state.activePlan = id
       state.saveStatus[id] = false
     },
+    SET_FIRST_PLAN (state) {
+      console.log('commit mutation: SET_FIRST_PLAN')
+      state.plans = [{
+        id: 1,
+        ins: [{
+          main: {},
+          addon: {}
+        }],
+        assu: {
+          age: '',
+          name: '',
+          sex: ''
+        }
+      }]
+    },
     SET_PLAN (state, payload) {
       console.log('commit mutation: SET_PLAN')
       state.plans[getPlanIndex(state)].ins = utils.parseVueObj(payload)
@@ -165,24 +181,6 @@ export default new Vuex.Store({
             assu: plan.assu,
             ins
           })
-          // if (child) {
-          //   child.forEach(item => {
-          //     ins = []
-          //     for (let j in item.content) {
-          //       plan = utils.parsePlan(item.content[j])
-          //       let addons = utils.parseChildPlan(item.content[j].children)
-          //       ins.push({
-          //         main: plan.ins,
-          //         addon: addons
-          //       })
-          //       plans.push({
-          //         id: plans.length + 1,
-          //         assu: plan.assu,
-          //         ins
-          //       })
-          //     }
-          //   })
-          // }
           console.log(JSON.stringify(plans))
           commit('SET_PARAM', {
             plans
@@ -190,24 +188,15 @@ export default new Vuex.Store({
           commit('SET_PLANFALSE')
           payload.scb && payload.scb()
         } else {
-          commit('SET_PARAM', {
-            plans: [{
-              id: 1,
-              ins: [{
-                main: {},
-                addon: {}
-              }],
-              assu: {
-                age: '',
-                name: '',
-                sex: ''
-              }
-            }]
-          })
+          commit('SET_FIRST_PLAN')
           // payload.ecb(ret.data.message)
           // location.href = '/Wechat/prospectus'
         }
       }).catch(payload.ecb)
+    },
+    SET_SAFEIDPLANS ({commit}, payload) {
+      console.log('dispatch action: SET_SAFEIDPLANS')
+      console.log(payload.safe_id)
     },
     SET_INSLIST ({commit}, payload) {
       console.log('dispatch action: SET_INSLIST')

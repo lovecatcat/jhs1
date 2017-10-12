@@ -818,6 +818,7 @@
   const addonFilter = ['8', '11', '86', '94', '121', '131', '146', '147', '148', '175', '177', '196', '235', '236', '237', '273', '281', '284', '285', '289', '291', '293', '294', '295', '348']
   const mustSelected = ['291', '177', '11', '333', '332', '349', '354'] // 必须附加的附加险
   const noNeedCal = ['291', '11', '349'] // 不需要计算的险种
+  const directNeedCal = ['11', '94', '121', '131', '177', '196', '284', '281', '285', '289', '333'] // 直接 计算的险种
 
   export default {
     name: 'insurance',
@@ -971,7 +972,6 @@
         } else {
           this.insurance.pay_year = ''
         }
-
         // 计划类型
         switch (safeid) {
           case '74':
@@ -1182,7 +1182,7 @@
             this.$toast.open(toastText)
             this.addonsSelected[index] = false
             this.$forceUpdate()
-          } else if (index === '121' || index === '131' || index === '333' || index === '94' || index === '11' || index === '177' || index === '196' || index === '285' || index === '284' || index === '281' || index === '289') {
+          } else if (directNeedCal.indexOf(index) > -1) { // 直接计算
             this.calMoney(false, index) // 试算附加险
           }
         } else {
@@ -1210,7 +1210,6 @@
         } else if (safeid === '288' || safeid === '290' || safeid === '292') {
           this.flag[294] = ''
           this.flag[293] = ''
-          this.cache.base_money295 = ''
         } else if (safeid === '283') {
           this.flag[146] = ''
           this.flag[147] = ''
@@ -1226,6 +1225,8 @@
           this.flag[236] = ''
           this.flag[237] = ''
         }
+        this.cache.base_money295 = ''
+        this.cache.derate_money291 = ''
         this.cache.pay_money332 = ''
         this.cache.pay_money333 = ''
         if (this.Addons) {
@@ -1235,7 +1236,12 @@
           }
         }
         this.addonRes = {}
-        this.addonsSelected = {}
+        this.addonsSelected = {
+          291: true,
+          11: true,
+          349: true,
+          354: true
+        }
       },
       // 更新附加险Flag
       flagChanged (index) {
