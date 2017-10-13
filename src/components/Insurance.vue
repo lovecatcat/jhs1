@@ -1294,7 +1294,7 @@
         let toastText = null
         if (!this.checkName(this.assu.name, '被投保人')) {
           return false
-        } else if (!this.assu.age) {
+        } else if (this.assu.age === '') { // 被保人输入零让他可以投保
           toastText = '被投保人年龄不能为空'
         }
         if (toastText) {
@@ -1359,8 +1359,6 @@
           case '363': // 泰康乐安心
             if (assuAge > 60) {
               toastText = '被保人年龄不能大于60周岁'
-            } else if (assuAge < 1) {
-              toastText = '被保人年龄不能小于28天'
             } else if (payOverage > 70) {
               toastText = '缴费期满年龄不能大于70周岁'
             }
@@ -1380,8 +1378,6 @@
               toastText = '30年交被保人年龄不能大于50周岁'
             } else if (mainPayYear === 30 && assuAge > 40) {
               toastText = '30年交被保人年龄不能大于40周岁'
-            } else if (assuAge < 1) {
-              toastText = '被保人年龄不能小于28天'
             }
             break
           case '360': // 恒大鑫福年
