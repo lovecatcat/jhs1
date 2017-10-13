@@ -16,11 +16,12 @@
           <input slot="input"
                  type="text"
                  placeholder="请填写计划名称"
-                 v-model.lazy.trim="alias">
+                 v-model.lazy.trim="alias"
+                 :disabled="pl_id !== ''">
           <div slot="icon"
                class="am-list-clear"
                @click="alias = '' "
-               v-show="alias != '' ">
+               v-show="alias != '' && pl_id === ''">
             <i class="am-icon-clear am-icon"></i>
           </div>
         </app-input>
@@ -99,7 +100,6 @@
     },
     data () {
       return {
-        alias: '',
         count: 0
       }
     },
@@ -115,8 +115,38 @@
         'insList',
         'admin_id',
         'activePlan',
-        'saveStatus'
-      ])
+        'saveStatus',
+        'assuchange' // 被保险人是否改变
+      ]),
+      alias: {
+        get () {
+          return this.$store.state.alias
+        },
+        set (val) {
+          this.$store.commit('SET_PARAM', {alias: val})
+        }
+      }
+    },
+    watch: {
+      assuchange: {
+        handler (val) {
+          let crtIns = this.$refs['ins_' + this.activePlan]
+          for (let i in crtIns) {
+            let item = crtIns[i]
+            if (item.showAll === false) { // 收缩险种信息
+              item.toggle()
+            }
+          }
+        },
+        deep: true
+      },
+      alias: {
+        handler (val) {
+          console.log(val)
+          // this.$store.commit('SET_PARAM', {alias: val})
+        },
+        deep: true
+      }
     },
     methods: {
       countMoney () {
@@ -175,6 +205,8 @@
         console.info('pushPlan')
 
         let data = []
+        let fristChild = []
+        let otherChild = []
         for (let i = 0; i < this.plans.length; i++) {
           let id = this.plans[i].id
           if (!this.saveStatus[id]) {
@@ -194,6 +226,11 @@
               item.main.check = 0
             }
             data.push(item.main)
+            if (i === 0 && id === 1 && j === 0) {
+              fristChild.push(item.main)
+            } else {
+              otherChild.push(item.main)
+            }
             for (let k in item.addon) {
               if (!item.addon[k]) continue
               item.addon[k].is_save = 1
@@ -204,32 +241,51 @@
                 item.addon[k].flag = item.addon[k].flag ? item.addon[k].flag : 0
               }
               data.push(item.addon[k])
+              if (i === 0 && id === 1 && j === 0) {
+                fristChild.push(item.addon[k])
+              } else {
+                otherChild.push(item.addon[k])
+              }
             }
           }
+          if (this.pl_id && this.plansFalse && i === 0 && id === 1) { // 编辑接口 第一个是默认编辑
+            console.log(fristChild)
+            let baseUrl = 'http://ts-open.ehuimeng.com/api/index/invoke'
+            utils.post(baseUrl, qs.stringify({
+              module: 'Prospectus',
+              method: 'add2edit',
+              params: JSON.stringify({
+                pl_id: this.pl_id,
+                mode: 'edit',
+                safes: JSON.stringify(fristChild)
+              })
+            })).then(ret => {
+              console.log('111')
+            }).catch(this.errorCb)
+          }
         }
-        this.log(data)
-        if (this.pl_id && this.plansFalse) { // 编辑接口
+        this.log(otherChild)
+        if (this.pl_id && this.plansFalse) { // 编辑添加接口 新添加的险种
           let baseUrl = 'http://ts-open.ehuimeng.com/api/index/invoke'
           utils.post(baseUrl, qs.stringify({
             module: 'Prospectus',
-            method: 'edit',
+            method: 'add2edit',
             params: JSON.stringify({
-              pl_id: this.pl_id,
-              safes: JSON.stringify(data)
+              pl_id: this.parent_pl_id,
+              mode: 'add',
+              safes: JSON.stringify(otherChild)
             })
           })).then(ret => {
-            ret = ret.data
-            if (ret.data.length > 0) {  // 如果是子pl_id就跳转到父级
-              let plId = this.parent_pl_id ? this.parent_pl_id : ret.data[0].pl_id
-              let url = '/wechat/prospectus-group?param=' + JSON.stringify({
-                admin_id: this.admin_id,
-                pl_id: plId
-              })
-              console.log(url)
-              // location.href = url
-            }
           }).catch(this.errorCb)
-        } else {
+          let plId = this.parent_pl_id ? this.parent_pl_id : this.pl_id // 如果是子pl_id就跳转到父级
+          let url = '/wechat/prospectus-group?param=' + JSON.stringify({
+            admin_id: this.admin_id,
+            pl_id: plId
+          })
+          console.log(url)
+          location.href = url
+        }
+        if (!this.pl_id && !this.plansFalse) { // 不是编辑状态
           utils.post('Prospectus/CreateBook4', qs.stringify({
             safes: JSON.stringify(data)
           })).then(ret => {

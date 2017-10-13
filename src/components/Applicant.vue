@@ -11,11 +11,12 @@
                  type="text"
                  @change="checkName(appl.name, '投保人')"
                  placeholder="请填写投保人姓名"
-                 v-model.lazy.trim="appl.name">
+                 v-model.lazy.trim="appl.name"
+                 :disabled="pl_id !== ''">
           <div slot="icon"
                class="am-list-clear"
                @click="appl.name = '' "
-               v-show="appl.name != '' ">
+               v-show="appl.name != '' && pl_id === ''">
             <i class="am-icon-clear am-icon"></i>
           </div>
         </app-input>
@@ -24,8 +25,9 @@
                  type="number"
                  placeholder="请填写投保人年龄"
                  v-model.number.lazy="appl.age"
-                 @change="ageChanged">
-          <div slot="icon" class="am-list-clear" v-show="appl.age != '' ">
+                 @change="ageChanged"
+                 :disabled="pl_id !== ''">
+          <div slot="icon" class="am-list-clear" v-show="appl.age != '' && pl_id === ''">
             <i class="am-icon-clear am-icon" @click="appl.age = '' "></i>
           </div>
           <label slot="button" class="app-date" for="appdate">
@@ -34,21 +36,22 @@
                    type="date"
                    id="appdate"
                    v-model="birthday"
-                   @change="birthDayChanged">
+                   @change="birthDayChanged" 
+                   :disabled="pl_id !== ''">
           </label>
         </app-input>
         <app-input label="性别">
           <div class="am-ft-left" slot="input">
             <label class="radio sex-radio">
               <div class="am-checkbox">
-                <input type="radio" :value="true" v-model="appl.sex">
+                <input type="radio" :value="true" v-model="appl.sex" :disabled="pl_id !== ''">
                 <span class="icon-check" aria-hidden="true" style="top: -0.08rem"></span>
               </div>
               <span>男</span>
             </label>
             <label class="radio sex-radio">
               <div class="am-checkbox">
-                <input type="radio" :value="false" v-model="appl.sex">
+                <input type="radio" :value="false" v-model="appl.sex" :disabled="pl_id !== ''">
                 <span class="icon-check" aria-hidden="true" style="top: -0.08rem;"></span>
               </div>
               <span>女</span>
@@ -66,6 +69,10 @@
    */
   import utils from '../widgets/utils'
 
+  import {
+    mapState
+  } from 'vuex'
+
   export default {
     name: 'applicant',
     props: {
@@ -80,6 +87,11 @@
         },
         birthday: ''
       }
+    },
+    computed: {
+      ...mapState([
+        'pl_id'
+      ])
     },
     watch: {
       appl: {

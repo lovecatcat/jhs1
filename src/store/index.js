@@ -40,7 +40,9 @@ export default new Vuex.Store({
     applData: {}, // 投保人
     saveStatus: { // 方案保存状态
       1: false
-    }
+    },
+    assuchange: true, // 被保险人是否改变
+    alias: null // 计划书名称
   },
   getters: {
     assu: state => {
@@ -80,6 +82,11 @@ export default new Vuex.Store({
     SET_ASSU (state, payload) {
       console.log('commit mutation: SET_ASSU')
       state.plans[getPlanIndex(state, payload.id)].assu = utils.parseVueObj(payload.assu)
+      state.assuchange = !state.assuchange
+    },
+    SET_ALIAS (state, payload) {
+      console.log('commit mutation: SET_ALIAS')
+      state.alias = payload
     },
     ADD_INS (state) {
       console.log('commit mutation: ADD_INS')
@@ -164,6 +171,8 @@ export default new Vuex.Store({
           // let child = ret.data.data.child
           let plan = null
           let ins = []
+          let alias = ret.data.data.alias
+          commit('SET_ALIAS', alias) // 计划书名称
           for (let i in content) {
             plan = utils.parsePlan(content[i])
             commit('SET_PARAM', {
@@ -187,7 +196,7 @@ export default new Vuex.Store({
           })
           commit('SET_PLANFALSE')
           payload.scb && payload.scb()
-        } else {
+        } else { // 没有数据重置为空
           commit('SET_FIRST_PLAN')
           // payload.ecb(ret.data.message)
           // location.href = '/Wechat/prospectus'

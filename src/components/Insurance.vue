@@ -876,7 +876,8 @@
         'admin_id',
         'pl_id',
         'appl',
-        'insList'
+        'insList',
+        'assuchange' // 被保险人是否改变
       ]),
       ...mapGetters([
         'assu',
@@ -892,6 +893,14 @@
           Addons[item.safe_id] = utils.parseVueObj(item)
         })
         return Addons
+      }
+    },
+    watch: {
+      assuchange: {
+        handler (val) {
+          this.insurance.period_money = ''
+        },
+        deep: true
       }
     },
     methods: {
@@ -1236,11 +1245,20 @@
           }
         }
         this.addonRes = {}
-        this.addonsSelected = {
-          291: true,
-          11: true,
-          349: true,
-          354: true
+        if (safeid === '74') {
+          this.addonsSelected = {
+            11: true
+          }
+        } else if (safeid === '290') {
+          this.addonsSelected = {
+            291: true
+          }
+        } else if (safeid === '172') {
+          this.addonsSelected = {
+            349: true
+          }
+        } else {
+          this.addonsSelected = {}
         }
       },
       // 更新附加险Flag
