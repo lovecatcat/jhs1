@@ -2,8 +2,8 @@
   <div class="assured">
     <div class="am-list am-list-6lb form">
       <div class="form-header">
-        <span class="fn-left">被保人信息{{id}}</span>
-        <span class="fn-right color-blank" @click="pl_id !== '' && id === 1 && keepSame"><input type="radio">同投保人</span>
+        <span class="fn-left">被保人信息</span>
+        <span class="fn-right color-blank" @click="keepSame" v-if="pl_id === '' || id !== 1"><input type="radio">同投保人</span>
       </div>
       <div class="am-list-body" v-if="assu">
         <app-input label="姓名">

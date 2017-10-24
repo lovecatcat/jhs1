@@ -16,8 +16,7 @@
           <input slot="input"
                  type="text"
                  placeholder="请填写计划名称"
-                 v-model.lazy.trim="alias"
-                 :disabled="pl_id !== ''">
+                 v-model.lazy.trim="alias">
           <div slot="icon"
                class="am-list-clear"
                @click="alias = '' "
@@ -86,6 +85,7 @@
 
   import qs from 'qs'
   import utils from './widgets/utils'
+  import env from './widgets/env'
 
   import {
     mapState
@@ -151,15 +151,16 @@
     methods: {
       countMoney () {
         let count = 0
-        for (let p in this.plans) {
+        for (let p = 0; p < this.plans.length; p++) {
           let crtIns = this.$refs['ins_' + this.plans[p].id]
-          for (let i in crtIns) {
+          console.log(crtIns)
+          for (let i = 0; i < crtIns.length; i++) {
             let item = crtIns[i]
             if (!item.showAll) {
               count += item.insurance.period_money
               for (let j in item.addonsSelected) {
                 if (item.addonsSelected[j] && item.addonRes[j]) {
-                  let pm = item.addonRes[j]['年缴保费'] || item.addonRes[j]['年缴保费(元)']
+                  let pm = item.addonRes[j]['年缴保费'] || item.addonRes[j]['年缴保费(元)'] || item.addonRes[j]['门诊总保费']
                   if (pm) {
                     count += pm
                   }
@@ -181,6 +182,7 @@
         }
         this.$dialog.open('确认删除【方案' + (index + 1) + '】吗？', () => {
           this.$store.commit('RMV_PLAN', index)
+          this.countMoney()
         })
       },
       savePlan () {
@@ -204,6 +206,10 @@
       pushPlan () {
         console.info('pushPlan')
 
+        let baseUrl = 'http://ts-open.ehuimeng.com/api/index/invoke'
+        if (env.env === 'prod') {
+          baseUrl = 'https://open.ehuimeng.com/api/index/invoke'
+        }
         let data = []
         let fristChild = []
         let otherChild = []
@@ -250,7 +256,6 @@
           }
           if (this.pl_id && this.plansFalse && i === 0 && id === 1) { // 编辑接口 第一个是默认编辑
             console.log(fristChild)
-            let baseUrl = 'http://ts-open.ehuimeng.com/api/index/invoke'
             utils.post(baseUrl, qs.stringify({
               module: 'Prospectus',
               method: 'add2edit',
@@ -266,7 +271,6 @@
         }
         this.log(otherChild)
         if (this.pl_id && this.plansFalse) { // 编辑添加接口 新添加的险种
-          let baseUrl = 'http://ts-open.ehuimeng.com/api/index/invoke'
           utils.post(baseUrl, qs.stringify({
             module: 'Prospectus',
             method: 'add2edit',
@@ -276,17 +280,19 @@
               safes: JSON.stringify(otherChild)
             })
           })).then(ret => {
+            let url = '/wechat/prospectus-group?param=' + JSON.stringify({
+              admin_id: this.admin_id,
+              pl_id: this.parent_pl_id
+            })
+            console.log(url)
+            location.href = url
           }).catch(this.errorCb)
-          let plId = this.parent_pl_id ? this.parent_pl_id : this.pl_id // 如果是子pl_id就跳转到父级
-          let url = '/wechat/prospectus-group?param=' + JSON.stringify({
-            admin_id: this.admin_id,
-            pl_id: plId
-          })
-          console.log(url)
-          location.href = url
+          // let plId = this.parent_pl_id ? this.parent_pl_id : this.pl_id // 如果是子pl_id就跳转到父级
         }
         if (!this.pl_id && !this.plansFalse) { // 不是编辑状态
           utils.post('Prospectus/CreateBook4', qs.stringify({
+            module: 'Prospectus',
+            method: 'create',
             safes: JSON.stringify(data)
           })).then(ret => {
             ret = ret.data

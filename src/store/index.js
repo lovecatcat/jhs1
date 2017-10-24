@@ -41,7 +41,9 @@ export default new Vuex.Store({
     saveStatus: { // 方案保存状态
       1: false
     },
-    assuchange: true, // 被保险人是否改变
+    assuchange: {
+      1: true
+    }, // 被保险人是否改变
     alias: null // 计划书名称
   },
   getters: {
@@ -82,7 +84,7 @@ export default new Vuex.Store({
     SET_ASSU (state, payload) {
       console.log('commit mutation: SET_ASSU')
       state.plans[getPlanIndex(state, payload.id)].assu = utils.parseVueObj(payload.assu)
-      state.assuchange = !state.assuchange
+      state.assuchange[payload.id] = !state.assuchange[payload.id]
     },
     SET_ALIAS (state, payload) {
       console.log('commit mutation: SET_ALIAS')
@@ -115,6 +117,7 @@ export default new Vuex.Store({
       })
       state.activePlan = id
       state.saveStatus[id] = false
+      state.assuchange[id] = true
     },
     SET_FIRST_PLAN (state) {
       console.log('commit mutation: SET_FIRST_PLAN')
@@ -136,7 +139,7 @@ export default new Vuex.Store({
       state.plans[getPlanIndex(state)].ins = utils.parseVueObj(payload)
     },
     RMV_PLAN (state, index) {
-      console.log('commit mutation: SET_PLAN')
+      console.log('commit mutation: RMV_PLAN')
       state.plans.splice(index, 1)
       index = index - 1 < 0 ? 0 : (index - 1) // fix 删除第一个
       state.activePlan = state.plans[index].id

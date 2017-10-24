@@ -48,7 +48,7 @@
           </app-select>
           <template v-if="insurance.safe_id">
             <!-- 输入保额算保费 -->
-            <template v-if="isBaseMoney&&!fuBaseMoney">
+            <template v-if="isBaseMoney&&!fuBaseMoney&&insurance.safe_id !== '366'">
               <app-select label="计划类型" v-if="prospectus_types.length > 0">
                 <select
                   v-model.number="prospectus_type"
@@ -125,6 +125,70 @@
               </app-input>
             </template>
             <!-- 泰康乐行天下 -->
+            <!-- 复星乐健一生366 -->
+            <template v-else-if="isBaseMoney&&!fuBaseMoney &&insurance.safe_id === '366'">
+              <app-input label="有无社保">
+                <div class="am-ft-left" slot="input">
+                  <label class="radio sex-radio">
+                    <div class="am-checkbox">
+                      <input type="radio" value="B" v-model="fxljys366.shebao" @change="resetFee('fxsb')">
+                      <span class="icon-check" aria-hidden="true" style="top: -0.08rem"></span>
+                    </div>
+                    <span>有</span>
+                  </label>
+                  <label class="radio sex-radio">
+                    <div class="am-checkbox">
+                      <input type="radio" value="A" v-model="fxljys366.shebao" @change="resetFee('fxsb')">
+                      <span class="icon-check" aria-hidden="true" style="top: -0.08rem;"></span>
+                    </div>
+                    <span>无</span>
+                  </label>
+                </div>
+              </app-input>
+              <div class="am-ft-md" style="padding: .1rem 0.15rem">乐健一生住院医疗保险</div>
+              <app-select label="套餐">
+                <select v-model.number="fxljys366.zytc"
+                        @change="resetFee">
+                  <option disabled value='0'>请选择</option>
+                  <option value="住院套餐一">住院套餐一</option>
+                  <option value="住院套餐二">住院套餐二</option>
+                  <option value="住院套餐三">住院套餐三</option>
+                  <option value="住院套餐六">住院套餐六</option>
+                </select>
+              </app-select>
+              <app-select label="住院免赔额">
+                <select v-model.number="fxljys366.zynmp"
+                        @change="resetFee">
+                  <option disabled value='0'>请选择</option>
+                  <option value="1">0免赔</option>
+                  <option value="0.6">一万免赔</option>
+                  <option value="0.5">二万免赔</option>
+                </select>
+              </app-select>
+             <!--  <app-select label="自负比例">
+                <select v-model.number="fxljys366.zyzfbl"
+                        @change="resetFee">
+                  <option disabled value=''>请选择</option>
+                  <option value="1">0%</option>
+                  <option value="0.9">10%</option>
+                  <option value="0.8">20%</option>
+                  <option value="0.7">30%</option>
+                  <option value="0.6">40%</option>
+                  <option value="0.5">50%</option>
+                </select>
+              </app-select> -->
+              <app-input label="年缴保费">
+                <input slot="input"
+                       readonly
+                       v-model.number.lazy="insurance.period_money"
+                       type="number"
+                       placeholder="年缴保费（元）">
+                <div slot="button" class="am-list-button">
+                  <button type="button" @click="calMoney(true)">点击计算</button>
+                </div>
+              </app-input> 
+            </template>
+            <!-- 复星乐健一生 -->
             <!-- 输入保费算保额 -->
             <template v-else>
               <app-select label="计划类型" v-if="prospectus_types.length > 0">
@@ -189,6 +253,77 @@
           </label>
         </div>
       </template>
+      <!--  乐健一生门急诊医疗保险 -->
+      <template v-if="item.safe_id==='374' && addonsSelected[item.safe_id]">
+        <app-select label="套餐">
+          <select v-model.number="fxljys366.mztc"
+                  @change="resetFee('fxmz')">
+            <option disabled value='0'>请选择</option>
+            <option value="门急诊套餐一">门急诊套餐一</option>
+            <option value="门急诊套餐二">门急诊套餐二</option>
+          </select>
+        </app-select>
+        <app-select label="住院免赔额">
+          <select v-model.number="fxljys366.mznmp"
+                  @change="resetFee('fxmz')">
+            <option disabled value='0'>请选择</option>
+            <option value="1">0免赔</option>
+            <option value="0.92">500元</option>
+          </select>
+        </app-select>
+        <app-input label="年缴保费">
+          <input slot="input"
+                 readonly
+                 v-model.number.lazy="fxljys366.mzmoney"
+                 type="number"
+                 placeholder="年缴保费（元）">
+          <div slot="button" class="am-list-button">
+            <button type="button" @click="flagChanged(item.safe_id)">点击计算</button>
+          </div>
+        </app-input>
+      </template>
+      <!--  乐健一生门急诊医疗保险 -->
+      <!--  附加康乐一生轻症保险 -->
+      <template v-if="(item.safe_id==='368') && addonRes[item.safe_id]">
+        <div class="am-list-item">
+          <div class="am-list-content">保障期间</div>
+          <div class="am-ft-black">{{mainSafeYear === 999 ? '终身' : mainSafeYear+'年'}}</div>
+        </div>
+        <div class="am-list-item">
+          <div class="am-list-content">缴费期间</div>
+          <div class="am-ft-black">{{mainPayYear}}年交</div>
+        </div>
+        <div class="am-list-item">
+          <div class="am-list-content">保险金额</div>
+          <div class="am-ft-orange">{{insurance.money * 0.2}}</div>
+        </div>
+        <div class="am-list-item">
+          <div class="am-list-content">年缴保费</div>
+          <div class="am-ft-orange">{{addonRes[item.safe_id]['年缴保费']}}</div>
+        </div>
+      </template>
+      <!--  附加康乐一生轻症保险 -->
+      <!-- 附加康乐一生投保人豁免保费重大疾病保险 -->
+      <template v-if="(item.safe_id==='367') && addonRes[item.safe_id]">
+        <div class="am-list-item">
+          <div class="am-list-content">保障期间</div>
+          <div class="am-ft-black">{{mainPayYear - 1}}</div>
+        </div>
+        <div class="am-list-item">
+          <div class="am-list-content">缴费期间</div>
+          <div class="am-ft-black">{{mainPayYear - 1}}年交</div>
+        </div>
+        <div class="am-list-item">
+          <div class="am-list-content">保险金额</div>
+          <div class="am-ft-orange" v-if="addonRes[368]">{{insurance.period_money + addonRes[368].年缴保费}}</div>
+          <div class="am-ft-orange" v-else>{{insurance.period_money}}</div>
+        </div>
+        <div class="am-list-item">
+          <div class="am-list-content">年缴保费</div>
+          <div class="am-ft-orange">{{addonRes[item.safe_id]['年缴保费']}}</div>
+        </div>
+      </template>
+      <!-- 附加康乐一生投保人豁免保费重大疾病保险 -->
       <!-- 附加健康两全保险 -->
       <template v-if="item.safe_id==='362' && addonsSelected[item.safe_id]">
         <app-select label="保障期间">
@@ -818,7 +953,7 @@
   const addonFilter = ['8', '11', '86', '94', '121', '131', '146', '147', '148', '175', '177', '196', '235', '236', '237', '273', '281', '284', '285', '289', '291', '293', '294', '295', '348']
   const mustSelected = ['291', '177', '11', '333', '332', '349', '354'] // 必须附加的附加险
   const noNeedCal = ['291', '11', '349'] // 不需要计算的险种
-  const directNeedCal = ['11', '94', '121', '131', '177', '196', '284', '281', '285', '289', '333'] // 直接 计算的险种
+  const directNeedCal = ['11', '94', '121', '131', '177', '196', '284', '281', '285', '289', '333', '367', '368'] // 直接 计算的险种
 
   export default {
     name: 'insurance',
@@ -868,7 +1003,19 @@
 
         samePerson: false, // 投被保人为同人
         isBaseMoney: true, // 输入保额
-        fuBaseMoney: false // 附加险算主险
+        fuBaseMoney: false, // 附加险算主险
+        fxljys366: {  // 复星乐健一生
+          shebao: 'B',
+          zytc: '0', // 住院套餐
+          zynmp: '0', // 住院年免赔
+          zyzfbl: 1, // 住院自负比例
+          mz: false, // 是否选择门诊
+          mznmp: '0', // 门诊年免赔
+          mzptcmp: 1, // 门诊普通次免赔
+          mztxcimp: 1, // 门诊特需次免赔
+          mztc: '0', // 门诊套餐
+          mzzfbl: 1 // 门诊自负比例
+        }
       }
     },
     computed: {
@@ -876,13 +1023,16 @@
         'admin_id',
         'pl_id',
         'appl',
-        'insList',
-        'assuchange' // 被保险人是否改变
+        'insList'
+        // 'assuchange' // 被保险人是否改变
       ]),
       ...mapGetters([
         'assu',
         'ins'
       ]),
+      assuchange () {
+        return this.$store.state.assuchange[this.id]
+      },
       Addons () { // 附加险可选信息
         let Addons = {}
         if (!this.insurance.safe_id || !this.insList || !this.insList.children) {
@@ -896,11 +1046,8 @@
       }
     },
     watch: {
-      assuchange: {
-        handler (val) {
-          this.insurance.period_money = ''
-        },
-        deep: true
+      assuchange (val) {
+        this.insurance.period_money = ''
       }
     },
     methods: {
@@ -918,6 +1065,9 @@
           console.info('delIns: ', this.insIndex)
           this.$store.commit('RMV_INS', this.insIndex)
           this.$parent.$forceUpdate()
+          this.$nextTick(() => {
+            this.$parent.countMoney()
+          })
         }, this.mainInsurance.name)
       },
       toggle () {
@@ -1072,15 +1222,37 @@
           this.$forceUpdate()
           this.editLoaded = true
         }
+        this.fxljys366 = {  // 复星乐健一生
+          shebao: 'B',
+          zytc: '0', // 住院套餐
+          zynmp: '0', // 住院年免赔
+          zyzfbl: 1, // 住院自负比例
+          mz: false, // 是否选择门诊
+          mznmp: '0', // 门诊年免赔
+          mzptcmp: 1, // 门诊普通次免赔
+          mztxcimp: 1, // 门诊特需次免赔
+          mztc: '0', // 门诊套餐
+          mzzfbl: 1 // 门诊自负比例
+        }
       },
       // 重置主险费用及附加险
-      resetFee () {
-        this.isBaseMoney ? this.insurance.period_money = '' : this.insurance.money = ''
-        if (this.fuBaseMoney) {
+      resetFee (fx) {
+        if (fx !== 'fxmz') { // 如果是复星门诊不清空
+          this.isBaseMoney ? this.insurance.period_money = '' : this.insurance.money = ''
+        } else {
+          this.fxljys366.mzmoney = ''
+        }
+        if (fx === 'fxsb') { // 切换社保，2个都重置
+          this.fxljys366.zymoney = ''
+          this.fxljys366.mzmoney = ''
+        }
+        if (this.fuBaseMoney) { // 如果是乐行天下
           this.insurance.period_money = ''
           this.insurance.money = ''
         }
-        this.resetAddon()
+        if (this.insurance.safe_id !== '366') { // 复星乐健一生不重置附加险
+          this.resetAddon()
+        }
       },
       /**
        * 附加险
@@ -1131,10 +1303,31 @@
                 }
               }
               break
+            case '369': // 恒大万年青
+              if (['293'].indexOf(index) > -1) {
+                if (this.insurance.money < 50000) {
+                  toastText = '主险保额小于5万元时不可附加该险种'
+                } else if (this.insurance.period_money < 3000) {
+                  toastText = '期交保费小于3千元时不可附加该险种'
+                }
+              }
+              break
             default:
               break
           }
           switch (index) {
+            case '368': // 附加康乐一生轻症保险
+              this.addonsSelected[367] = false
+              this.addonRes[367] = ''
+              this.$forceUpdate()
+              break
+            case '367': // 附加康乐一生投保人豁免保费重大疾病保险
+              if (this.samePerson) {
+                toastText = '投被保人为同人时不可附加该险种'
+              } else if (this.mainPayYear === 1) {
+                toastText = '主险趸交不可附加该险种'
+              }
+              break
             case '281':
               if (this.samePerson) {
                 toastText = '投被保人为同人时不可附加该险种'
@@ -1159,8 +1352,8 @@
               if (this.samePerson) {
                 toastText = '投被保人为同人时不可附加该险种'
               }
-              if (this.insurance.pay_year === '1') {
-                toastText = '缴费期间为趸交不可附加该险种'
+              if (this.mainPayYear === 1) {
+                toastText = '主险趸交不可附加该险种'
               }
               break
             case '86': // 附加豁免保险费重疾保险
@@ -1216,7 +1409,7 @@
           this.flag[362] = ''
         } else if (safeid === '318') {
           this.flag[332] = ''
-        } else if (safeid === '288' || safeid === '290' || safeid === '292') {
+        } else if (safeid === '288' || safeid === '290' || safeid === '292' || safeid === '369') { // 新增恒大万年青终身重疾病保险
           this.flag[294] = ''
           this.flag[293] = ''
         } else if (safeid === '283') {
@@ -1328,9 +1521,9 @@
           toastText = '请选择主险领取年龄'
         } else if (safeid === '352' && !this.flag[safeid]) {
           toastText = '请选择主险领取年龄'
-        } else if (this.isBaseMoney && !this.insurance.money && !this.fuBaseMoney) {
+        } else if (this.isBaseMoney && !this.insurance.money && !this.fuBaseMoney && this.insurance.safe_id !== '366') {
           toastText = '请输入主险基本保额'
-        } else if (this.isBaseMoney && exp.test(this.insurance.money) === false && !this.fuBaseMoney) {
+        } else if (this.isBaseMoney && exp.test(this.insurance.money) === false && !this.fuBaseMoney && this.insurance.safe_id !== '366') {
           toastText = '数字格式不规范，请重新输入'
         } else if (!this.isBaseMoney && !this.insurance.period_money && !this.fuBaseMoney) {
           toastText = '请输入主险年缴保费'
@@ -1340,6 +1533,10 @@
           toastText = '请先完善附加乐行天下意外住院津贴医疗保险'
         } else if (this.prospectus_types.length > 0 && !this.prospectus_type) {
           toastText = '请选择计划类型'
+        } else if (this.insurance.safe_id === '366' && this.fxljys366.zytc === '0') {
+          toastText = '请选择乐健一生住院套餐'
+        } else if (this.insurance.safe_id === '366' && this.fxljys366.zynmp === '0') {
+          toastText = '请选择乐健一生住院免赔额'
         }
         if (toastText) {
           this.$toast.open(toastText)
@@ -1349,6 +1546,7 @@
       },
       // 校验主险投保年龄
       checkMainAge (safeid) {
+        let applAge = this.appl.age
         let assuAge = this.assu.age
         let mainSafeYear = this.mainSafeYear
         let mainPayYear = this.mainPayYear
@@ -1356,6 +1554,39 @@
 
         let toastText = null
         switch (safeid) {
+          case '369': // 恒大万年青终身重疾病保险
+            if (mainPayYear === 10 && assuAge > 60) {
+              toastText = '10年交被保人年龄不能大于60周岁'
+            } else if (mainPayYear === 15 && assuAge > 55) {
+              toastText = '20年交被保人年龄不能大于55周岁'
+            } else if (mainPayYear === 20 && assuAge > 50) {
+              toastText = '20年交被保人年龄不能大于50周岁'
+            } else if (mainPayYear === 30 && assuAge > 40) {
+              toastText = '30年交被保人年龄不能大于40周岁'
+            }
+            break
+          case '366': // 复星乐健一生
+            if (assuAge > 64) {
+              toastText = '被保人年龄不能大于64周岁'
+            }
+            break
+          case '364': // 康乐一生重大疾病保险A款
+          case '365': // 康乐一生重大疾病保险B款
+            if (mainPayYear === 1 && applAge > 70) {
+              toastText = '投保人年龄不能大于70周岁'
+            } else if (mainPayYear === 5 && applAge > 65) {
+              toastText = '5年交投保人年龄不能大于65周岁'
+            } else if (mainPayYear === 10 && applAge > 60) {
+              toastText = '10年交投保人年龄不能大于60周岁'
+            } else if (mainPayYear === 20 && applAge > 50) {
+              toastText = '20年交投保人年龄不能大于50周岁'
+            } else if (assuAge > 50) {
+              toastText = '被保人年龄不能大于50周岁'
+            }
+            if (mainPayYear === 20 && mainSafeYear === 70) {
+              toastText = '保障期间为70年时不能20年交'
+            }
+            break
           case '363': // 泰康乐安心
             if (assuAge > 60) {
               toastText = '被保人年龄不能大于60周岁'
@@ -1373,9 +1604,9 @@
             } else if (mainPayYear === 10 && assuAge > 60) {
               toastText = '10年交被保人年龄不能大于60周岁'
             } else if (mainPayYear === 15 && assuAge > 55) {
-              toastText = '20年交被保人年龄不能大于55周岁'
+              toastText = '15年交被保人年龄不能大于55周岁'
             } else if (mainPayYear === 20 && assuAge > 50) {
-              toastText = '30年交被保人年龄不能大于50周岁'
+              toastText = '20年交被保人年龄不能大于50周岁'
             } else if (mainPayYear === 30 && assuAge > 40) {
               toastText = '30年交被保人年龄不能大于40周岁'
             }
@@ -1416,9 +1647,9 @@
             } else if (mainPayYear === 10 && assuAge > 55) {
               toastText = '10年交被保人年龄不能大于55周岁'
             } else if (mainPayYear === 15 && assuAge > 54) {
-              toastText = '20年交被保人年龄不能大于54周岁'
+              toastText = '15年交被保人年龄不能大于54周岁'
             } else if (mainPayYear === 20 && assuAge > 50) {
-              toastText = '30年交被保人年龄不能大于50周岁'
+              toastText = '20年交被保人年龄不能大于50周岁'
             }
             break
           case '316': // 华宝安行
@@ -1543,7 +1774,7 @@
             } else if (mainPayYear === 5 && assuAge > 55) {
               toastText = '5年交被保人年龄不能大于55周岁'
             } else if (mainPayYear === 8 && assuAge > 50) {
-              toastText = '10年交被保人年龄不能大于50周岁'
+              toastText = '8年交被保人年龄不能大于50周岁'
             } else if (mainPayYear === 10 && assuAge > 50) {
               toastText = '10年交被保人年龄不能大于50周岁'
             } else if (payOverage > 60) {
@@ -1611,6 +1842,21 @@
         let toastText = null
 
         switch (safeid) {
+          case '369': // 恒大万年青终身重疾病保险
+            if (money < 50000 || money % 1000 !== 0) {
+              toastText = '【' + name + '】最低保额5万元，且为1千元整数倍！'
+            }
+            break
+          case '364': // 康乐一生重大疾病保险A款
+          case '365': // 康乐一生重大疾病保险B款
+            if (money > 200000 && assuAge < 2) {
+              toastText = '【' + name + '】未满2周岁，投保限额为20万！'
+            } else if (money > 500000 && assuAge > 2 && assuAge < 19) {
+              toastText = '【' + name + '】2 周岁‐18 周岁，投保限额为50万！'
+            } else if (money < 50000) {
+              toastText = '【' + name + '】最低保额5万元！'
+            }
+            break
           case '363': // 泰康乐安心
             if (money < 50000 || money % 10000 !== 0) {
               toastText = '【' + name + '】最低保额5万元，且为1万元整数倍！'
@@ -1800,6 +2046,7 @@
       checkExtraAge (safeid) {
         let assuAge = Number(this.assu.age)
         let applAge = Number(this.appl.age)
+        let mainSafeYear = this.mainSafeYear
         let mainPayYear = this.mainPayYear
         let payOverage = Number(this.insurance.pay_year) - 1 + applAge // 期满年龄
         let toastText = null
@@ -1842,6 +2089,13 @@
               toastText = '投保人年龄不能大于60周岁,且期满年龄不能大于75岁'
             }
             break
+          case '289':
+            if (applAge > 60) {
+              toastText = '被豁免合同投保人年龄不能大于60周岁'
+            } else if (mainPayYear === 30) {
+              toastText = '30年交不可附加该险种'
+            }
+            break
           case '293': // 尊享安康
             if (assuAge > 65) {
               toastText = '被保人年龄不能大于65周岁'
@@ -1867,17 +2121,32 @@
             } else if (mainPayYear === 10 && assuAge > 50) {
               toastText = '10年交被保人年龄不能大于50周岁'
             } else if (mainPayYear === 15 && assuAge > 45) {
-              toastText = '20年交被保人年龄不能大于45周岁'
+              toastText = '15年交被保人年龄不能大于45周岁'
             } else if (mainPayYear === 20 && assuAge > 40) {
-              toastText = '30年交被保人年龄不能大于40周岁'
-            } else if (mainPayYear === 30 && assuAge > 30) {
-              toastText = '30年交被保人年龄不能大于30周岁'
+              toastText = '20年交被保人年龄不能大于40周岁'
+            }
+            break
+          case '367': // 附加康乐一生投保人豁免保费重大疾病保险
+            if (applAge > 50) {
+              toastText = '投保人年龄不能大于50周岁，不可附加该险种'
+            }
+            break
+          case '368': //
+            if (mainPayYear === 20 && mainSafeYear === 70) {
+              toastText = '保障期间为70年，缴费为20年交时，不可附加该险种'
+            }
+            break
+          case '374': //
+            if (assuAge > 54) {
+              toastText = '被保人年龄不能大于54周岁'
             }
             break
         }
 
         if (toastText) {
           this.$toast.open(toastText)
+          this.addonsSelected[safeid] = false
+          this.$forceUpdate()
           return false
         }
         return true
@@ -1888,6 +2157,14 @@
         let flag = this.flag[safeid]
         let periodMoney = this.insurance.period_money
         switch (safeid) {
+          case '374': // 复星乐健一生门诊保险（主险）
+            if (toastText) break
+            if (this.fxljys366.mztc === '0') {
+              toastText = '请选择乐健一生门急诊医疗保险套餐'
+            } else if (this.fxljys366.mznmp === '0') {
+              toastText = '请选择乐健一生门急诊医疗保险免赔额'
+            }
+            break
           case '362': // 附加百万健康两全保险
             if (!flag) {
               toastText = '请先选择保障期间'
@@ -2014,6 +2291,7 @@
           case '289':
           case '285': // 附加豁免保险费重大疾病保险
           case '284': // 附加豁免保险费定期寿险
+          case '367': // 附加康乐一生投保人豁免保费重大疾病保险
             if (this.samePerson) {
               toastText = '投被保人为同人时不可附加该险种'
             }
@@ -2144,13 +2422,6 @@
             money_ten: '0'
           })
         }
-        // 乐行天下主险
-        if (safeid === '318') {
-          data = Object.assign(data, {
-            money_one: this.cache.pay_money332,
-            money_two: this.cache.pay_money333
-          })
-        }
         // 计划书类型
         if (this.prospectus_types.length > 0) {
           data.type = this.prospectus_type
@@ -2173,7 +2444,41 @@
         let money = this.insurance.money
 
         // 险种参数
-        if (safeid === '362') {
+        if (safeid === '368') {
+          //  附加康乐一生轻症保险
+          data.pay_year = this.mainPayYear
+          data.safe_year = this.mainSafeYear === 999 ? 0 : this.mainSafeYear
+          data.base_money = money * 0.2
+        } else if (safeid === '367') {
+          //  附加康乐一生投保人豁免保费重大疾病保险
+          data.pay_year = py
+          data.safe_year = this.mainSafeYear === 999 ? 0 : this.mainSafeYear
+          if (this.addonRes[368]) {
+            data.base_money = periodMoney + this.addonRes[368].年缴保费
+          } else {
+            data.base_money = periodMoney
+          }
+        } else if (safeid === '366') {
+          //  复星乐健一生住院
+          data.flag = this.fxljys366.shebao + this.fxljys366.zytc
+          data = Object.assign(data, {
+            zynmp: this.fxljys366.zynmp, // 住院年免赔
+            zfbl: 1, // 自负比例
+            mznmp: this.fxljys366.mznmp, // 门诊年免赔
+            mzptcmp: this.fxljys366.mzptcmp, // 门诊普通次免赔
+            mztxcimp: this.fxljys366.mztxcimp // 门诊特需次免赔
+          })
+        } else if (safeid === '374') {
+          //  复星乐健一生门诊
+          data.flag = this.fxljys366.shebao + this.fxljys366.mztc
+          data = Object.assign(data, {
+            zynmp: this.fxljys366.zynmp, // 住院年免赔
+            zfbl: 1, // 自负比例
+            mznmp: this.fxljys366.mznmp, // 门诊年免赔
+            mzptcmp: this.fxljys366.mzptcmp, // 门诊普通次免赔
+            mztxcimp: this.fxljys366.mztxcimp // 门诊特需次免赔
+          })
+        } else if (safeid === '362') {
           // 信泰百万健康重大疾病
           data.pay_year = this.mainPayYear
           data.safe_year = this.flag[safeid]
@@ -2208,6 +2513,12 @@
           data.pay_year = this.mainPayYear
           data.safe_year = this.mainSafeYear
           data.base_money = this.flag[safeid]
+        } else if (safeid === '318') {
+          // 乐行天下主险
+          data = Object.assign(data, {
+            money_one: this.cache.pay_money332,
+            money_two: this.cache.pay_money333
+          })
         } else if (safeid === '295') {
           // 恒祥
           data.pay_year = 1
@@ -2335,19 +2646,23 @@
             ret.data.data[safeid].main.list &&
             ret.data.data[safeid].main.list[1]) {
             if (isMain) {
+              let data = ret.data.data[safeid].main.list[1]
               if (this.isBaseMoney && !this.fuBaseMoney) {
-                this.insurance.period_money = ret.data.data[safeid].main.list[1]['年缴保费']
+                this.insurance.period_money = data['年缴保费']
+                if (safeid === '366') {
+                  this.insurance.period_money = data['住院总保费']
+                }
               } else if (this.isBaseMoney && this.fuBaseMoney) {
-                this.insurance.period_money = ret.data.data[safeid].main.list[1]['年缴保费']
+                this.insurance.period_money = data['年缴保费']
                 this.insurance.money = ret.data.data[safeid].base_money
               } else {
                 if (safeid === '360') {
-                  this.insurance.money = ret.data.data[safeid].main.list[1]['保额']
+                  this.insurance.money = data['保额']
                 } else {
                   this.insurance.money = ret.data.data[safeid].base_money
                 }
               }
-              if (safeid !== '318') {
+              if (safeid !== '318' && safeid !== '366') {
                 this.resetAddon()
               }
               this.checkMainFee(safeid)
@@ -2357,6 +2672,8 @@
                 this.cache.pay_money332 = this.addonRes[safeid]['年缴保费'] || this.addonRes[safeid]['年缴保费(元)']
               } else if (safeid === '333') {
                 this.cache.pay_money333 = this.addonRes[safeid]['年缴保费'] || this.addonRes[safeid]['年缴保费(元)']
+              } else if (safeid === '374') {
+                this.fxljys366.mzmoney = this.addonRes[safeid]['门诊总保费']
               }
               this.$forceUpdate()
             }
