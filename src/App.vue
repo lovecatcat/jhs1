@@ -206,9 +206,9 @@
       pushPlan () {
         console.info('pushPlan')
 
-        let baseUrl = 'http://ts-open.ehuimeng.com/api/index/invoke'
+        let baseUrl = '//ts-open.ehuimeng.com/api/index/invoke'
         if (env.env === 'prod') {
-          baseUrl = 'https://open.ehuimeng.com/api/index/invoke'
+          baseUrl = '//open.ehuimeng.com/api/index/invoke'
         }
         let data = []
         let fristChild = []
@@ -228,9 +228,8 @@
             item.main.is_save = 1
             item.main.warranty_year = 105
             item.main.need_packet = 1
-            if (this.pl_id) {
-              item.main.check = 0
-            }
+            item.main.check = 0
+            item.main.flag = item.main.flag ? item.main.flag : 0
             data.push(item.main)
             if (i === 0 && id === 1 && j === 0) {
               fristChild.push(item.main)
@@ -242,10 +241,8 @@
               item.addon[k].is_save = 1
               item.addon[k].warranty_year = 105
               item.addon[k].need_packet = 1
-              if (this.pl_id) {
-                item.addon[k].check = 0
-                item.addon[k].flag = item.addon[k].flag ? item.addon[k].flag : 0
-              }
+              item.addon[k].check = 0
+              item.addon[k].flag = item.addon[k].flag ? item.addon[k].flag : 0
               data.push(item.addon[k])
               if (i === 0 && id === 1 && j === 0) {
                 fristChild.push(item.addon[k])
@@ -290,12 +287,14 @@
           // let plId = this.parent_pl_id ? this.parent_pl_id : this.pl_id // 如果是子pl_id就跳转到父级
         }
         if (!this.pl_id && !this.plansFalse) { // 不是编辑状态
-          utils.post('Prospectus/CreateBook4', qs.stringify({
+          utils.post(baseUrl, qs.stringify({
             module: 'Prospectus',
             method: 'create',
-            safes: JSON.stringify(data)
+            params: JSON.stringify({
+              safes: JSON.stringify(data)
+            })
           })).then(ret => {
-            ret = ret.data
+            ret = ret.data.data
             if (ret.data.length > 0) {
               let plId = ret.data[0].pl_id
               let url = '/wechat/prospectus-group?param=' + JSON.stringify({

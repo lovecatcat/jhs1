@@ -1,4 +1,4 @@
-let env = 'prop'
+let env = 'prod'
 let url = '//cloud.ehuimeng.com'
 if (location.port === '8088') {
   env = 'local'

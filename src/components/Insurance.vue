@@ -1558,7 +1558,7 @@
             if (mainPayYear === 10 && assuAge > 60) {
               toastText = '10年交被保人年龄不能大于60周岁'
             } else if (mainPayYear === 15 && assuAge > 55) {
-              toastText = '20年交被保人年龄不能大于55周岁'
+              toastText = '15年交被保人年龄不能大于55周岁'
             } else if (mainPayYear === 20 && assuAge > 50) {
               toastText = '20年交被保人年龄不能大于50周岁'
             } else if (mainPayYear === 30 && assuAge > 40) {
@@ -2052,6 +2052,11 @@
         let toastText = null
 
         switch (safeid) {
+          case '94':
+            if (mainPayYear === 20 && assuAge > 40) {
+              toastText = '缴费为20年交，被保人年龄大于40岁时，不可附加该险种'
+            }
+            break
           case '121':
             if (assuAge > 55) {
               toastText = '被保人年龄不能大于55周岁'

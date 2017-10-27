@@ -155,9 +155,9 @@ export default new Vuex.Store({
   actions: {
     SET_PLANS ({commit}, payload) {
       console.log('dispatch action: SET_PLANS')
-      let baseUrl = 'http://ts-open.ehuimeng.com/api/index/invoke'
+      let baseUrl = '//ts-open.ehuimeng.com/api/index/invoke'
       if (env.env === 'prod') {
-        baseUrl = 'https://open.ehuimeng.com/api/index/invoke'
+        baseUrl = '//open.ehuimeng.com/api/index/invoke'
       }
 
       utils.post(baseUrl, qs.stringify({
