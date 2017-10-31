@@ -566,6 +566,10 @@
             <option disabled value=''>请选择</option>
             <option value="150">有社保50万</option>
             <option value="250">无社保50万</option>
+            <option value="1100">有社保100万</option>
+            <option value="2100">无社保100万</option>
+            <option value="1150">有社保150万</option>
+            <option value="2150">无社保150万</option>
           </select>
         </app-select>
         <template v-if="addonRes[item.safe_id]">
@@ -576,10 +580,6 @@
           <div class="am-list-item">
             <div class="am-list-content">缴费期间</div>
             <div class="am-ft-black">趸缴</div>
-          </div>
-          <div class="am-list-item">
-            <div class="am-list-content">保险金额</div>
-            <div class="am-ft-orange">500000</div>
           </div>
           <div class="am-list-item">
             <div class="am-list-content">年缴保费</div>
