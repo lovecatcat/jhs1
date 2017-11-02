@@ -253,6 +253,26 @@
           </label>
         </div>
       </template>
+      <!-- 乐安心的附加险乐相伴豁免B款 -->
+      <template v-if="item.safe_id === '377' && addonRes[item.safe_id]">
+        <div class="am-list-item">
+          <div class="am-list-content">保障期间</div>
+          <div class="am-ft-black">{{mainPayYear > 1 ? mainPayYear - 1 : mainPayYear}}年</div>
+        </div>
+        <div class="am-list-item">
+          <div class="am-list-content">缴费期间</div>
+          <div class="am-ft-black">{{mainPayYear > 1 ? (mainPayYear - 1) + '年交' : '趸交'}}</div>
+        </div>
+        <div class="am-list-item">
+          <div class="am-list-content">保险金额</div>
+          <div class="am-ft-orange">{{insurance.period_money}}</div>
+        </div>
+        <div class="am-list-item">
+          <div class="am-list-content">年缴保费</div>
+          <div class="am-ft-orange">{{addonRes[item.safe_id]['年缴保费']}}</div>
+        </div>
+      </template>
+      <!-- 乐安心的附加险乐相伴豁免B款 -->
       <!--  乐健一生门急诊医疗保险 -->
       <template v-if="item.safe_id==='374' && addonsSelected[item.safe_id]">
         <app-select label="套餐">
@@ -950,10 +970,10 @@
   const calMoneyIns = ['74', '182', '290', '352', '360'] // 算保费的主险
   const fuMoneyIns = ['318'] // 通过附加算主险
   // 附加险上线产品
-  const addonFilter = ['8', '11', '86', '94', '121', '131', '146', '147', '148', '175', '177', '196', '235', '236', '237', '273', '281', '284', '285', '289', '291', '293', '294', '295', '348']
+  const addonFilter = ['8', '11', '86', '94', '121', '131', '146', '147', '148', '175', '177', '196', '235', '236', '237', '273', '281', '284', '285', '289', '291', '293', '294', '295', '348', '377']
   const mustSelected = ['291', '177', '11', '333', '332', '349', '354'] // 必须附加的附加险
   const noNeedCal = ['291', '11', '349'] // 不需要计算的险种
-  const directNeedCal = ['11', '94', '121', '131', '177', '196', '284', '281', '285', '289', '333', '367', '368'] // 直接 计算的险种
+  const directNeedCal = ['11', '94', '121', '131', '177', '196', '284', '281', '285', '289', '333', '367', '368', '377'] // 直接 计算的险种
 
   export default {
     name: 'insurance',
@@ -1360,8 +1380,12 @@
             case '289':
             case '285': // 附加豁免保险费重大疾病保险
             case '284': // 附加豁免保险费定期寿险
+            case '377': // 乐安心的附加险乐相伴豁免B款
               if (this.samePerson) {
                 toastText = '投被保人为同人时不可附加该险种'
+              }
+              if (this.mainPayYear === 1) {
+                toastText = '主险趸交不可附加该险种'
               }
               break
             case '121':
@@ -2449,7 +2473,11 @@
         let money = this.insurance.money
 
         // 险种参数
-        if (safeid === '368') {
+        if (safeid === '377') { // 乐安心的附加险乐相伴豁免B款
+          data.pay_year = py
+          data.safe_year = py
+          data.year_fee = periodMoney
+        } else if (safeid === '368') {
           //  附加康乐一生轻症保险
           data.pay_year = this.mainPayYear
           data.safe_year = this.mainSafeYear === 999 ? 0 : this.mainSafeYear
