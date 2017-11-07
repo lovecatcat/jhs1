@@ -186,7 +186,7 @@
                 <div slot="button" class="am-list-button">
                   <button type="button" @click="calMoney(true)">点击计算</button>
                 </div>
-              </app-input> 
+              </app-input>
             </template>
             <!-- 复星乐健一生 -->
             <!-- 输入保费算保额 -->
@@ -254,7 +254,7 @@
         </div>
       </template>
       <!-- 乐安心的附加险乐相伴豁免B款 -->
-      <template v-if="item.safe_id === '377' && addonRes[item.safe_id]">
+      <template v-if="item.safe_id === '380' && addonRes[item.safe_id]">
         <div class="am-list-item">
           <div class="am-list-content">保障期间</div>
           <div class="am-ft-black">{{mainPayYear > 1 ? mainPayYear - 1 : mainPayYear}}年</div>
@@ -283,7 +283,7 @@
             <option value="门急诊套餐二">门急诊套餐二</option>
           </select>
         </app-select>
-        <app-select label="住院免赔额">
+        <app-select label="门急诊免赔额">
           <select v-model.number="fxljys366.mznmp"
                   @change="resetFee('fxmz')">
             <option disabled value='0'>请选择</option>
@@ -461,7 +461,7 @@
           <input slot="input"
                  v-model.number="cache.base_money295"
                  type="number" placeholder="保险金额(元)"
-                 
+
                  @change="addonsSelected[item.safe_id] = true, flagChanged(item.safe_id)">
                  <!-- @change="addonRes[item.safe_id]=null,addonsSelected[item.safe_id]=false"> -->
           <div slot="icon"
@@ -471,7 +471,7 @@
             <i class="am-icon-clear am-icon"></i>
           </div>
         </app-input>
-        <div class="am-list-footer"><span class='am-ft-orange'>最低50元,10的整数倍。累计不超过100元/天</span>
+        <div class="am-list-footer"><span class='am-ft-orange'>最低50元,10的整数倍。累计不超过200元/天</span>
         </div>
         <template v-if="addonRes[item.safe_id]">
           <div class="am-list-item">
@@ -494,7 +494,7 @@
       </template>
       <!-- 附加恒祥 -->
       <!-- 附加恒顺 -->
-      <template v-else-if="item.safe_id === '294' && addonsSelected[item.safe_id]">
+      <template v-if="item.safe_id === '294' && addonsSelected[item.safe_id]">
         <app-select label="保险金额">
           <select v-model.number="flag[item.safe_id]" @change="flagChanged(item.safe_id)">
             <option disabled value=''>请选择</option>
@@ -556,7 +556,7 @@
       </template>
       <!-- 附加恒顺 -->
       <!-- 金财人生终身年金保险D款 -->
-      <template v-else-if="item.safe_id==='291' && addonsSelected[item.safe_id]">
+      <template v-if="item.safe_id==='291' && addonsSelected[item.safe_id]">
         <div class="am-list-item">
           <div class="am-list-content">保障期间</div>
           <div class="am-ft-black">终身</div>
@@ -580,7 +580,7 @@
       </template>
       <!-- 金财人生终身年金保险D款 -->
       <!-- 附加尊享安康费用补偿医疗保险 -->
-      <template v-else-if="item.safe_id === '293' && addonsSelected[item.safe_id]">
+      <template v-if="item.safe_id === '293' && addonsSelected[item.safe_id]">
         <app-select label="保险金额">
           <select v-model.number="flag[item.safe_id]" @change="flagChanged(item.safe_id)">
             <option disabled value=''>请选择</option>
@@ -609,7 +609,7 @@
       </template>
       <!-- 附加尊享安康费用补偿医疗保险 -->
       <!-- 附加投保人豁免保险费重大疾病保险（2017 版） -->
-      <template v-else-if="(item.safe_id==='289') && addonRes[item.safe_id]">
+      <template v-if="(item.safe_id==='289') && addonRes[item.safe_id]">
         <div class="am-list-item">
           <div class="am-list-content">保障期间</div>
           <div class="am-ft-black">终身</div>
@@ -629,7 +629,7 @@
       </template>
       <!-- 附加投保人豁免保险费重大疾病保险（2017 版） -->
       <!-- 附加豁免保险费定期寿险 -->
-      <template v-else-if="(item.safe_id==='285' || item.safe_id==='284') && addonRes[item.safe_id]">
+      <template v-if="(item.safe_id==='285' || item.safe_id==='284') && addonRes[item.safe_id]">
         <div class="am-list-item">
           <div class="am-list-content">保障期间</div>
           <div class="am-ft-black">{{mainPayYear - 1}}年</div>
@@ -649,7 +649,7 @@
       </template>
       <!-- 附加豁免保险费定期寿险 -->
       <!-- 附加投保人保费豁免重大疾病保险 -->
-      <template v-else-if="item.safe_id === '281' && addonRes[item.safe_id]">
+      <template v-if="item.safe_id === '281' && addonRes[item.safe_id]">
         <div class="am-list-item">
           <div class="am-list-content">保障期间</div>
           <div class="am-ft-black">{{mainPayYear}}年</div>
@@ -669,7 +669,7 @@
       </template>
       <!-- 附加投保人保费豁免重大疾病保险 -->
       <!-- 附加住院费用医疗（社保和非社保型）235-236 -->
-      <template v-else-if="(item.safe_id === '235' || item.safe_id === '236' || item.safe_id === '237') && addonsSelected[item.safe_id]">
+      <template v-if="(item.safe_id === '235' || item.safe_id === '236' || item.safe_id === '237') && addonsSelected[item.safe_id]">
         <app-select label="投保份数">
           <select v-model.number="flag[item.safe_id]" @change="flagChanged(item.safe_id)">
             <option disabled value=''>请选择</option>
@@ -705,7 +705,7 @@
       </template>
       <!-- 附加住院费用医疗（社保和非社保型）235-236 -->
       <!-- 华宝安康医疗保险 -->
-      <template v-else-if="item.safe_id === '273' && addonsSelected[item.safe_id]">
+      <template v-if="item.safe_id === '273' && addonsSelected[item.safe_id]">
         <app-select label="选择计划">
           <select v-model.number="flag[item.safe_id]" @change="flagChanged(item.safe_id)">
             <option disabled value=''>请选择计划</option>
@@ -720,7 +720,7 @@
       </template>
       <!-- 华宝安康医疗保险 -->
       <!-- 附加住院津贴医疗保险 -->
-      <template v-else-if="item.safe_id === '196' && addonRes[item.safe_id]">
+      <template v-if="item.safe_id === '196' && addonRes[item.safe_id]">
         <div class="am-list-item" v-for="(value,key) in addonRes[item.safe_id]">
           <div class="am-list-content">{{key}}</div>
           <div class="am-ft-orange">{{value}}</div>
@@ -748,7 +748,7 @@
       </template>
       <!-- 附加御立方三号重大疾病保险 -->
       <!-- 附加乐无忧住院医疗保险 -->
-      <template v-else-if="item.safe_id === '175' && addonsSelected[item.safe_id]">
+      <template v-if="item.safe_id === '175' && addonsSelected[item.safe_id]">
         <app-select label="保险计划">
           <select v-model.number="flag[item.safe_id]" @change="flagChanged(item.safe_id)">
             <option disabled value=''>请选择计划</option>
@@ -783,7 +783,7 @@
       </template>
       <!-- 附加乐无忧住院医疗保险 -->
       <!-- 附加综合意外伤害保险 -->
-      <template v-else-if="item.safe_id === '148' && addonsSelected[item.safe_id]">
+      <template v-if="item.safe_id === '148' && addonsSelected[item.safe_id]">
         <app-input label="保险金额">
           <input slot="input"
                  v-model.number="cache.base_money148"
@@ -822,7 +822,7 @@
       </template>
       <!-- 附加综合意外伤害保险 -->
       <!-- 附加住院费用医疗保险 -->
-      <template v-else-if="item.safe_id === '147' && addonsSelected[item.safe_id]">
+      <template v-if="item.safe_id === '147' && addonsSelected[item.safe_id]">
         <app-select label="保险金额">
           <select v-model.number="flag[item.safe_id]" @change="flagChanged(item.safe_id)">
             <option disabled value=''>请选择金额</option>
@@ -856,7 +856,7 @@
       </template>
       <!-- 附加住院费用医疗保险 -->
       <!-- 附加意外伤害医疗B -->
-      <template v-else-if="item.safe_id === '146' && addonsSelected[item.safe_id]">
+      <template v-if="item.safe_id === '146' && addonsSelected[item.safe_id]">
         <app-select label="保险金额">
           <select v-model.number="flag[item.safe_id]" @change="flagChanged(item.safe_id)">
             <option disabled value=''>请选择金额</option>
@@ -888,7 +888,7 @@
       </template>
       <!-- 附加意外伤害医疗B -->
       <!-- 附加乐相伴豁免保险费重大疾病保险 -->
-      <template v-else-if="item.safe_id === '131' && addonRes[item.safe_id]">
+      <template v-if="item.safe_id === '131' && addonRes[item.safe_id]">
         <div class="am-list-item">
           <div class="am-list-content">保障期间</div>
           <div class="am-ft-black">{{mainPayYear > 1 ? mainPayYear - 1 : mainPayYear}}年</div>
@@ -908,7 +908,7 @@
       </template>
       <!-- 附加乐相伴豁免保险费重大疾病保险 -->
       <!-- 附加如意尊享住院费用B款医疗保险 -->
-      <template v-else-if="item.safe_id === '121' && addonRes[item.safe_id]">
+      <template v-if="item.safe_id === '121' && addonRes[item.safe_id]">
         <div class="am-list-item" v-for="value,key in addonRes[item.safe_id]">
           <div class="am-list-content">{{key}}</div>
           <div class="am-ft-orange">{{value}}</div>
@@ -916,7 +916,7 @@
       </template>
       <!-- 附加如意尊享住院费用B款医疗保险 -->
       <!-- 国华附加年金保险 -->
-      <template v-else-if="item.safe_id === '94' && addonRes[item.safe_id]">
+      <template v-if="item.safe_id === '94' && addonRes[item.safe_id]">
         <div class="am-list-item">
           <div class="am-list-content">保障期间</div>
           <div class="am-ft-black">至85岁</div>
@@ -936,7 +936,7 @@
       </template>
       <!-- 国华附加年金保险 -->
       <!-- 附加豁免保险费重疾保险 -->
-      <template v-else-if="item.safe_id === '86' && addonRes[item.safe_id]">
+      <template v-if="item.safe_id === '86' && addonRes[item.safe_id]">
         <div class="am-list-item">
           <div class="am-list-content">保障期间</div>
           <div class="am-ft-black">{{(mainPayYear - 1) + '年'}}</div>
@@ -970,10 +970,10 @@
   const calMoneyIns = ['74', '182', '290', '352', '360'] // 算保费的主险
   const fuMoneyIns = ['318'] // 通过附加算主险
   // 附加险上线产品
-  const addonFilter = ['8', '11', '86', '94', '121', '131', '146', '147', '148', '175', '177', '196', '235', '236', '237', '273', '281', '284', '285', '289', '291', '293', '294', '295', '348', '377']
+  const addonFilter = ['8', '11', '86', '94', '121', '131', '146', '147', '148', '175', '177', '196', '235', '236', '237', '273', '281', '284', '285', '289', '291', '293', '294', '295', '348', '380']
   const mustSelected = ['291', '177', '11', '333', '332', '349', '354'] // 必须附加的附加险
   const noNeedCal = ['291', '11', '349'] // 不需要计算的险种
-  const directNeedCal = ['11', '94', '121', '131', '177', '196', '284', '281', '285', '289', '333', '367', '368', '377'] // 直接 计算的险种
+  const directNeedCal = ['11', '94', '121', '131', '177', '196', '284', '281', '285', '289', '333', '367', '368', '380'] // 直接 计算的险种
 
   export default {
     name: 'insurance',
@@ -1286,7 +1286,8 @@
           this.$forceUpdate()
           return false
         }
-        console.log(this.addonsSelected[index])
+        // this.addonsSelected[index] = !this.addonsSelected[index]
+        // this.$forceUpdate()
         this.checkRS()
         let toastText = null
         if (this.addonsSelected[index]) {
@@ -1380,7 +1381,7 @@
             case '289':
             case '285': // 附加豁免保险费重大疾病保险
             case '284': // 附加豁免保险费定期寿险
-            case '377': // 乐安心的附加险乐相伴豁免B款
+            case '380': // 乐安心的附加险乐相伴豁免B款
               if (this.samePerson) {
                 toastText = '投被保人为同人时不可附加该险种'
               }
@@ -2131,13 +2132,13 @@
             }
             break
           case '294': // 恒顺
-            if (assuAge > 65) {
-              toastText = '被保人年龄不能大于65周岁'
+            if (assuAge > 55) {
+              toastText = '被保人年龄不能大于55周岁'
             }
             break
           case '295': // 恒祥
-            if (assuAge > 65) {
-              toastText = '被保人年龄不能大于65周岁'
+            if (assuAge > 55) {
+              toastText = '被保人年龄不能大于55周岁'
             }
             break
           case '362': // 附加信泰百万健康重大疾病
@@ -2229,8 +2230,8 @@
             if (toastText) break
             if (!this.cache.base_money295) {
               toastText = '请先输入保险金额'
-            } else if (this.cache.base_money295 < 50 || this.cache.base_money295 > 100 || this.cache.base_money295 % 10 !== 0) {
-              toastText = '保险金额范围50-100元，且为10的整数'
+            } else if (this.cache.base_money295 < 50 || this.cache.base_money295 > 200 || this.cache.base_money295 % 10 !== 0) {
+              toastText = '保险金额范围50-200元，且为10的整数'
             }
             break
           case '294': // 恒顺
@@ -2473,7 +2474,7 @@
         let money = this.insurance.money
 
         // 险种参数
-        if (safeid === '377') { // 乐安心的附加险乐相伴豁免B款
+        if (safeid === '380') { // 乐安心的附加险乐相伴豁免B款
           data.pay_year = py
           data.safe_year = py
           data.year_fee = periodMoney

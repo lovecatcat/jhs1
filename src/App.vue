@@ -26,7 +26,7 @@
         </app-input>
       </div>
 
-      <applicant :edit="applData"></applicant>
+      <applicant ref="appl" :edit="applData"></applicant>
       
       <div class="plan" v-show="plan.id === activePlan" v-for="plan,index in plans" :key="plan.id">
         <assured
@@ -297,10 +297,10 @@
             ret = ret.data.data
             if (ret.data.length > 0) {
               let plId = ret.data[0].pl_id
-              let url = '/wechat/prospectus-group?param=' + JSON.stringify({
+              let url = '/wechat/prospectus-group?param=' + encodeURI(JSON.stringify({
                 admin_id: this.admin_id,
                 pl_id: plId
-              })
+              }))
               console.log(url)
               location.href = url
             }

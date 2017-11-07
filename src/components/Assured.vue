@@ -95,7 +95,7 @@
     },
     methods: {
       keepSame () {
-        let appl = this.$store.state.appl
+        let appl = this.$parent.$refs.appl.$data.appl
         this.assu = Object.assign({}, this.assu, utils.parseVueObj(appl))
       },
       ageChanged () {
