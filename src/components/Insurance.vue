@@ -41,7 +41,7 @@
                     :disabled="mainPyAttr.length === 1"
                     @change="resetFee">
               <option disabled value=''>请选择</option>
-              <option v-for="(item,index) in mainPyAttr" :value="item.pay_year" :key="index">
+              <option v-for="(item,index) in mainPyAttr" :value="item.pay_year" :key="index" v-if="payYearFilter(item.pay_year)">
                 {{item.pay_year === '1' ? '趸交' : item.pay_year + '年交'}}
               </option>
             </select>
@@ -207,6 +207,23 @@
                   <option value="80">80岁</option>
                 </select>
               </app-select>
+              <app-select label="生存金方式" v-if="insurance.safe_id === '379'">
+                <!-- 恒大福享今生 -->
+                <select v-model.number="flag['379']" @change="resetFee">
+                  <option disabled value=''>请选择</option>
+                  <option value="1">方式一</option>
+                  <option value="2">方式二</option>
+                  <option value="3">方式三</option>
+                </select>
+              </app-select>
+              <app-select label="保证年限" v-if="insurance.safe_id === '378'">
+                <!-- 恒大福享今生 -->
+                <select v-model.number="flag['378']" @change="resetFee">
+                  <option disabled value=''>请选择</option>
+                  <option value="20">20年</option>
+                  <option value="30">30年</option>
+                </select>
+              </app-select>
               <app-input label="年缴保费">
                 <input slot="input"
                        v-model.number.lazy="insurance.period_money"
@@ -253,6 +270,26 @@
           </label>
         </div>
       </template>
+      <!-- 信泰附加投保人豁免保险费重大疾病保险 -->
+      <template v-if="item.safe_id === '370' && addonRes[item.safe_id]">
+        <div class="am-list-item">
+          <div class="am-list-content">保障期间</div>
+          <div class="am-ft-black">终身</div>
+        </div>
+        <div class="am-list-item">
+          <div class="am-list-content">缴费期间</div>
+          <div class="am-ft-black">{{mainPayYear > 1 ? (mainPayYear - 1) + '年交' : '趸交'}}</div>
+        </div>
+        <div class="am-list-item">
+          <div class="am-list-content">保险金额</div>
+          <div class="am-ft-orange">{{insurance.period_money}}</div>
+        </div>
+        <div class="am-list-item">
+          <div class="am-list-content">年缴保费</div>
+          <div class="am-ft-orange">{{addonRes[item.safe_id]['年缴保费']}}</div>
+        </div>
+      </template>
+      <!-- 信泰附加投保人豁免保险费重大疾病保险 -->
       <!-- 乐安心的附加险乐相伴豁免B款 -->
       <template v-if="item.safe_id === '380' && addonRes[item.safe_id]">
         <div class="am-list-item">
@@ -967,13 +1004,13 @@
     mapGetters
   } from 'vuex'
 
-  const calMoneyIns = ['74', '182', '290', '352', '360'] // 算保费的主险
+  const calMoneyIns = ['74', '182', '290', '352', '360', '377', '378', '379', '381'] // 算保费的主险
   const fuMoneyIns = ['318'] // 通过附加算主险
   // 附加险上线产品
-  const addonFilter = ['8', '11', '86', '94', '121', '131', '146', '147', '148', '175', '177', '196', '235', '236', '237', '273', '281', '284', '285', '289', '291', '293', '294', '295', '348', '380']
+  const addonFilter = ['8', '11', '86', '94', '121', '131', '146', '147', '148', '175', '177', '196', '235', '236', '237', '273', '281', '284', '285', '289', '291', '293', '294', '295', '348', '380', '370']
   const mustSelected = ['291', '177', '11', '333', '332', '349', '354'] // 必须附加的附加险
   const noNeedCal = ['291', '11', '349'] // 不需要计算的险种
-  const directNeedCal = ['11', '94', '121', '131', '177', '196', '284', '281', '285', '289', '333', '367', '368', '380'] // 直接 计算的险种
+  const directNeedCal = ['11', '94', '121', '131', '177', '196', '284', '281', '285', '289', '333', '367', '368', '380', '370'] // 直接 计算的险种
 
   export default {
     name: 'insurance',
@@ -1067,7 +1104,11 @@
     },
     watch: {
       assuchange (val) {
-        this.insurance.period_money = ''
+        if (this.isBaseMoney) {
+          this.insurance.period_money = ''
+        } else {
+          this.insurance.money = ''
+        }
       }
     },
     methods: {
@@ -1205,6 +1246,10 @@
 
         if (safeid === '205' || safeid === '352') { // 泰康尊享岁月  中国人保尊赢
           this.flag[safeid] = '' // 领取年龄
+        } else if (safeid === '378') { // 恒大福享今生
+          this.flag[safeid] = '' // 保证年限
+        } else if (safeid === '379') { // 国华盛世鑫悦
+          this.flag[safeid] = '' // 生存金方式
         }
 
         // 保费、保额
@@ -1274,6 +1319,24 @@
           this.resetAddon()
         }
       },
+      // 筛选主险年限
+      payYearFilter (index) {
+        console.log(111)
+        let mainSafeYear = this.insurance.safe_year
+        if (this.insurance.safe_id === '382') {
+          if (mainSafeYear === 10 && ['10', '15', '20'].indexOf(index) > -1) {
+            return false
+          } else if (mainSafeYear === 15 && ['15', '20'].indexOf(index) > -1) {
+            return false
+          } else if (mainSafeYear === 20 && ['20'].indexOf(index) > -1) {
+            return false
+          } else {
+            return true
+          }
+        } else {
+          return true
+        }
+      },
       /**
        * 附加险
        * @param index
@@ -1296,6 +1359,10 @@
             this.addonsSelected[index] = false
             this.$forceUpdate()
             return false
+          } else if (!this.isBaseMoney && !this.insurance.base_money) {
+            toastText = '请先计算保险金额'
+            this.addonsSelected[index] = false
+            this.$forceUpdate()
           }
           // let flag = this.flag[index]
           let periodMoney = this.insurance.period_money
@@ -1337,6 +1404,15 @@
               break
           }
           switch (index) {
+            case '370': // 信泰附加投保人豁免保险费重大疾病保
+              if (this.samePerson) {
+                toastText = '投被保人为同人时不可附加该险种'
+              } else if (this.mainPayYear === 1 || this.mainPayYear === 3) {
+                toastText = '主险趸交或3年交不可附加该险种'
+              } else if (this.assu.age < 18 || this.assu.age > 60) {
+                toastText = '被保险人年龄小于18周岁或大于60周岁不可附加'
+              }
+              break
             case '368': // 附加康乐一生轻症保险
               this.addonsSelected[367] = false
               this.addonRes[367] = ''
@@ -1434,7 +1510,7 @@
           this.flag[362] = ''
         } else if (safeid === '318') {
           this.flag[332] = ''
-        } else if (safeid === '288' || safeid === '290' || safeid === '292' || safeid === '369') { // 新增恒大万年青终身重疾病保险
+        } else if (safeid === '288' || safeid === '290' || safeid === '292' || safeid === '369' || safeid === '378') { // 新增恒大万年青终身重疾病保险
           this.flag[294] = ''
           this.flag[293] = ''
         } else if (safeid === '283') {
@@ -1573,12 +1649,92 @@
       checkMainAge (safeid) {
         let applAge = this.appl.age
         let assuAge = this.assu.age
+        let assuSex = this.assu.sex
         let mainSafeYear = this.mainSafeYear
         let mainPayYear = this.mainPayYear
         let payOverage = mainPayYear + assuAge // 缴费期满年龄
 
         let toastText = null
         switch (safeid) {
+          case '382': // 中英人寿金喜年年
+            if (assuAge > 65) {
+              toastText = '被保人年龄不能大于55周岁'
+            } else if (mainPayYear === 20 && assuAge > 40 && assuSex) {
+              toastText = '20年交男性被保人为年龄不能大于40周岁'
+            } else if (mainPayYear === 10 && assuAge > 50 && assuSex) {
+              toastText = '10年交男性被保人为年龄不能大于50周岁'
+            } else if (mainPayYear === 20 && assuAge > 35 && !assuSex) {
+              toastText = '20年交女性被保人为年龄不能大于35周岁'
+            } else if (mainPayYear === 10 && assuAge > 45 && assuSex) {
+              toastText = '10年交女性被保人为年龄不能大于45周岁'
+            }
+            break
+          case '381': // 中国人保鑫盈人生
+            if (mainPayYear === 1 && assuAge > 70) {
+              toastText = '趸交时被保人为年龄不能大于70周岁'
+            } else if (mainPayYear === 3 && assuAge > 65) {
+              toastText = '3年交被保人为年龄不能大于65周岁'
+            } else if (mainPayYear === 5 && assuAge > 63) {
+              toastText = '20年交被保人为年龄不能大于35周岁'
+            } else if (mainPayYear === 10 && assuAge > 60) {
+              toastText = '10年交被保人为年龄不能大于60周岁'
+            }
+            break
+          case '379': // 国华盛世鑫悦
+            if (mainPayYear === 1 && assuAge > 60 && this.flag[379] === 1) {
+              toastText = '生存方式一且趸交时被保人年龄为28天-60周岁（含）'
+            } else if (mainPayYear === 3 && assuAge > 57 && this.flag[379] === 1) {
+              toastText = '生存方式一且3年交时被保人年龄为28天-57周岁（含）'
+            } else if (mainPayYear === 5 && assuAge > 55 && this.flag[379] === 1) {
+              toastText = '生存方式一且5年交时被保人年龄为28天-55周岁（含）'
+            } else if (mainPayYear === 10 && assuAge > 50 && this.flag[379] === 1) {
+              toastText = '生存方式一且10年交时被保人年龄为28天-50周岁（含）'
+            } else if (mainPayYear === 1 && assuAge > 45 && this.flag[379] === 2) {
+              toastText = '生存方式二且趸交时被保人年龄为28天-45周岁（含）'
+            } else if (mainPayYear === 3 && assuAge > 42 && this.flag[379] === 2) {
+              toastText = '生存方式二且3年交时被保人年龄为28天-42周岁（含）'
+            } else if (mainPayYear === 5 && assuAge > 40 && this.flag[379] === 2) {
+              toastText = '生存方式二且5年交时被保人年龄为28天-40周岁（含）'
+            } else if (mainPayYear === 10 && assuAge > 35 && this.flag[379] === 2) {
+              toastText = '生存方式二且10年交时被保人年龄为28天-35周岁（含）'
+            } else if (mainPayYear === 1 && assuAge > 45 && this.flag[379] === 3) {
+              toastText = '生存方式三且趸交时被保人年龄为18周岁-45周岁（含）'
+            } else if (mainPayYear === 3 && assuAge > 42 && this.flag[379] === 3) {
+              toastText = '生存方式三且3年交时被保人年龄为18周岁-42周岁（含）'
+            } else if (mainPayYear === 5 && assuAge > 40 && this.flag[379] === 3) {
+              toastText = '生存方式三且5年交时被保人年龄为18周岁-40周岁（含）'
+            } else if (mainPayYear === 10 && assuAge > 35 && this.flag[379] === 3) {
+              toastText = '生存方式三且10年交时被保人年龄为18周岁-35周岁（含）'
+            } else if (mainPayYear === 1 && assuAge < 18 && this.flag[379] === 3) {
+              toastText = '生存方式三且趸交时被保人年龄为18周岁-45周岁（含）'
+            } else if (mainPayYear === 3 && assuAge < 18 && this.flag[379] === 3) {
+              toastText = '生存方式三且3年交时被保人年龄为18周岁-42周岁（含）'
+            } else if (mainPayYear === 5 && assuAge < 18 && this.flag[379] === 3) {
+              toastText = '生存方式三且5年交时被保人年龄为18周岁-40周岁（含）'
+            } else if (mainPayYear === 10 && assuAge < 18 && this.flag[379] === 3) {
+              toastText = '生存方式三且10年交时被保人年龄为18周岁-35周岁（含）'
+            }
+            break
+          case '378': // 恒大福享今生
+            if (assuAge > 55) {
+              toastText = '被保人年龄不能大于55周岁'
+            } else if (mainPayYear === 20 && assuAge > 40 && assuSex) {
+              toastText = '20年交男性被保人为年龄不能大于40周岁'
+            } else if (mainPayYear === 10 && assuAge > 50 && assuSex) {
+              toastText = '10年交男性被保人为年龄不能大于50周岁'
+            } else if (mainPayYear === 20 && assuAge > 35 && !assuSex) {
+              toastText = '20年交女性被保人为年龄不能大于35周岁'
+            } else if (mainPayYear === 10 && assuAge > 45 && assuSex) {
+              toastText = '10年交女性被保人为年龄不能大于45周岁'
+            }
+            break
+          case '377': // 信泰千万人生
+            if (assuAge > 55) {
+              toastText = '被保人年龄不能大于55周岁'
+            } else if (mainPayYear === 10 && assuAge > 50) {
+              toastText = '10年交被保人年龄不能大于50周岁'
+            }
+            break
           case '369': // 恒大万年青终身重疾病保险
             if (mainPayYear === 10 && assuAge > 60) {
               toastText = '10年交被保人年龄不能大于60周岁'
@@ -1867,6 +2023,11 @@
         let toastText = null
 
         switch (safeid) {
+          case '382': // 中英人寿金喜年年
+            if (money < 1500 || money % 500 !== 0) {
+              toastText = '【' + name + '】最低保额1500元，且为500元整数倍！'
+            }
+            break
           case '369': // 恒大万年青终身重疾病保险
             if (money < 50000 || money % 1000 !== 0) {
               toastText = '【' + name + '】最低保额5万元，且为1千元整数倍！'
@@ -2022,7 +2183,7 @@
         let money = this.insurance.money
         if (this.isBaseMoney && !this.insurance.period_money && !this.fuBaseMoney) {
           toastText = this.insurance.period_money === 0 ? '超出费率表计算范围，无法投保' : '请计算主险年缴保费'
-        } else if (!this.isBaseMoney && !this.insurance.money && !this.fuBaseMoney) {
+        } else if (this.isBaseMoney && !this.insurance.money && !this.fuBaseMoney) {
           toastText = this.insurance.money === 0 ? '超出费率表计算范围，无法投保' : '请计算主险基本保额'
         }
         if (toastText) {
@@ -2031,6 +2192,26 @@
         }
 
         switch (safeid) {
+          case '379': // 国华盛世鑫悦
+            if (this.mainPayYear === 1 && periodMoney < 10000 && periodMoney % 10000 !== 0) {
+              toastText = '该主险趸交时，保费不能低于1万元，以万元为递增'
+            } else if (this.mainPayYear === 1 && periodMoney % 10000 !== 0) {
+              toastText = '该主险趸交时，保费不能低于1万元，以万元为递增'
+            } else if ([3, 5, 10].indexOf(this.insurance.pay_year) > -1 && periodMoney < 5000) {
+              toastText = '该主险3年、5年或10年时，保费不能低于5千元，以千元为递增'
+            } else if ([3, 5, 10].indexOf(this.insurance.pay_year) > -1 && periodMoney % 1000 !== 0) {
+              toastText = '该主险3年、5年或10年时，保费不能低于5千元，以千元为递增'
+            }
+            break
+          case '377': // 信泰千万人生
+            if (this.mainPayYear === 1 && periodMoney < 50000) {
+              toastText = '该主险趸交时，保费不能低于5万元'
+            } else if ([3, 5, 10].indexOf(this.insurance.pay_year) > -1 && periodMoney < 10000) {
+              toastText = '该主险3年、5年或10年时，保费不能低于1万元'
+            } else if (periodMoney % 1000 !== 0) {
+              toastText = '保费应为千元整数倍'
+            }
+            break
           case '360': // 恒大鑫福年
             if (money < 1000) {
               toastText = '该主险最低保额1千元！'
@@ -2398,6 +2579,11 @@
             return false
           }
         }
+        if (safeid === '377') {
+          if (!this.checkMainFee(safeid)) {
+            return false
+          }
+        }
         let data = {
           admin_id: this.admin_id,
           applicant: this.appl.name,
@@ -2416,7 +2602,7 @@
           need_packet: 0
         }
         // 添加特殊参数
-        let filterSafeid = ['74', '182', '290', '348', '172', '352', '360', '362']
+        let filterSafeid = ['74', '182', '290', '348', '172', '352', '360', '362', '377']
         if (filterSafeid.indexOf(safeid) > -1) {
           data = Object.assign(data, {
             assume_rate: '0',
@@ -2474,7 +2660,21 @@
         let money = this.insurance.money
 
         // 险种参数
-        if (safeid === '380') { // 乐安心的附加险乐相伴豁免B款
+        if (safeid === '379') {
+          // 国华盛世鑫悦
+          data.flag = this.flag[safeid]
+          data.base_money = 0
+        } else if (safeid === '378') {
+          // 恒大福享今生
+          data.level = 2 // 不知道为什么要传这个才能做计划书
+          data.flag = this.flag[safeid]
+        } else if (safeid === '377') { // 信泰千万人生
+          data.flag = 0
+        } else if (safeid === '370') { // 信泰附加投保人豁免保险费重大疾病保险
+          data.pay_year = py
+          data.safe_year = this.mainSafeYear === 999 ? 0 : this.mainSafeYear
+          data.base_money = periodMoney
+        } else if (safeid === '380') { // 乐安心的附加险乐相伴豁免B款
           data.pay_year = py
           data.safe_year = py
           data.year_fee = periodMoney
@@ -2714,7 +2914,7 @@
           } else {
             this.$toast.open('计算出错', 'error')
           }
-        })
+        }).catch(this.errorCb)
       },
       checkIns () {
         if (!this.checkMainForm()) {
