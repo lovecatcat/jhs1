@@ -28,7 +28,7 @@ export default new Vuex.Store({
   strict: debug,
   state: {
     insList: null, // 所有险种相关列表
-    admin_id: (adminId !== '$admin_id' && adminId) || $_GET['admin_id'] || '1846', // 用户ID
+    admin_id: (adminId !== '{$admin_id}' && adminId) || $_GET['admin_id'] || '1846', // 用户ID
     pl_id: $_GET['pl_id'] || '', // 计划书ID(子)
     parent_pl_id: $_GET['parent_pl_id'] || '', // 父级的ID
     safe_id: $_GET['safe_id'] || '',

@@ -36,7 +36,7 @@
                    type="date"
                    id="appdate"
                    v-model="birthday"
-                   @change="birthDayChanged" 
+                   @change="birthDayChanged"
                    :disabled="pl_id !== ''">
           </label>
         </app-input>

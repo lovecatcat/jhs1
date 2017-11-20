@@ -11,7 +11,7 @@
                  type="text"
                  @change="checkName(assu.name, '被保人')"
                  placeholder="请填写被保人姓名"
-                 v-model.lazy.trim="assu.name"
+                 v-model.trim="assu.name"
                  :disabled="pl_id !== '' && id === 1">
           <div slot="icon"
                class="am-list-clear"
@@ -21,8 +21,8 @@
           </div>
         </app-input>
         <app-input label="年龄">
-          <input slot="input" type="number" placeholder="请填写被保人年龄" v-model.number.lazy="assu.age"
-                 @change="ageChanged" 
+          <input slot="input" type="number" placeholder="请填写被保人年龄" v-model.number="assu.age"
+                 @change="ageChanged"
                  :disabled="pl_id !== '' && id === 1">
           <div slot="icon" class="am-list-clear" @click="assu.age = '' "
                v-show="assu.name != '' && id !== 1 || assu.name != '' && pl_id === ''">
