@@ -1489,12 +1489,17 @@
               }
               break
             case '369': // 恒大万年青
-              if (['293'].indexOf(index) > -1) {
-                if (this.insurance.money < 50000) {
-                  toastText = '主险保额小于5万元时不可附加该险种'
-                } else if (this.insurance.period_money < 3000) {
-                  toastText = '期交保费小于3千元时不可附加该险种'
-                }
+              if (index === '293' && this.insurance.money < 50000) {
+                toastText = '主险保额小于5万元时不可附加该险种'
+              } else if (index === '293' && this.insurance.period_money < 3000) {
+                toastText = '期交保费小于3千元时不可附加该险种'
+              } else if (index === '289' && this.mainPayYear === 30) {
+                toastText = '30年缴不可附加'
+              }
+              break
+            case '378': // 福享今生
+              if (index === '293' && this.insurance.period_money < 10000) {
+                toastText = '期交保费小于一万元时不可附加该险种'
               }
               break
             default:
@@ -2521,14 +2526,108 @@
               toastText = '该附加险缴费年限不能超过主险保障期间'
             } else if (!this.flag[1831]) {
               toastText = '请先选择保险期限'
-            } else if (this.flag[1831] > this.insurance.safe_year) {
+            } else if (this.flag[1831] < 1000 && this.flag[1831] > this.insurance.safe_year) {
               toastText = '该附加险保险期间不能超过主险保险期间'
+            } else if (this.flag[1831] === 5500 && (55 - assuAge > this.insurance.safe_year)) {
+              toastText = '该附加险保险期间不能超过主险保险期间'
+            } else if (this.flag[1831] === 6000 && (60 - assuAge > this.insurance.safe_year)) {
+              toastText = '该附加险保险期间不能超过主险保险期间'
+            } else if (this.flag[1831] === 6500 && (65 - assuAge > this.insurance.safe_year)) {
+              toastText = '该附加险保险期间不能超过主险保险期间'
+            } else if (this.flag[1831] === 7000 && (70 - assuAge > this.insurance.safe_year)) {
+              toastText = '该附加险保险期间不能超过主险保险期间'
+            } else if (this.flag[1831] === 7500 && (75 - assuAge > this.insurance.safe_year)) {
+              toastText = '该附加险保险期间不能超过主险保险期间'
+            } else if (this.flag[1831] === 5500 && assuAge > 50 && flag === 1) {
+              toastText = '该附加险保险期间为至55岁且趸交被保人年龄不能超过50岁'
+            } else if (this.flag[1831] === 5500 && assuAge > 45 && flag === 3) {
+              toastText = '该附加险保险期间为至55岁且3年交被保人年龄不能超过45岁'
+            } else if (this.flag[1831] === 5500 && assuAge > 45 && flag === 5) {
+              toastText = '该附加险保险期间为至55岁且5年交被保人年龄不能超过45岁'
+            } else if (this.flag[1831] === 5500 && assuAge > 40 && flag === 9) {
+              toastText = '该附加险保险期间为至55岁且9年交被保人年龄不能超过40岁'
+            } else if (this.flag[1831] === 5500 && assuAge > 40 && flag === 10) {
+              toastText = '该附加险保险期间为至55岁且10年交被保人年龄不能超过40岁'
+            } else if (this.flag[1831] === 5500 && assuAge > 35 && flag === 15) {
+              toastText = '该附加险保险期间为至55岁且15年交被保人年龄不能超过35岁'
+            } else if (this.flag[1831] === 5500 && assuAge > 30 && flag === 19) {
+              toastText = '该附加险保险期间为至55岁且19年交被保人年龄不能超过30岁'
+            } else if (this.flag[1831] === 5500 && assuAge > 30 && flag === 20) {
+              toastText = '该附加险保险期间为至55岁且20年交被保人年龄不能超过30岁'
+            } else if (this.flag[1831] === 6000 && assuAge > 55 && flag === 1) {
+              toastText = '该附加险保险期间为至60岁且趸交被保人年龄不能超过55岁'
+            } else if (this.flag[1831] === 6000 && assuAge > 50 && flag === 3) {
+              toastText = '该附加险保险期间为至60岁且3年交被保人年龄不能超过50岁'
+            } else if (this.flag[1831] === 6000 && assuAge > 50 && flag === 5) {
+              toastText = '该附加险保险期间为至60岁且5年交被保人年龄不能超过50岁'
+            } else if (this.flag[1831] === 6000 && assuAge > 45 && flag === 9) {
+              toastText = '该附加险保险期间为至60岁且9年交被保人年龄不能超过45岁'
+            } else if (this.flag[1831] === 6000 && assuAge > 45 && flag === 10) {
+              toastText = '该附加险保险期间为至60岁且10年交被保人年龄不能超过45岁'
+            } else if (this.flag[1831] === 6000 && assuAge > 40 && flag === 15) {
+              toastText = '该附加险保险期间为至60岁且15年交被保人年龄不能超过40岁'
+            } else if (this.flag[1831] === 6000 && assuAge > 35 && flag === 19) {
+              toastText = '该附加险保险期间为至60岁且19年交被保人年龄不能超过35岁'
+            } else if (this.flag[1831] === 6000 && assuAge > 35 && flag === 19) {
+              toastText = '该附加险保险期间为至60岁且19年交被保人年龄不能超过35岁'
+            } else if (this.flag[1831] === 6000 && assuAge > 35 && flag === 19) {
+              toastText = '该附加险保险期间为至60岁且19年交被保人年龄不能超过35岁'
+            } else if (this.flag[1831] === 6500 && assuAge > 60 && flag === 1) {
+              toastText = '该附加险保险期间为至65岁且趸交被保人年龄不能超过60岁'
+            } else if (this.flag[1831] === 6500 && assuAge > 55 && flag === 3) {
+              toastText = '该附加险保险期间为至65岁且3年交被保人年龄不能超过55岁'
+            } else if (this.flag[1831] === 6500 && assuAge > 55 && flag === 5) {
+              toastText = '该附加险保险期间为至65岁且5年交被保人年龄不能超过55岁'
+            } else if (this.flag[1831] === 6500 && assuAge > 50 && flag === 9) {
+              toastText = '该附加险保险期间为至65岁且9年交被保人年龄不能超过50岁'
+            } else if (this.flag[1831] === 6500 && assuAge > 50 && flag === 10) {
+              toastText = '该附加险保险期间为至65岁且10年交被保人年龄不能超过50岁'
+            } else if (this.flag[1831] === 6500 && assuAge > 45 && flag === 15) {
+              toastText = '该附加险保险期间为至65岁且15年交被保人年龄不能超过45岁'
+            } else if (this.flag[1831] === 6500 && assuAge > 40 && flag === 19) {
+              toastText = '该附加险保险期间为至65岁且19年交被保人年龄不能超过40岁'
+            } else if (this.flag[1831] === 6500 && assuAge > 40 && flag === 20) {
+              toastText = '该附加险保险期间为至65岁且20年交被保人年龄不能超过40岁'
+            } else if (this.flag[1831] === 6500 && assuAge > 40 && flag === 20) {
+              toastText = '该附加险保险期间为至65岁且20年交被保人年龄不能超过40岁'
+            } else if (this.flag[1831] === 7000 && assuAge > 65 && flag === 1) {
+              toastText = '该附加险保险期间为至70岁且趸交被保人年龄不能超过65岁'
+            } else if (this.flag[1831] === 7000 && assuAge > 60 && flag === 3) {
+              toastText = '该附加险保险期间为至70岁且3年交被保人年龄不能超过60岁'
+            } else if (this.flag[1831] === 7000 && assuAge > 60 && flag === 5) {
+              toastText = '该附加险保险期间为至70岁且5年交被保人年龄不能超过60岁'
+            } else if (this.flag[1831] === 7000 && assuAge > 55 && flag === 9) {
+              toastText = '该附加险保险期间为至70岁且9年交被保人年龄不能超过55岁'
+            } else if (this.flag[1831] === 7000 && assuAge > 55 && flag === 10) {
+              toastText = '该附加险保险期间为至70岁且10年交被保人年龄不能超过55岁'
+            } else if (this.flag[1831] === 7000 && assuAge > 50 && flag === 15) {
+              toastText = '该附加险保险期间为至70岁且15年交被保人年龄不能超过50岁'
+            } else if (this.flag[1831] === 7000 && assuAge > 45 && flag === 19) {
+              toastText = '该附加险保险期间为至70岁且19年交被保人年龄不能超过45岁'
+            } else if (this.flag[1831] === 7000 && assuAge > 45 && flag === 20) {
+              toastText = '该附加险保险期间为至70岁且19年交被保人年龄不能超过45岁'
+            } else if (this.flag[1831] === 7500 && assuAge > 65 && flag === 1) {
+              toastText = '该附加险保险期间为至75岁且趸交被保人年龄不能超过60岁'
+            } else if (this.flag[1831] === 7500 && assuAge > 65 && flag === 3) {
+              toastText = '该附加险保险期间为至75岁且3年交被保人年龄不能超过65岁'
+            } else if (this.flag[1831] === 7500 && assuAge > 65 && flag === 5) {
+              toastText = '该附加险保险期间为至75岁且5年交被保人年龄不能超过65岁'
+            } else if (this.flag[1831] === 7500 && assuAge > 60 && flag === 9) {
+              toastText = '该附加险保险期间为至75岁且9年交被保人年龄不能超过60岁'
+            } else if (this.flag[1831] === 7500 && assuAge > 60 && flag === 10) {
+              toastText = '该附加险保险期间为至75岁且10年交被保人年龄不能超过60岁'
+            } else if (this.flag[1831] === 7500 && assuAge > 55 && flag === 15) {
+              toastText = '该附加险保险期间为至75岁且15年交被保人年龄不能超过55岁'
+            } else if (this.flag[1831] === 7500 && assuAge > 50 && flag === 19) {
+              toastText = '该附加险保险期间为至75岁且19年交被保人年龄不能超过50岁'
+            } else if (this.flag[1831] === 7500 && assuAge > 50 && flag === 19) {
+              toastText = '该附加险保险期间为至75岁且19年交被保人年龄不能超过50岁'
             } else if (this.flag[1831] === 15 && assuAge > 60) {
-              toastText = '该附加险保险期间位15年被保人年龄不能超过60岁'
+              toastText = '该附加险保险期间为15年被保人年龄不能超过60岁'
             } else if (this.flag[1831] === 20 && assuAge > 55) {
-              toastText = '该附加险保险期间位20年被保人年龄不能超过55岁'
+              toastText = '该附加险保险期间为20年被保人年龄不能超过55岁'
             } else if (this.flag[1831] === 30 && assuAge > 45) {
-              toastText = '该附加险保险期间位30年被保人年龄不能超过45岁'
+              toastText = '该附加险保险期间为30年被保人年龄不能超过45岁'
             }
             break
           case '383': // 中英人寿附加额外给付重大疾病保险（B 款
@@ -2600,11 +2699,11 @@
             let extraMoney = flag > 50000 ? flag.toString().substr(1) : flag
             if (!flag) {
               toastText = '请先选择保险金额'
-            } else if (extraMoney > this.insurance.period_money * this.mainPayYear * 0.2 && this.insurance.safe_id === '290') {
-              // 主险--金财D
+            } else if (extraMoney > this.insurance.period_money * this.mainPayYear * 0.2 && ['290', '378'].indexOf(this.insurance.safe_id) > -1) {
+              // 主险--金财D,福享今生
               toastText = '该附加险保额不超主合同总保费（期交保费*缴费年限）*20%'
-            } else if (extraMoney > this.insurance.money * 0.2 && this.insurance.safe_id === '288') {
-              // 恒久健康
+            } else if (extraMoney > this.insurance.money * 0.2 && ['288', '369'].indexOf(this.insurance.safe_id) > -1) {
+              // 恒久健康，万年青
               toastText = '该附加险保额不能大于主险保额的20%'
             } else if (extraMoney > this.insurance.money * 50000 * 0.2 && this.insurance.safe_id === '292') {
               // 千万护航
@@ -2713,7 +2812,9 @@
             break
         }
         if (toastText) {
+          this.$delete(this.addonRes, safeid)
           this.$toast.open(toastText)
+          this.$forceUpdate()
           return false
         }
         return true
