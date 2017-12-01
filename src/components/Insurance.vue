@@ -511,7 +511,7 @@
         </div>
         <div class="am-list-item">
           <div class="am-list-content">保险金额</div>
-          <div class="am-ft-orange">{{insurance.money * 0.2}}</div>
+          <div class="am-ft-orange">{{insurance.money * 0.2 | moneyFilter}}</div>
         </div>
         <div class="am-list-item">
           <div class="am-list-content">年缴保费</div>
