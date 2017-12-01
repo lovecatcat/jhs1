@@ -84,7 +84,7 @@
                   <i class="am-icon-clear am-icon"></i>
                 </div>
               </app-input>
-              <template v-if="insurance.safe_id === '384'">
+              <template v-else-if="insurance.safe_id === '384'">
                 <app-select label="基本保额">
                   <select
                     v-model.number="insurance.money"
