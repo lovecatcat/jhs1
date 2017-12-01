@@ -531,7 +531,7 @@
         </div>
         <div class="am-list-item">
           <div class="am-list-content">保险金额</div>
-          <div class="am-ft-orange" v-if="addonRes[368]">{{insurance.period_money + addonRes[368].年缴保费}}</div>
+          <div class="am-ft-orange" v-if="addonRes[368]">{{Number(insurance.period_money) + Number(addonRes[368].年缴保费)}}</div>
           <div class="am-ft-orange" v-else>{{insurance.period_money}}</div>
         </div>
         <div class="am-list-item">
@@ -3117,6 +3117,8 @@
           } else {
             data.base_money = periodMoney
           }
+        } else if (safeid === '365') {
+          data.safe_year = this.mainSafeYear === 70 ? 7000 : 0
         } else if (safeid === '366') {
           //  复星乐健一生住院
           data.flag = this.fxljys366.shebao + this.fxljys366.zytc
