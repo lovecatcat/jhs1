@@ -65,7 +65,9 @@ Vue.filter('safeYearFilter', function (value) {
     return '终身'
   }
 })
-
+Vue.filter('moneyFilter', function (value) {
+  return value.toFixed(2)
+})
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

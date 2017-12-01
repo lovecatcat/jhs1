@@ -70,7 +70,7 @@
                 </select>
               </app-select>
               <app-input label="基本保额"
-                         v-if="insurance.safe_id !== '292'"
+                         v-if="insurance.safe_id !== '292' && insurance.safe_id !== '384'"
                          v-show="insurance.safe_id !== '309' &&
                           insurance.safe_id !== '280'">
                 <input slot="input"
@@ -84,6 +84,20 @@
                   <i class="am-icon-clear am-icon"></i>
                 </div>
               </app-input>
+              <template v-if="insurance.safe_id === '384'">
+                <app-select label="基本保额">
+                  <select
+                    v-model.number="insurance.money"
+                    @change="resetFee">
+                    <option disabled value="">请选择</option>
+                    <option value="50000">50000</option>
+                    <option value="100000">100000</option>
+                    <option value="150000">150000</option>
+                    <option value="250000">250000</option>
+                    <option value="500000">500000</option>
+                  </select>
+                </app-select>
+              </template>
               <template v-else>
                 <app-select label="投保份数">
                   <select
@@ -273,6 +287,53 @@
           </label>
         </div>
       </template>
+      <!-- 国华康运金生身故豁免保险费 -->
+      <template v-if="['388', '387', '386'].indexOf(item.safe_id) > -1 && addonRes[item.safe_id]">
+        <div class="am-list-item">
+          <div class="am-list-content">保障期间</div>
+          <div class="am-ft-black">1年</div>
+        </div>
+        <div class="am-list-item">
+          <div class="am-list-content">缴费期间</div>
+          <div class="am-ft-black">趸交</div>
+        </div>
+        <div class="am-list-item">
+          <div class="am-list-content">保险金额</div>
+          <div class="am-ft-orange" v-if="addonRes[385]">{{(Number(insurance.period_money) + Number(addonRes[385]['年缴保费']))*(mainPayYear-1) | moneyFilter}}</div>
+          <div class="am-ft-orange" v-else>{{insurance.period_money*(mainPayYear-1) | moneyFilter}}</div>
+        </div>
+        <div class="am-list-item">
+          <div class="am-list-content">年缴保费</div>
+          <div class="am-ft-orange">{{addonRes[item.safe_id]['年缴保费']}}</div>
+        </div>
+      </template>
+      <!-- 国华康运金生 身故豁免保险费 -->
+      <!-- 国华康运金生 轻症疾病豁免保险费 -->
+
+      <!-- 国华康运金生 轻症疾病豁免保险费 -->
+      <!-- 国华康运金生豁免保险费重大疾病保险（2017） -->
+
+      <!-- 国华康运金生豁免保险费重大疾病保险（2017） -->
+      <!-- 国华康运金生附加养老年金 -->
+      <template v-if="item.safe_id === '385' && addonRes[item.safe_id]">
+        <div class="am-list-item">
+          <div class="am-list-content">保障期间</div>
+          <div class="am-ft-black">至85周岁</div>
+        </div>
+        <div class="am-list-item">
+          <div class="am-list-content">缴费期间</div>
+          <div class="am-ft-black">{{mainPayYear}}年交</div>
+        </div>
+        <div class="am-list-item">
+          <div class="am-list-content">保险金额</div>
+          <div class="am-ft-orange">{{insurance.period_money*mainPayYear | moneyFilter}}</div>
+        </div>
+        <div class="am-list-item">
+          <div class="am-list-content">年缴保费</div>
+          <div class="am-ft-orange">{{addonRes[item.safe_id]['年缴保费']}} </div>
+        </div>
+      </template>
+      <!-- 国华康运金生附加养老年金 -->
       <!--  附加交通意外伤害保险 -->
       <template v-if="item.safe_id === '183' && addonsSelected[item.safe_id]">
         <app-input label="保险金额">
@@ -611,7 +672,7 @@
         <template v-if="addonRes[item.safe_id]">
           <div class="am-list-item">
             <div class="am-list-content">保障期间</div>
-            <div class="am-ft-black">终身</div>
+            <div class="am-ft-black">1年</div>
           </div>
           <div class="am-list-item">
             <div class="am-list-content">缴费期间</div>
@@ -671,7 +732,7 @@
         <template v-if="addonRes[item.safe_id]">
           <div class="am-list-item">
             <div class="am-list-content">保障期间</div>
-            <div class="am-ft-black">终身</div>
+            <div class="am-ft-black">1年</div>
           </div>
           <div class="am-list-item">
             <div class="am-list-content">缴费期间</div>
@@ -1105,10 +1166,10 @@
   const calMoneyIns = ['74', '182', '290', '352', '360', '377', '378', '379', '381'] // 算保费的主险
   const fuMoneyIns = ['318'] // 通过附加算主险
   // 附加险上线产品
-  const addonFilter = ['8', '11', '86', '94', '121', '131', '146', '147', '148', '175', '177', '196', '235', '236', '237', '273', '281', '284', '285', '289', '291', '293', '294', '295', '348', '380', '370', '383', '183']
+  const addonFilter = ['8', '11', '86', '94', '121', '131', '146', '147', '148', '175', '177', '196', '235', '236', '237', '273', '281', '284', '285', '289', '291', '293', '294', '295', '348', '380', '370', '383', '183', '385', '386', '387', '388']
   const mustSelected = ['291', '177', '11', '333', '332', '349', '354'] // 必须附加的附加险
   const noNeedCal = ['291', '11', '349'] // 不需要计算的险种
-  const directNeedCal = ['11', '94', '121', '131', '177', '196', '284', '281', '285', '289', '333', '367', '368', '380', '370'] // 直接 计算的险种
+  const directNeedCal = ['11', '94', '121', '131', '177', '196', '284', '281', '285', '289', '333', '367', '368', '380', '370', '385', '386', '387', '388'] // 直接 计算的险种
 
   export default {
     name: 'insurance',
@@ -1422,7 +1483,6 @@
       },
       // 筛选主险年限
       payYearFilter (index) {
-        console.log(111)
         let mainSafeYear = this.insurance.safe_year
         if (this.insurance.safe_id === '382') {
           if (mainSafeYear === 10 && ['10', '15', '20'].indexOf(index) > -1) {
@@ -1506,6 +1566,26 @@
               break
           }
           switch (index) {
+            case '387': // 国华康运金生附加豁免轻症疾病豁免保险费
+            case '388': // 国华康运金生附加豁免身故豁免保险费
+              if (!this.addonsSelected[386]) {
+                toastText = '请先完成豁免保险费重大疾病保险（2017）'
+              }
+              break
+            case '386': // 国华康运金生附加豁免保险费重大疾病保险（2017）
+              if (this.samePerson) {
+                toastText = '投被保人为同人时不可附加该险种'
+              } else if (this.mainPayYear === 1) {
+                toastText = '主险趸交不可附加该险种'
+              } else if (this.appl.age < 18 || this.appl.age > 60) {
+                toastText = '投保人年龄小于18周岁或大于60周岁不可附加'
+              }
+              break
+            case '385': // 国华康运金生附加养老年金
+              if (this.mainPayYear === 30) {
+                toastText = '主险30年交不可附加该险种'
+              }
+              break
             case '370': // 信泰附加投保人豁免保险费重大疾病保
               if (this.samePerson) {
                 toastText = '投被保人为同人时不可附加该险种'
@@ -1596,6 +1676,21 @@
             this.$toast.open(toastText)
             this.addonsSelected[index] = true
             this.calMoney(false, index)// 试算附加险
+          } else if (index === '385') {
+            this.flag[index] = ''
+            this.addonInsData = {}
+            this.addonRes = {}
+            this.addonsSelected = {}
+          } else if (index === '386') {
+            this.flag[index] = ''
+            this.$delete(this.addonInsData, index)
+            this.$delete(this.addonRes, index)
+            this.$delete(this.addonInsData, 387)
+            this.$delete(this.addonRes, 387)
+            this.addonsSelected[387] = false
+            this.$delete(this.addonInsData, 388)
+            this.$delete(this.addonRes, 388)
+            this.addonsSelected[388] = false
           } else {
 //            取消时 清除缓存的提交数据
             this.flag[index] = ''
@@ -1769,6 +1864,19 @@
 
         let toastText = null
         switch (safeid) {
+          case '384': // 国华人寿康运金生
+            if (mainPayYear === 5 && assuAge > 60) {
+              toastText = '5年交被保人年龄不能大于60周岁'
+            } else if (mainPayYear === 10 && assuAge > 55) {
+              toastText = '10年交时被保人为年龄不能大于55周岁'
+            } else if (mainPayYear === 15 && assuAge > 50) {
+              toastText = '15年交被保人为年龄不能大于50周岁'
+            } else if (mainPayYear === 20 && assuAge > 45) {
+              toastText = '20年交被保人为年龄不能大于45周岁'
+            } else if (mainPayYear === 30 && assuAge > 35) {
+              toastText = '30年交被保人为年龄不能大于35周岁'
+            }
+            break
           case '382': // 中英人寿金喜年年
             if (assuAge > 65) {
               toastText = '被保人年龄不能大于65周岁'
@@ -2568,10 +2676,8 @@
               toastText = '该附加险保险期间为至60岁且15年交被保人年龄不能超过40岁'
             } else if (this.flag[1831] === 6000 && assuAge > 35 && flag === 19) {
               toastText = '该附加险保险期间为至60岁且19年交被保人年龄不能超过35岁'
-            } else if (this.flag[1831] === 6000 && assuAge > 35 && flag === 19) {
-              toastText = '该附加险保险期间为至60岁且19年交被保人年龄不能超过35岁'
-            } else if (this.flag[1831] === 6000 && assuAge > 35 && flag === 19) {
-              toastText = '该附加险保险期间为至60岁且19年交被保人年龄不能超过35岁'
+            } else if (this.flag[1831] === 6000 && assuAge > 35 && flag === 20) {
+              toastText = '该附加险保险期间为至60岁且20年交被保人年龄不能超过35岁'
             } else if (this.flag[1831] === 6500 && assuAge > 60 && flag === 1) {
               toastText = '该附加险保险期间为至65岁且趸交被保人年龄不能超过60岁'
             } else if (this.flag[1831] === 6500 && assuAge > 55 && flag === 3) {
@@ -2620,8 +2726,8 @@
               toastText = '该附加险保险期间为至75岁且15年交被保人年龄不能超过55岁'
             } else if (this.flag[1831] === 7500 && assuAge > 50 && flag === 19) {
               toastText = '该附加险保险期间为至75岁且19年交被保人年龄不能超过50岁'
-            } else if (this.flag[1831] === 7500 && assuAge > 50 && flag === 19) {
-              toastText = '该附加险保险期间为至75岁且19年交被保人年龄不能超过50岁'
+            } else if (this.flag[1831] === 7500 && assuAge > 50 && flag === 20) {
+              toastText = '该附加险保险期间为至75岁且20年交被保人年龄不能超过50岁'
             } else if (this.flag[1831] === 15 && assuAge > 60) {
               toastText = '该附加险保险期间为15年被保人年龄不能超过60岁'
             } else if (this.flag[1831] === 20 && assuAge > 55) {
@@ -2645,6 +2751,22 @@
               toastText = '请先选择缴费年限'
             } else if (flag > this.insurance.safe_year) {
               toastText = '该附加险缴费年限不能超过主险保障期间'
+            } else if (this.insurance.safe_year === 30 && assuAge > 50) {
+              toastText = '主险保险期间为30年被保人年龄不能超过50岁'
+            } else if (this.insurance.safe_year === 20 && assuAge > 60) {
+              toastText = '主险保险期间为20年被保人年龄不能超过60岁'
+            } else if (this.insurance.safe_year === 20 && assuAge > 55 && flag === 15) {
+              toastText = '主险保险期间为20年且附加险缴费年限为15年交被保人年龄不能超过55岁'
+            } else if (this.insurance.safe_year === 15 && assuAge > 65) {
+              toastText = '主险保险期间为15年被保人年龄不能超过65岁'
+            } else if (this.insurance.safe_year === 15 && assuAge > 60 && flag === 10) {
+              toastText = '主险保险期间为15年且附加险缴费年限为10年交被保人年龄不能超过60岁'
+            } else if (this.insurance.safe_year === 15 && assuAge > 55 && flag === 15) {
+              toastText = '主险保险期间为15年且附加险缴费年限为15年交被保人年龄不能超过55岁'
+            } else if (this.insurance.safe_year === 10 && assuAge > 65) {
+              toastText = '主险保险期间为10年被保人年龄不能超过65岁'
+            } else if (this.insurance.safe_year === 10 && assuAge > 60 && flag === 10) {
+              toastText = '主险保险期间为10年且附加险缴费年限为10年交被保人年龄不能超过60岁'
             }
             break
           case '374': // 复星乐健一生门诊保险（主险）
@@ -2936,7 +3058,23 @@
         let money = this.insurance.money
 
         // 险种参数
-        if (safeid === '183') { // 中英人寿附加交通意外伤害保险
+        if (safeid === '386' || safeid === '387' || safeid === '388') { // 国华康运金生附加豁免保险费重大疾病保险（2017）
+          data.pay_year = 1
+          data.safe_year = 1
+          if (this.addonRes[385]) {
+            data.base_money = (Number(periodMoney) + Number(this.addonRes[385]['年缴保费'])) * (this.mainPayYear - 1)
+          } else {
+            data.base_money = periodMoney * (this.mainPayYear - 1)
+          }
+          data.flag = 0
+        } else if (safeid === '385') { // 国华康运金生附加养老年金
+          data.pay_year = this.mainPayYear
+          data.safe_year = '8500'
+          data.base_money = periodMoney * this.mainPayYear
+          data.flag = 0
+        } else if (safeid === '384') { // 国华人寿康运金生
+          data.flag = money / 10000
+        } else if (safeid === '183') { // 中英人寿附加交通意外伤害保险
           data.pay_year = this.flag[safeid]
           data.safe_year = this.flag[1831]
           data.base_money = this.cache.base_money183
@@ -3169,7 +3307,7 @@
             if (isMain) {
               let data = ret.data.data[safeid].main.list[1]
               if (this.isBaseMoney && !this.fuBaseMoney) {
-                this.insurance.period_money = data['年缴保费']
+                this.insurance.period_money = data['年缴保费'].toFixed(2)
                 if (safeid === '366') {
                   this.insurance.period_money = data['住院总保费']
                 }

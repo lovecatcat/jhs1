@@ -27,7 +27,7 @@
       </div>
 
       <applicant ref="appl" :edit="applData"></applicant>
-      
+
       <div class="plan" v-show="plan.id === activePlan" v-for="plan,index in plans" :key="plan.id">
         <assured
           :ref="'assu_' + plan.id"
@@ -41,7 +41,7 @@
           :key="i"
           :id="plan.id"
           :insIndex="i"/>
-        
+
         <div class="am-button-group" v-show="saveStatus[plan.id] !== true">
           <button type="button" class="am-button add" @click="addIns">
             <i class="iconfont icon-tianjia"></i> 添加险种
@@ -157,12 +157,12 @@
           for (let i = 0; i < crtIns.length; i++) {
             let item = crtIns[i]
             if (!item.showAll) {
-              count += item.insurance.period_money
+              count += Number(item.insurance.period_money)
               for (let j in item.addonsSelected) {
                 if (item.addonsSelected[j] && item.addonRes[j]) {
                   let pm = item.addonRes[j]['年缴保费'] || item.addonRes[j]['年缴保费(元)'] || item.addonRes[j]['门诊总保费']
                   if (pm) {
-                    count += pm
+                    count += Number(pm)
                   }
                 }
               }
