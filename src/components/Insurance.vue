@@ -3309,9 +3309,10 @@
             if (isMain) {
               let data = ret.data.data[safeid].main.list[1]
               if (this.isBaseMoney && !this.fuBaseMoney) {
-                this.insurance.period_money = data['年缴保费'].toFixed(2)
                 if (safeid === '366') {
                   this.insurance.period_money = data['住院总保费']
+                } else {
+                  this.insurance.period_money = data['年缴保费'].toFixed(0)
                 }
               } else if (this.isBaseMoney && this.fuBaseMoney) {
                 this.insurance.period_money = data['年缴保费']
