@@ -503,7 +503,7 @@
       <template v-if="(item.safe_id==='368') && addonRes[item.safe_id]">
         <div class="am-list-item">
           <div class="am-list-content">保障期间</div>
-          <div class="am-ft-black">{{mainSafeYear === 999 ? '终身' : mainSafeYear+'年'}}</div>
+          <div class="am-ft-black">{{mainSafeYear === 999 ? '终身' : '至'+mainSafeYear+'周岁'}}</div>
         </div>
         <div class="am-list-item">
           <div class="am-list-content">缴费期间</div>
@@ -523,7 +523,7 @@
       <template v-if="(item.safe_id==='367') && addonRes[item.safe_id]">
         <div class="am-list-item">
           <div class="am-list-content">保障期间</div>
-          <div class="am-ft-black">{{mainPayYear - 1}}</div>
+          <div class="am-ft-black">{{mainSafeYear === 70 ? '至70周岁' : '终身'}}</div>
         </div>
         <div class="am-list-item">
           <div class="am-list-content">缴费期间</div>
@@ -2573,6 +2573,8 @@
               toastText = '15年交被保人年龄不能大于45周岁'
             } else if (mainPayYear === 20 && assuAge > 40) {
               toastText = '20年交被保人年龄不能大于40周岁'
+            } else if (mainPayYear === 30 && assuAge > 35) {
+              toastText = '30年交被保人年龄不能大于35周岁'
             }
             break
           case '367': // 附加康乐一生投保人豁免保费重大疾病保险
@@ -3113,7 +3115,7 @@
           data.pay_year = py
           data.safe_year = this.mainSafeYear === 999 ? 0 : this.mainSafeYear
           if (this.addonRes[368]) {
-            data.base_money = periodMoney + this.addonRes[368].年缴保费
+            data.base_money = Number(periodMoney) + Number(this.addonRes[368].年缴保费)
           } else {
             data.base_money = periodMoney
           }
