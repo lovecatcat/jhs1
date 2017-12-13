@@ -287,6 +287,30 @@
           </label>
         </div>
       </template>
+      <!-- 金掌柜年金保险 -->
+      <template v-if="item.safe_id==='398' && addonsSelected[item.safe_id]">
+        <div class="am-list-item">
+          <div class="am-list-content">保障期间</div>
+          <div class="am-ft-black">终身</div>
+        </div>
+        <div class="am-list-item">
+          <div class="am-list-content">缴费期间</div>
+          <div class="am-ft-black">趸交</div>
+        </div>
+        <app-input label="年缴保费">
+          <input slot="input"
+                 v-model.number="cache.derate_money398"
+                 type="number"
+                 placeholder="基本保险金额（元）"
+                 @change="addonsSelected[item.safe_id] = true, flagChanged(item.safe_id)">
+          <div slot="icon" v-show="cache.derate_money398 !== ''" class="am-list-clear"><i
+            class="am-icon-clear am-icon" @click="cache.derate_money398 = ''"></i></div>
+        </app-input>
+        <div class="am-notice" role="alert">
+          <div class="am-notice-content">年缴保费为1000元整数倍，可为0</div>
+        </div>
+      </template>
+      <!-- 金掌柜年金保险 -->
       <!-- 国华康运金生身故豁免保险费 -->
       <template v-if="['388', '387', '386'].indexOf(item.safe_id) > -1 && addonRes[item.safe_id]">
         <div class="am-list-item">
@@ -848,7 +872,7 @@
       <template v-if="item.safe_id === '281' && addonRes[item.safe_id]">
         <div class="am-list-item">
           <div class="am-list-content">保障期间</div>
-          <div class="am-ft-black">{{mainPayYear}}年</div>
+          <div class="am-ft-black">{{mainSafeYear}}年</div>
         </div>
         <div class="am-list-item">
           <div class="am-list-content">缴费期间</div>
@@ -856,7 +880,10 @@
         </div>
         <div class="am-list-item">
           <div class="am-list-content">保险金额</div>
-          <div class="am-ft-orange">{{insurance.period_money}}</div>
+          <div class="am-ft-orange" v-if="addonRes[183]&&addonRes[383]">{{insurance.period_money + addonRes[183].年缴保费+ addonRes[383].年缴保费}}</div>
+          <div class="am-ft-orange" v-else-if="addonRes[183]">{{insurance.period_money + addonRes[183].年缴保费}}</div>
+          <div class="am-ft-orange" v-else-if="addonRes[383]">{{insurance.period_money + addonRes[383].年缴保费}}</div>
+          <div class="am-ft-orange" v-else>{{insurance.period_money}}</div>
         </div>
         <div class="am-list-item">
           <div class="am-list-content">年缴保费</div>
@@ -1168,7 +1195,7 @@
   // 附加险上线产品
   const addonFilter = ['8', '11', '86', '94', '121', '131', '146', '147', '148', '175', '177', '196', '235', '236', '237', '273', '281', '284', '285', '289', '291', '293', '294', '295', '348', '380', '370', '383', '183', '385', '386', '387', '388']
   const mustSelected = ['291', '177', '11', '333', '332', '349', '354'] // 必须附加的附加险
-  const noNeedCal = ['291', '11', '349'] // 不需要计算的险种
+  const noNeedCal = ['291', '11', '349', '398'] // 不需要计算的险种
   const directNeedCal = ['11', '94', '121', '131', '177', '196', '284', '281', '285', '289', '333', '367', '368', '380', '370', '385', '386', '387', '388'] // 直接 计算的险种
 
   export default {
@@ -1209,7 +1236,8 @@
           pay_money332: '',
           pay_money333: '',
           base_money383: '',
-          base_money183: ''
+          base_money183: '',
+          base_money398: ''
         },
         mainInsData: {}, // 主险提交信息
         addonInsData: {}, // 附加险提交信息
@@ -1607,7 +1635,17 @@
                 toastText = '主险趸交不可附加该险种'
               }
               break
-            case '281':
+            case '183': //  附加交通意外伤害保险
+              this.addonsSelected[281] = false
+              this.addonRes[281] = ''
+              this.$forceUpdate()
+              break
+            case '383': //   附加额外给付重大疾病保险（B款）
+              this.addonsSelected[281] = false
+              this.addonRes[281] = ''
+              this.$forceUpdate()
+              break
+            case '281': //  附加投保人保费豁免重大疾病保险(和183，383有关）
               if (this.samePerson) {
                 toastText = '投被保人为同人时不可附加该险种'
               } else if (this.mainPayYear === 1) {
@@ -1691,6 +1729,12 @@
             this.$delete(this.addonInsData, 388)
             this.$delete(this.addonRes, 388)
             this.addonsSelected[388] = false
+          } else if (index === '183' || index === '383') {
+            this.$delete(this.addonInsData, index)
+            this.$delete(this.addonRes, index)
+            this.$delete(this.addonInsData, 281)
+            this.$delete(this.addonRes, 281)
+            this.addonsSelected[281] = false
           } else {
 //            取消时 清除缓存的提交数据
             this.flag[index] = ''
@@ -1736,6 +1780,7 @@
         this.cache.derate_money291 = ''
         this.cache.pay_money332 = ''
         this.cache.pay_money333 = ''
+        this.cache.derate_money398 = ''
         if (this.Addons) {
           for (let i in this.Addons[safeid]) {
             const j = this.Addons[safeid][i].safe_id
@@ -2839,6 +2884,16 @@
               toastText = '请先选择保险金额'
             }
             break
+          case '398': // 信泰千万人生金掌柜
+            if (toastText) break
+            if (this.cache.derate_money398 === '') {
+              toastText = '年缴保费不能为空'
+            } else if (this.cache.derate_money398 !== 0 && this.cache.derate_money398 % 1000 !== 0) {
+              toastText = '年缴保费为1000元整数倍，可为0'
+            } else if (this.cache.derate_money398 > this.insurance.period_money * this.mainPayYear) {
+              toastText = '该附加险保费不能超过主险总保费'
+            }
+            break
           case '291': // 金管家D款
             if (toastText) break
             if (this.cache.derate_money291 === '') {
@@ -3060,7 +3115,12 @@
         let money = this.insurance.money
 
         // 险种参数
-        if (safeid === '386' || safeid === '387' || safeid === '388') { // 国华康运金生附加豁免保险费重大疾病保险（2017）
+        if (safeid === '398') { // 附加金掌柜年金保险
+          data.pay_year = 1
+          data.safe_year = 1
+          data.derate_money = this.cache.derate_money398
+          data.flag = this.cache.derate_money398
+        } else if (safeid === '386' || safeid === '387' || safeid === '388') { // 国华康运金生附加豁免保险费重大疾病保险（2017）
           data.pay_year = 1
           data.safe_year = 1
           if (this.addonRes[385]) {
@@ -3222,7 +3282,15 @@
         } else if (safeid === '281') {
           data.pay_year = this.mainPayYear
           data.safe_year = this.mainPayYear
-          data.base_money = periodMoney
+          if (this.addonRes[183] && this.addonRes[383]) {
+            data.base_money = periodMoney + this.addonRes[183]['年缴保费'] + this.addonRes[383]['年缴保费']
+          } else if (this.addonRes[183]) {
+            data.base_money = periodMoney + this.addonRes[183]['年缴保费']
+          } else if (this.addonRes[383]) {
+            data.base_money = periodMoney + this.addonRes[383]['年缴保费']
+          } else {
+            data.base_money = periodMoney
+          }
         } else if (safeid === '205') {
           data.flag = this.flag[safeid]
           data.level = 0
@@ -3314,7 +3382,7 @@
                 if (safeid === '366') {
                   this.insurance.period_money = data['住院总保费']
                 } else {
-                  this.insurance.period_money = data['年缴保费'].toFixed(0)
+                  this.insurance.period_money = Number(data['年缴保费'].toFixed(0))
                 }
               } else if (this.isBaseMoney && this.fuBaseMoney) {
                 this.insurance.period_money = data['年缴保费']
