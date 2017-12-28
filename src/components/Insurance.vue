@@ -3008,6 +3008,8 @@
             if (toastText) break
             if (this.cache.derate_money398 === '') {
               toastText = '年缴保费不能为空'
+            } else if (this.cache.derate_money398 === 0) {
+              toastText = '年缴保费不能为0'
             } else if (this.cache.derate_money398 % 1000 !== 0) {
               toastText = '年缴保费为1000元整数倍'
             }
