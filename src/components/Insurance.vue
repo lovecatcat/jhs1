@@ -307,7 +307,7 @@
             class="am-icon-clear am-icon" @click="cache.derate_money398 = ''"></i></div>
         </app-input>
         <div class="am-notice" role="alert">
-          <div class="am-notice-content">年缴保费为1000元整数倍，可为0</div>
+          <div class="am-notice-content">年缴保费为1000元整数倍</div>
         </div>
       </template>
       <!-- 金掌柜年金保险 -->
@@ -1909,6 +1909,68 @@
 
         let toastText = null
         switch (safeid) {
+          case '402': // 优爱宝终身
+            if (mainPayYear === 20 && assuAge > 55) {
+              toastText = '20年交被保人不能超过55周岁'
+            } else if (mainPayYear === 30 && assuAge > 45) {
+              toastText = '30年交被保人不能超过45周岁'
+            } else if (mainPayYear === 10 && assuAge > 40) {
+              toastText = '交至100周岁被保人不能超过40周岁'
+            }
+            break
+          case '400': // 优护宝定期
+            if (mainSafeYear === 60 && assuAge > 50) {
+              toastText = '保至60周岁被保人不能超过50周岁'
+            } else if (mainSafeYear === 65 && assuAge > 55) {
+              toastText = '保至65周岁被保人不能超过55周岁'
+            } else if (mainSafeYear === 70 && assuAge > 60) {
+              toastText = '保至70周岁被保人不能超过60周岁'
+            } else if (mainSafeYear === 75 && assuAge > 65) {
+              toastText = '保至75周岁被保人不能超过65周岁'
+            } else if (mainSafeYear === 80 && assuAge > 65) {
+              toastText = '保至80周岁被保人不能超过65周岁'
+            } else if (mainSafeYear === 85 && assuAge > 65) {
+              toastText = '保至85周岁被保人不能超过65周岁'
+            } else if (mainSafeYear === 60 && assuAge > 40 && mainPayYear === 20) {
+              toastText = '20年交保至60周岁被保人不能超过40周岁'
+            } else if (mainSafeYear === 65 && assuAge > 45 && mainPayYear === 20) {
+              toastText = '20年交保至65周岁被保人不能超过45周岁'
+            } else if (mainSafeYear === 70 && assuAge > 50 && mainPayYear === 20) {
+              toastText = '20年交保至70周岁被保人不能超过50周岁'
+            } else if (mainSafeYear === 75 && assuAge > 55 && mainPayYear === 20) {
+              toastText = '20年交保至6075周岁被保人不能超过55周岁'
+            } else if (mainSafeYear === 80 && assuAge > 60 && mainPayYear === 20) {
+              toastText = '20年交保至80周岁被保人不能超过60周岁'
+            }
+            break
+          case '399': // 横琴优爱宝定期
+            if (mainSafeYear === 20 && assuAge > 50) {
+              toastText = '保20年被保人不能超过50周岁'
+            } else if (mainSafeYear === 30 && assuAge > 40) {
+              toastText = '保30年被保人不能超过40周岁'
+            } else if (mainSafeYear === 60 && assuAge > 50) {
+              toastText = '保至60周岁被保人不能超过50周岁'
+            } else if (mainSafeYear === 60 && mainPayYear === 20 && assuAge > 40) {
+              toastText = '20年交保至60周岁被保人不能超过40周岁'
+            } else if (mainSafeYear === 65 && assuAge > 55) {
+              toastText = '保至65周岁被保人不能超过55周岁'
+            } else if (mainSafeYear === 65 && mainPayYear === 20 && assuAge > 45) {
+              toastText = '20年交保至65周岁被保人不能超过45周岁'
+            } else if (mainSafeYear === 70 && mainPayYear === 20 && assuAge > 50) {
+              toastText = '20年交保至70周岁被保人不能超过50周岁'
+            }
+            break
+          case '397': // 横琴优康保
+            if ([1, 3, 5, 10].indexOf(mainPayYear) > -1 && assuAge > 60) {
+              toastText = '被保险人年龄不能大于60周岁'
+            } else if (mainPayYear === 15 && assuAge > 55) {
+              toastText = '交费期间为15年被保险人年龄不能大于55周岁'
+            } else if (mainPayYear === 20 && assuAge > 50) {
+              toastText = '交费期间为20年被保险人年龄不能大于50周岁'
+            } else if (mainPayYear === 30 && assuAge > 40) {
+              toastText = '交费期间为30年被保险人年龄不能大于40周岁'
+            }
+            break
           case '384': // 国华人寿康运金生
             if (mainPayYear === 5 && assuAge > 60) {
               toastText = '5年交被保人年龄不能大于60周岁'
@@ -2287,6 +2349,64 @@
         let toastText = null
 
         switch (safeid) {
+          case '402': // 优爱宝终身
+            if (assuAge < 18 && money < 50000) {
+              toastText = '未成年人最低保额5万元'
+            } else if (assuAge >= 18 && money < 100000) {
+              toastText = '成年人最低保额10万元'
+            } else if (money % 10000 !== 0) {
+              toastText = '保额应为1万元的整数倍'
+            } else if (assuAge <= 9 && money > 200000) {
+              toastText = '0至9周岁最高保额20万元'
+            } else if (assuAge >= 10 && assuAge <= 17 && money > 500000) {
+              toastText = '10至17周岁最高保额50万元'
+            } else if (assuAge >= 18 && assuAge <= 45 && money > 1000000) {
+              toastText = '18至45周岁最高保额100万元'
+            } else if (assuAge >= 46 && assuAge <= 55 && money > 500000) {
+              toastText = '46至55周岁最高保额50万元'
+            } else if (assuAge >= 56 && money > 300000) {
+              toastText = '56至65周岁最高保额30万元'
+            }
+            break
+          case '400': // 优护宝定期
+            if (money < 300000) {
+              toastText = '最低保额为30万元'
+            } else if (money % 10000 !== 0) {
+              toastText = '保额应为1万元的整数倍'
+            } else if (assuAge >= 18 && assuAge <= 40 && money > 1500000) {
+              toastText = '18至40周岁最高保额150万元'
+            } else if (assuAge >= 41 && assuAge <= 50 && money > 100000) {
+              toastText = '41至50周岁最高保额100万元'
+            } else if (assuAge >= 51 && money > 500000) {
+              toastText = '56至65周岁最高保额50万元'
+            }
+            break
+          case '399': // 横琴优爱宝定期
+            if (money < 300000) {
+              toastText = '最低保额30万元'
+            } else if (money % 10000 !== 0) {
+              toastText = '保额应为1万元的整数倍'
+            } else if (assuAge >= 18 && assuAge <= 40 && money > 1500000) {
+              toastText = '18至40周岁最高保额150万元'
+            } else if (assuAge >= 41 && assuAge <= 50 && money > 1000000) {
+              toastText = '41至50周岁最高保额150万元'
+            } else if (assuAge >= 51 && money > 500000) {
+              toastText = '至40周岁最高保额150万元'
+            }
+            break
+          case '397': // 横琴优康保
+            if (money < 50000 || money % 10000 !== 0) {
+              toastText = '最低保额为5万元，且为一万元整数倍！'
+            } else if (assuAge < 41 && money > 500000) {
+              toastText = '0-40岁投保限额为50万元'
+            } else if (assuAge > 40 && assuAge < 46 && money > 200000) {
+              toastText = '41-45岁投保限额为20万元'
+            } else if (assuAge > 45 && assuAge < 51 && money > 200000) {
+              toastText = '46-50岁投保限额为15万元'
+            } else if (assuAge > 50 && assuAge < 56 && money > 200000) {
+              toastText = '51-55岁投保限额为5万元'
+            }
+            break
           case '382': // 中英人寿金喜年年
             if (money < 1500 || money % 500 !== 0) {
               toastText = '【' + name + '】最低保额1500元，且为500元整数倍！'
@@ -2888,10 +3008,8 @@
             if (toastText) break
             if (this.cache.derate_money398 === '') {
               toastText = '年缴保费不能为空'
-            } else if (this.cache.derate_money398 !== 0 && this.cache.derate_money398 % 1000 !== 0) {
-              toastText = '年缴保费为1000元整数倍，可为0'
-            } else if (this.cache.derate_money398 > this.insurance.period_money * this.mainPayYear) {
-              toastText = '该附加险保费不能超过主险总保费'
+            } else if (this.cache.derate_money398 % 1000 !== 0) {
+              toastText = '年缴保费为1000元整数倍'
             }
             break
           case '291': // 金管家D款
@@ -3115,11 +3233,18 @@
         let money = this.insurance.money
 
         // 险种参数
-        if (safeid === '398') { // 附加金掌柜年金保险
+        if (safeid === '400' || safeid === '399') { // 优护宝定期，优爱宝定期
+          if (this.mainSafeYear > 50) {
+            data.safe_year = this.mainSafeYear + '00'
+          } else {
+            data.safe_year = this.mainSafeYear
+          }
+        } else if (safeid === '398') { // 附加金掌柜年金保险
           data.pay_year = 1
           data.safe_year = 1
           data.derate_money = this.cache.derate_money398
           data.flag = this.cache.derate_money398
+          this.addonRes[safeid] = {'年缴保费': this.cache.derate_money398}
         } else if (safeid === '386' || safeid === '387' || safeid === '388') { // 国华康运金生附加豁免保险费重大疾病保险（2017）
           data.pay_year = 1
           data.safe_year = 1
