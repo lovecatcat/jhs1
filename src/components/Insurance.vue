@@ -45,7 +45,8 @@
                     @change="resetFee">
               <option disabled value=''>请选择</option>
               <option v-for="(item,index) in mainPyAttr" :value="item.pay_year" :key="index" v-if="payYearFilter(item.pay_year)">
-                {{item.pay_year === '1' ? '趸交' : item.pay_year + '年交'}}
+                <!--{{item.pay_year === '1' ? '趸交' : item.pay_year + '年交'}}-->
+                {{item.pay_year | payYearFilter}}
               </option>
             </select>
           </app-select>
@@ -287,6 +288,22 @@
           </label>
         </div>
       </template>
+      <!-- 恒大传家宝 -->
+      <template v-if="item.safe_id==='404' && addonsSelected[item.safe_id]">
+        <div class="am-list-item">
+          <div class="am-list-content">保障期间</div>
+          <div class="am-ft-black">终身</div>
+        </div>
+        <div class="am-list-item">
+          <div class="am-list-content">缴费期间</div>
+          <div class="am-ft-black">趸交</div>
+        </div>
+        <div class="am-list-item">
+          <div class="am-list-content">年交保费</div>
+          <div class="am-ft-black">100元</div>
+        </div>
+      </template>
+      <!-- 恒大传家宝-->
       <!-- 金掌柜年金保险 -->
       <template v-if="item.safe_id==='398' && addonsSelected[item.safe_id]">
         <div class="am-list-item">
@@ -608,8 +625,8 @@
       <!-- 附加品质生活年金保险 -->
       <!-- 附加金账户年金保险 -->
       <template v-if="item.safe_id==='349'">
-        <app-input label="年缴保费">
-          <input slot="input"
+        <app-input label="年缴保费">02
+            <input slot="input"
                  v-model.number="cache.derate_money349"
                  type="number"
                  placeholder="基本保险金额（元）"
@@ -1190,13 +1207,13 @@
     mapGetters
   } from 'vuex'
 
-  const calMoneyIns = ['74', '182', '290', '352', '360', '377', '378', '379', '381'] // 算保费的主险
+  const calMoneyIns = ['74', '182', '290', '352', '360', '377', '378', '379', '381', '401'] // 算保费的主险
   const fuMoneyIns = ['318'] // 通过附加算主险
   // 附加险上线产品
   const addonFilter = ['8', '11', '86', '94', '121', '131', '146', '147', '148', '175', '177', '196', '235', '236', '237', '273', '281', '284', '285', '289', '291', '293', '294', '295', '348', '380', '370', '383', '183', '385', '386', '387', '388']
   const mustSelected = ['291', '177', '11', '333', '332', '349', '354'] // 必须附加的附加险
-  const noNeedCal = ['291', '11', '349', '398'] // 不需要计算的险种
-  const directNeedCal = ['11', '94', '121', '131', '177', '196', '284', '281', '285', '289', '333', '367', '368', '380', '370', '385', '386', '387', '388'] // 直接 计算的险种
+  const noNeedCal = ['291', '11', '349', '398', '404'] // 不需要计算的险种
+  const directNeedCal = ['11', '94', '121', '131', '177', '196', '284', '281', '285', '289', '333', '367', '368', '380', '370', '385', '386', '387', '388', '404'] // 直接 计算的险种
 
   export default {
     name: 'insurance',
@@ -1510,14 +1527,14 @@
         }
       },
       // 筛选主险年限
-      payYearFilter (index) {
+      payYearFilter (value) {
         let mainSafeYear = this.insurance.safe_year
         if (this.insurance.safe_id === '382') {
-          if (mainSafeYear === 10 && ['10', '15', '20'].indexOf(index) > -1) {
+          if (mainSafeYear === 10 && ['10', '15', '20'].indexOf(value) > -1) {
             return false
-          } else if (mainSafeYear === 15 && ['15', '20'].indexOf(index) > -1) {
+          } else if (mainSafeYear === 15 && ['15', '20'].indexOf(value) > -1) {
             return false
-          } else if (mainSafeYear === 20 && ['20'].indexOf(index) > -1) {
+          } else if (mainSafeYear === 20 && ['20'].indexOf(value) > -1) {
             return false
           } else {
             return true
@@ -1586,6 +1603,7 @@
               }
               break
             case '378': // 福享今生
+            case '401': // 恒大万年红
               if (index === '293' && this.insurance.period_money < 10000) {
                 toastText = '期交保费小于一万元时不可附加该险种'
               }
@@ -1758,7 +1776,7 @@
           this.flag[362] = ''
         } else if (safeid === '318') {
           this.flag[332] = ''
-        } else if (safeid === '288' || safeid === '290' || safeid === '292' || safeid === '369' || safeid === '378') { // 新增恒大万年青终身重疾病保险
+        } else if (safeid === '288' || safeid === '290' || safeid === '292' || safeid === '369' || safeid === '378' || safeid === '401') { // 新增恒大万年青终身重疾病保险,万年红
           this.flag[294] = ''
           this.flag[293] = ''
         } else if (safeid === '283') {
@@ -1909,8 +1927,28 @@
 
         let toastText = null
         switch (safeid) {
+          case '401': // 恒大万年红
+            if (mainPayYear === 3 && assuAge > 65) {
+              toastText = '3年交被保人不能超过65周岁'
+            } else if (mainPayYear === 5 && assuAge > 65) {
+              toastText = '5年交被保人不能超过45周岁'
+            } else if (mainPayYear === 10 && assuAge > 60) {
+              toastText = '10年交被保人不能超过60周岁'
+            }
+            break
+          case '403': // 优护宝终身
+            if (assuAge > 65) {
+              toastText = '被保人不能超过65周岁'
+            } else if (mainPayYear === 20 && assuAge > 55) {
+              toastText = '20年交被保人不能超过55周岁'
+            } else if (mainPayYear === 30 && assuAge > 45) {
+              toastText = '30年交被保人不能超过45周岁'
+            }
+            break
           case '402': // 优爱宝终身
-            if (mainPayYear === 20 && assuAge > 55) {
+            if (assuAge > 65) {
+              toastText = '被保人不能超过65周岁'
+            } else if (mainPayYear === 20 && assuAge > 55) {
               toastText = '20年交被保人不能超过55周岁'
             } else if (mainPayYear === 30 && assuAge > 45) {
               toastText = '30年交被保人不能超过45周岁'
@@ -2349,7 +2387,15 @@
         let toastText = null
 
         switch (safeid) {
+          case '401': // 恒大万年红
+            if (periodMoney < 1000) {
+              toastText = '【' + name + '】最低年缴保费为1千元'
+            } else if (periodMoney % 1000 !== 0) {
+              toastText = '【' + name + '】保费需为1千元整数倍'
+            }
+            break
           case '402': // 优爱宝终身
+          case '403': // 优护宝终身
             if (assuAge < 18 && money < 50000) {
               toastText = '未成年人最低保额5万元'
             } else if (assuAge >= 18 && money < 100000) {
@@ -2988,7 +3034,7 @@
             let extraMoney = flag > 50000 ? flag.toString().substr(1) : flag
             if (!flag) {
               toastText = '请先选择保险金额'
-            } else if (extraMoney > this.insurance.period_money * this.mainPayYear * 0.2 && ['290', '378'].indexOf(this.insurance.safe_id) > -1) {
+            } else if (extraMoney > this.insurance.period_money * this.mainPayYear * 0.2 && ['290', '378', '401'].indexOf(this.insurance.safe_id) > -1) {
               // 主险--金财D,福享今生
               toastText = '该附加险保额不超主合同总保费（期交保费*缴费年限）*20%'
             } else if (extraMoney > this.insurance.money * 0.2 && ['288', '369'].indexOf(this.insurance.safe_id) > -1) {
@@ -3235,7 +3281,12 @@
         let money = this.insurance.money
 
         // 险种参数
-        if (safeid === '400' || safeid === '399') { // 优护宝定期，优爱宝定期
+        if (safeid === '404') { // 恒大万年红附加传家宝
+          data.pay_year = 1
+          data.safe_year = 0
+          data.derate_money = 100
+          data.flag = 100
+        } else if (safeid === '400' || safeid === '399') { // 优护宝定期，优爱宝定期
           if (this.mainSafeYear > 50) {
             data.safe_year = this.mainSafeYear + '00'
           } else {
