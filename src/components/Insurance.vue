@@ -288,6 +288,31 @@
           </label>
         </div>
       </template>
+      <!-- 工银安盛养老年金 -->
+      <template v-if="item.safe_id==='19385' && addonsSelected[item.safe_id]">
+        <app-select label="领取年龄">
+          <select v-model.number="flag[item.safe_id]" @change="flagChanged(item.safe_id)">
+            <option disabled value=''>请选择</option>
+            <option value="65">65周岁</option>
+            <option value="75">75周岁</option>
+          </select>
+        </app-select>
+        <template v-if="addonRes[item.safe_id]">
+          <div class="am-list-item">
+            <div class="am-list-content">保险期间</div>
+            <div class="am-ft-black">至105周岁</div>
+          </div>
+          <div class="am-list-item">
+            <div class="am-list-content">缴费期间</div>
+            <div class="am-ft-black">趸交</div>
+          </div>
+          <div class="am-list-item">
+            <div class="am-list-content">年缴保费</div>
+            <div class="am-ft-orange">100</div>
+          </div>
+        </template>
+      </template>
+      <!-- 工银安盛养老年金-->
       <!-- 恒大传家宝 -->
       <template v-if="item.safe_id==='404' && addonsSelected[item.safe_id]">
         <div class="am-list-item">
@@ -889,7 +914,7 @@
       <template v-if="item.safe_id === '281' && addonRes[item.safe_id]">
         <div class="am-list-item">
           <div class="am-list-content">保障期间</div>
-          <div class="am-ft-black">{{mainSafeYear}}年</div>
+          <div class="am-ft-black">{{mainSafeYear | safeYearFilter}}</div>
         </div>
         <div class="am-list-item">
           <div class="am-list-content">缴费期间</div>
@@ -1212,7 +1237,7 @@
   // 附加险上线产品
   const addonFilter = ['8', '11', '86', '94', '121', '131', '146', '147', '148', '175', '177', '196', '235', '236', '237', '273', '281', '284', '285', '289', '291', '293', '294', '295', '348', '380', '370', '383', '183', '385', '386', '387', '388']
   const mustSelected = ['291', '177', '11', '333', '332', '349', '354'] // 必须附加的附加险
-  const noNeedCal = ['291', '11', '349', '398', '404'] // 不需要计算的险种
+  const noNeedCal = ['291', '11', '349', '398', '404', '19385'] // 不需要计算的险种
   const directNeedCal = ['11', '94', '121', '131', '177', '196', '284', '281', '285', '289', '333', '367', '368', '380', '370', '385', '386', '387', '388', '404'] // 直接 计算的险种
 
   export default {
@@ -1766,7 +1791,14 @@
       // 重置附加险默认信息
       resetAddon () {
         let safeid = this.insurance.safe_id
-        if (safeid === '382') {
+        if (safeid === '19384') {
+          this.flag[19385] = ''
+          this.flag[146] = ''
+          this.flag[147] = ''
+          this.cache.quota147 = 2
+          this.flag[148] = ''
+          this.cache.base_money148 = 0
+        } else if (safeid === '382') {
           this.flag[383] = ''
           this.cache.base_money383 = ''
           this.flag[183] = ''
@@ -1927,11 +1959,20 @@
 
         let toastText = null
         switch (safeid) {
+          case '19384': // 工银安盛鑫丰盈
+            if (mainPayYear === 1 && assuAge > 60) {
+              toastText = '趸交被保人不能超过60周岁'
+            } else if (mainPayYear === 5 && assuAge > 55) {
+              toastText = '5年交被保人不能超过55周岁'
+            } else if (mainPayYear === 10 && assuAge > 45) {
+              toastText = '10年交被保人不能超过45周岁'
+            }
+            break
           case '401': // 恒大万年红
             if (mainPayYear === 3 && assuAge > 65) {
               toastText = '3年交被保人不能超过65周岁'
             } else if (mainPayYear === 5 && assuAge > 65) {
-              toastText = '5年交被保人不能超过45周岁'
+              toastText = '5年交被保人不能超过65周岁'
             } else if (mainPayYear === 10 && assuAge > 60) {
               toastText = '10年交被保人不能超过60周岁'
             }
@@ -2387,6 +2428,13 @@
         let toastText = null
 
         switch (safeid) {
+          case '19384': // 工银鑫丰盈
+            if (this.mainPayYear === 1 && money < 3000) {
+              toastText = '【' + name + '】趸交最低基本保额3000元'
+            } else if (this.mainPayYear !== 1 && money < 2000) {
+              toastText = '【' + name + '】年交最低基本保额2000元'
+            }
+            break
           case '401': // 恒大万年红
             if (periodMoney < 1000) {
               toastText = '【' + name + '】最低年缴保费为1千元'
@@ -2826,6 +2874,11 @@
         let periodMoney = this.insurance.period_money
         let assuAge = Number(this.assu.age)
         switch (safeid) {
+          case '19385': // 工银养老年金
+            if (!flag) {
+              toastText = '请先选择领取年龄'
+            }
+            break
           case '183':
             if (!this.cache.base_money183) {
               toastText = '请先输入保险金额'
@@ -3223,7 +3276,7 @@
           need_packet: 0
         }
         // 添加特殊参数
-        let filterSafeid = ['74', '182', '290', '348', '172', '352', '360', '362', '377']
+        let filterSafeid = ['74', '182', '290', '348', '172', '352', '360', '362', '377', '404', '19385']
         if (filterSafeid.indexOf(safeid) > -1) {
           data = Object.assign(data, {
             assume_rate: '0',
@@ -3277,15 +3330,36 @@
         }
 
         let py = this.mainPayYear === 1 ? 1 : this.mainPayYear - 1 // 主险缴费期间减一年
-        let periodMoney = this.insurance.period_money
-        let money = this.insurance.money
+        let periodMoney = Number(this.insurance.period_money)
+        let money = Number(this.insurance.money)
 
         // 险种参数
-        if (safeid === '404') { // 恒大万年红附加传家宝
+        if (safeid === '19385') { // 工银安盛-鑫丰盈年金保险-养老年金
+          data.pay_year = 1
+          data.safe_year = 10500
+          data.level = 0
+          data.flag = this.flag[safeid]
+          data.ylnj = 0
+          data.zsj = 0
+          data.njy = 0
+          data.nje = 0
+          data.tbnj = 0
+          this.addonRes[safeid] = {'年缴保费': 100}
+          this.$forceUpdate()
+        } else if (safeid === '19384') { // 工银安盛-鑫丰盈年金保险
+          data.safe_year = 10500
+        } else if (safeid === '404') { // 恒大万年红附加传家宝
           data.pay_year = 1
           data.safe_year = 0
+          data.base_money = 0
           data.derate_money = 100
           data.flag = 100
+          data.ylnj = 0
+          data.zsj = 0
+          data.njy = 0
+          data.nje = 0
+          data.tbnj = 0
+          this.addonRes[safeid] = {'年缴保费': 100}
         } else if (safeid === '400' || safeid === '399') { // 优护宝定期，优爱宝定期
           if (this.mainSafeYear > 50) {
             data.safe_year = this.mainSafeYear + '00'
@@ -3302,7 +3376,7 @@
           data.pay_year = 1
           data.safe_year = 1
           if (this.addonRes[385]) {
-            data.base_money = (Number(periodMoney) + Number(this.addonRes[385]['年缴保费'])) * (this.mainPayYear - 1)
+            data.base_money = (periodMoney + Number(this.addonRes[385]['年缴保费'])) * (this.mainPayYear - 1)
           } else {
             data.base_money = periodMoney * (this.mainPayYear - 1)
           }
@@ -3558,18 +3632,18 @@
               let data = ret.data.data[safeid].main.list[1]
               if (this.isBaseMoney && !this.fuBaseMoney) {
                 if (safeid === '366') {
-                  this.insurance.period_money = data['住院总保费']
+                  this.insurance.period_money = Number(data['住院总保费'])
                 } else {
-                  this.insurance.period_money = Number(data['年缴保费'].toFixed(0))
+                  this.insurance.period_money = Number(data['年缴保费'])
                 }
               } else if (this.isBaseMoney && this.fuBaseMoney) {
-                this.insurance.period_money = data['年缴保费']
-                this.insurance.money = ret.data.data[safeid].base_money
+                this.insurance.period_money = Number(data['年缴保费'])
+                this.insurance.money = Number(ret.data.data[safeid].base_money)
               } else {
                 if (safeid === '360') {
-                  this.insurance.money = data['保额']
+                  this.insurance.money = Number(data['保额'])
                 } else {
-                  this.insurance.money = ret.data.data[safeid].base_money
+                  this.insurance.money = Number(ret.data.data[safeid].base_money)
                 }
               }
               if (safeid !== '318' && safeid !== '366') {

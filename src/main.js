@@ -57,7 +57,7 @@ Vue.mixin({
 
 // 过滤器
 Vue.filter('safeYearFilter', function (value) {
-  if (value > 50 && value !== '999') {
+  if (value > 50 && value !== '999' && value !== 999) {
     return `至${value}岁`
   } else if (value < 50 && value > 0) {
     return `${value}年`
