@@ -1232,7 +1232,7 @@
     mapGetters
   } from 'vuex'
 
-  const calMoneyIns = ['74', '182', '290', '352', '360', '377', '378', '379', '381', '401'] // 算保费的主险
+  const calMoneyIns = ['74', '182', '290', '352', '360', '377', '378', '379', '381', '401', '19384'] // 算保费的主险
   const fuMoneyIns = ['318'] // 通过附加算主险
   // 附加险上线产品
   const addonFilter = ['8', '11', '86', '94', '121', '131', '146', '147', '148', '175', '177', '196', '235', '236', '237', '273', '281', '284', '285', '289', '291', '293', '294', '295', '348', '380', '370', '383', '183', '385', '386', '387', '388']
@@ -2428,13 +2428,6 @@
         let toastText = null
 
         switch (safeid) {
-          case '19384': // 工银鑫丰盈
-            if (this.mainPayYear === 1 && money < 3000) {
-              toastText = '【' + name + '】趸交最低基本保额3000元'
-            } else if (this.mainPayYear !== 1 && money < 2000) {
-              toastText = '【' + name + '】年交最低基本保额2000元'
-            }
-            break
           case '401': // 恒大万年红
             if (periodMoney < 1000) {
               toastText = '【' + name + '】最低年缴保费为1千元'
@@ -2697,6 +2690,13 @@
         }
 
         switch (safeid) {
+          case '19384': // 工银鑫丰盈
+            if (this.mainPayYear === 1 && money < 3000) {
+              toastText = '趸交最低基本保额3000元'
+            } else if (this.mainPayYear !== 1 && money < 2000) {
+              toastText = '年交最低基本保额2000元'
+            }
+            break
           case '360': // 恒大鑫福年
             if (money < 1000) {
               toastText = '该主险最低保额1千元！'
@@ -2727,7 +2727,11 @@
         if (toastText) {
           this.$toast.open(toastText)
           setTimeout(() => {
-            this.insurance.period_money = ''
+            if (safeid === '19384') {
+              this.insurance.money = ''
+            } else {
+              this.insurance.period_money = ''
+            }
           }, 2000)
           return false
         }
@@ -3634,16 +3638,16 @@
                 if (safeid === '366') {
                   this.insurance.period_money = Number(data['住院总保费'])
                 } else {
-                  this.insurance.period_money = Number(data['年缴保费'])
+                  this.insurance.period_money = Number(Number(data['年缴保费']).toFixed(0))
                 }
               } else if (this.isBaseMoney && this.fuBaseMoney) {
-                this.insurance.period_money = Number(data['年缴保费'])
-                this.insurance.money = Number(ret.data.data[safeid].base_money)
+                this.insurance.period_money = Number(Number(data['年缴保费']).toFixed(0))
+                this.insurance.money = Number(Number(ret.data.data[safeid].base_money).toFixed(0))
               } else {
                 if (safeid === '360') {
                   this.insurance.money = Number(data['保额'])
                 } else {
-                  this.insurance.money = Number(ret.data.data[safeid].base_money)
+                  this.insurance.money = Number(Number(ret.data.data[safeid].base_money).toFixed(0))
                 }
               }
               if (safeid !== '318' && safeid !== '366') {

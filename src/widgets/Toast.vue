@@ -37,7 +37,8 @@
       },
       close () {
         this.timer && window.clearTimeout(this.timer)
-        this.isShow = false
+        this.text = null
+        this.type = null
       }
     }
   }
