@@ -313,11 +313,14 @@
       }
     },
     created () {
+      this.$toast.loading('初始化数据', 'loading')
       // 获取险种列表
       this.$store.dispatch('SET_INSLIST', {
         admin_id: this.admin_id,
         ecb: this.errorCb,
         scb: () => {
+          this.$toast.close()
+          //  直接点击险种进来
           if (this.safe_id) {
             // var company = this.insList.company
             var main = this.insList.main
