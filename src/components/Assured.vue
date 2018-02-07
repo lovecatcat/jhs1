@@ -61,7 +61,8 @@
    */
   import utils from '../widgets/utils'
   import {
-    mapState
+    mapState,
+    mapGetters
   } from 'vuex'
 
   export default {
@@ -80,6 +81,9 @@
     computed: {
       ...mapState([
         'pl_id'
+      ]),
+      ...mapGetters([
+        'appl'
       ])
     },
     watch: {
@@ -95,7 +99,7 @@
     },
     methods: {
       keepSame () {
-        let appl = this.$parent.$refs.appl.$data.appl
+        let appl = this.appl
         this.assu = Object.assign({}, this.assu, utils.parseVueObj(appl))
       },
       ageChanged () {

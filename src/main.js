@@ -57,12 +57,21 @@ Vue.mixin({
 
 // 过滤器
 Vue.filter('safeYearFilter', function (value) {
-  if (value > 50 && value !== '999') {
+  if (value > 50 && value !== '999' && value !== 999) {
     return `至${value}岁`
   } else if (value < 50 && value > 0) {
     return `${value}年`
   } else {
     return '终身'
+  }
+})
+Vue.filter('payYearFilter', function (value) {
+  if (value === '1') {
+    return '趸交'
+  } else if (value < 60) {
+    return `${value}年交`
+  } else {
+    return `至${value}岁`
   }
 })
 Vue.filter('moneyFilter', function (value) {

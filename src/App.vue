@@ -26,9 +26,13 @@
         </app-input>
       </div>
 
-      <applicant ref="appl" :edit="applData"></applicant>
+
 
       <div class="plan" v-show="plan.id === activePlan" v-for="plan,index in plans" :key="plan.id">
+        <applicant
+          :ref="'appl_' + plan.id"
+          :id="plan.id"
+          :edit="plan.appl"/>
         <assured
           :ref="'assu_' + plan.id"
           :id="plan.id"

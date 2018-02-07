@@ -12,7 +12,7 @@
                  @change="checkName(appl.name, '投保人')"
                  placeholder="请填写投保人姓名"
                  v-model.lazy.trim="appl.name"
-                 :disabled="pl_id !== ''">
+                 :disabled="pl_id !== '' && id === 1">
           <div slot="icon"
                class="am-list-clear"
                @click="appl.name = '' "
@@ -24,9 +24,9 @@
           <input slot="input"
                  type="number"
                  placeholder="请填写投保人年龄"
-                 v-model.number.lazy="appl.age"
+                 v-model.number="appl.age"
                  @change="ageChanged"
-                 :disabled="pl_id !== ''">
+                 :disabled="pl_id !== '' && id === 1">
           <div slot="icon" class="am-list-clear" v-show="appl.age != '' && pl_id === ''">
             <i class="am-icon-clear am-icon" @click="appl.age = '' "></i>
           </div>
@@ -37,21 +37,21 @@
                    id="appdate"
                    v-model="birthday"
                    @change="birthDayChanged"
-                   :disabled="pl_id !== ''">
+                   :disabled="pl_id !== '' && id === 1">
           </label>
         </app-input>
         <app-input label="性别">
           <div class="am-ft-left" slot="input">
             <label class="radio sex-radio">
               <div class="am-checkbox">
-                <input type="radio" :value="true" v-model="appl.sex" :disabled="pl_id !== ''">
+                <input type="radio" :value="true" v-model="appl.sex" :disabled="pl_id !== '' && id === 1">
                 <span class="icon-check" aria-hidden="true" style="top: -0.08rem"></span>
               </div>
               <span>男</span>
             </label>
             <label class="radio sex-radio">
               <div class="am-checkbox">
-                <input type="radio" :value="false" v-model="appl.sex" :disabled="pl_id !== ''">
+                <input type="radio" :value="false" v-model="appl.sex" :disabled="pl_id !== '' && id === 1">
                 <span class="icon-check" aria-hidden="true" style="top: -0.08rem;"></span>
               </div>
               <span>女</span>
@@ -76,15 +76,12 @@
   export default {
     name: 'applicant',
     props: {
-      'edit': Object
+      id: Number,
+      edit: Object
     },
     data () {
       return {
-        appl: {
-          name: '',
-          age: '',
-          sex: true
-        },
+        appl: null,
         birthday: ''
       }
     },
@@ -96,14 +93,12 @@
     watch: {
       appl: {
         handler (val) {
-          this.$store.commit('SET_APPL', val)
+          this.$store.commit('SET_APPL', {
+            id: this.id,
+            appl: val
+          })
         },
         deep: true
-      },
-      edit (val) {
-        let appl = Object.assign({}, val)
-        appl.sex && (appl.sex = appl.sex === 1 || appl.sex === true)
-        this.appl = appl
       }
     },
     methods: {
@@ -121,6 +116,17 @@
       },
       addPlan () {
         this.$store.commit('ADD_PLAN')
+      }
+    },
+    created () {
+      if (this.$store.state.pl_id && this.edit.name) {
+        this.appl = Object.assign({}, this.edit)
+      } else {
+        this.appl = {
+          name: '',
+          sex: true,
+          age: ''
+        }
       }
     }
   }

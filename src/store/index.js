@@ -47,6 +47,11 @@ export default new Vuex.Store({
     alias: null // 计划书名称
   },
   getters: {
+    appl: state => {
+      let plans = state.plans
+      let plan = getPlanIndex(state)
+      return plans && plans[plan] ? plans[plan].appl : {}
+    },
     assu: state => {
       let plans = state.plans
       let plan = getPlanIndex(state)
@@ -79,7 +84,8 @@ export default new Vuex.Store({
     },
     SET_APPL (state, payload) {
       console.log('commit mutation: SET_APPL')
-      state.appl = utils.parseVueObj(payload)
+      state.plans[getPlanIndex(state, payload.id)].appl = utils.parseVueObj(payload.appl)
+      // state.appl = utils.parseVueObj(payload)
     },
     SET_ASSU (state, payload) {
       console.log('commit mutation: SET_ASSU')
@@ -113,7 +119,8 @@ export default new Vuex.Store({
       state.plans.push({
         id,
         ins: [{}],
-        assu: {}
+        assu: {},
+        appl: {}
       })
       state.activePlan = id
       state.saveStatus[id] = false
@@ -127,6 +134,11 @@ export default new Vuex.Store({
           main: {},
           addon: {}
         }],
+        appl: {
+          age: '',
+          name: '',
+          sex: ''
+        },
         assu: {
           age: '',
           name: '',
@@ -190,6 +202,7 @@ export default new Vuex.Store({
 
           plans.push({
             id: plans.length + 1,
+            appl: plan.appl,
             assu: plan.assu,
             ins
           })
