@@ -91,7 +91,6 @@
                     v-model.number="insurance.money"
                     @change="resetFee">
                     <option disabled value="">请选择</option>
-                    <option value="50000">50000</option>
                     <option value="100000">100000</option>
                     <option value="150000">150000</option>
                     <option value="250000">250000</option>
