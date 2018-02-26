@@ -1,9 +1,14 @@
 <template>
   <div class="applicant">
     <div class="am-list am-list-6lb form">
+      <div class="am-list-body" aria-labelledby="list-header-1">
+        <div class="am-list-item">
+          <div class="am-list-content" @click="addPlan"><i class="iconfont icon-tianjia"></i> 添加方案</div>
+        </div>
+      </div>
       <div class="form-header fn-clear">
         <span class="fn-left">投保人信息</span>
-        <span class="color-blank fn-right add-plan" @click="addPlan"><i class="iconfont icon-tianjia"></i> 添加被保人</span>
+        <!--<span class="color-blank fn-right add-plan" @click="addPlan"><i class="iconfont icon-tianjia"></i> 添加被保人</span>-->
       </div>
       <div class="am-list-body" v-if="appl">
         <app-input label="姓名">
@@ -87,16 +92,28 @@
     },
     computed: {
       ...mapState([
-        'pl_id'
+        'pl_id',
+        'plans'
       ])
     },
     watch: {
       appl: {
         handler (val) {
+          console.log(this.id)
           this.$store.commit('SET_APPL', {
             id: this.id,
             appl: val
           })
+        },
+        deep: true
+      },
+      edit: {
+        handler (val) {
+          if (this.plans.length === this.id) {
+            this.appl.name = val.name
+            this.appl.age = val.age
+            this.appl.sex = val.sex
+          }
         },
         deep: true
       }
@@ -121,6 +138,8 @@
     created () {
       if (this.$store.state.pl_id && this.edit.name) {
         this.appl = Object.assign({}, this.edit)
+      } else if (this.id !== 1) {
+        this.appl = Object.assign({}, this.plans[0].appl)
       } else {
         this.appl = {
           name: '',

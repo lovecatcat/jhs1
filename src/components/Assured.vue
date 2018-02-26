@@ -1,9 +1,17 @@
 <template>
   <div class="assured">
     <div class="am-list am-list-6lb form">
+      <div class="am-list-body" aria-labelledby="list-header-1">
+        <div class="am-list-item">
+          <div class="am-list-content" @click="swap"><i class="iconfont icon-shangxiajiantou"></i> 投、被保人置换</div>
+        </div>
+        <div class="am-list-item">
+          <div class="am-list-content" @click="keepSame" v-if="pl_id === '' || id !== 1"> 同投保人</div>
+        </div>
+      </div>
       <div class="form-header">
         <span class="fn-left">被保人信息</span>
-        <span class="fn-right color-blank" @click="keepSame" v-if="pl_id === '' || id !== 1"><input type="radio">同投保人</span>
+        <!--<span class="fn-right color-blank" @click="keepSame" v-if="pl_id === '' || id !== 1"><input type="radio">同投保人</span>-->
       </div>
       <div class="am-list-body" v-if="assu">
         <app-input label="姓名">
@@ -80,7 +88,8 @@
     },
     computed: {
       ...mapState([
-        'pl_id'
+        'pl_id',
+        'plans'
       ]),
       ...mapGetters([
         'appl'
@@ -98,6 +107,15 @@
       }
     },
     methods: {
+      swap () {
+        let assu = this.assu
+        let appl = this.appl
+        this.assu = Object.assign({}, this.assu, utils.parseVueObj(appl))
+        this.$store.commit('SET_APPL', {
+          id: this.id,
+          appl: assu
+        })
+      },
       keepSame () {
         let appl = this.appl
         this.assu = Object.assign({}, this.assu, utils.parseVueObj(appl))
@@ -118,6 +136,8 @@
     created () {
       if (this.$store.state.pl_id && this.edit.name) {
         this.assu = Object.assign({}, this.edit)
+      } else if (this.id !== 1) {
+        this.assu = Object.assign({}, this.plans[0].assu)
       } else {
         this.assu = {
           name: '',
