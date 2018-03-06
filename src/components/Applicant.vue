@@ -1,14 +1,9 @@
 <template>
   <div class="applicant">
     <div class="am-list am-list-6lb form">
-      <div class="am-list-body" aria-labelledby="list-header-1">
-        <div class="am-list-item">
-          <div class="am-list-content" @click="addPlan"><i class="iconfont icon-tianjia"></i> 添加方案</div>
-        </div>
-      </div>
       <div class="form-header fn-clear">
         <span class="fn-left">投保人信息</span>
-        <!--<span class="color-blank fn-right add-plan" @click="addPlan"><i class="iconfont icon-tianjia"></i> 添加被保人</span>-->
+        <span class="color-blank fn-right add-plan" @click="addPlan"><i class="iconfont icon-tianjia"></i> 添加被保人</span>
       </div>
       <div class="am-list-body" v-if="appl">
         <app-input label="姓名">

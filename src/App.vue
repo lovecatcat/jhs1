@@ -1,6 +1,5 @@
 <template>
   <div id="app">
-
     <div class="am-tab am-fixed am-fixed-top" style="overflow-x: auto;">
       <a href="javascript:;" style="border-right: solid 1px #eee;min-width: 100px;" class="am-tab-item"
          :class="{selected:activePlan===plan.id}"
