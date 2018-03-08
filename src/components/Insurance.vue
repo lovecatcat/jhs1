@@ -31,6 +31,9 @@
                     :disabled="mainSyAttr.length === 1"
                     @change="resetFee">
               <option disabled value=''>请选择</option>
+              <option value="25" v-if="insurance.safe_id === '19388'">
+                至25周岁
+              </option>
               <option v-for="(item,index) in mainSyAttr" :value="item.safe_year" :key="index">
                 {{item.safe_year | safeYearFilter}}
               </option>
@@ -287,20 +290,46 @@
           </label>
         </div>
       </template>
+      <!-- 国华 附加少儿成长无忧年金保险 -->
+      <template v-if="item.safe_id==='19389' && addonsSelected[item.safe_id]">
+        <app-input label="份数">
+          <input slot="input"
+                 v-model.number="cache.derate_money19389"
+                 type="number"
+                 placeholder="请输入份数"
+                 @change="addonsSelected[item.safe_id] = true, flagChanged(item.safe_id)">
+          <div slot="icon" v-show="cache.derate_money19389 !== ''" class="am-list-clear"><i
+            class="am-icon-clear am-icon" @click="cache.derate_money19389 = ''"></i></div>
+        </app-input>
+        <div class="am-list-item">
+          <div class="am-list-content">保障期间</div>
+          <div class="am-ft-black">至25周岁</div>
+        </div>
+        <div class="am-list-item">
+          <div class="am-list-content">缴费期间</div>
+          <div class="am-ft-black">10年</div>
+        </div>
+        <template v-if="addonRes[item.safe_id]">
+          <div class="am-list-item">
+            <div class="am-list-content">保险金额</div>
+            <div class="am-ft-orange">{{10*insurance.period_money*cache.derate_money19389}}</div>
+          </div>
+          <div class="am-list-item">
+            <div class="am-list-content">年缴保费</div>
+            <div class="am-ft-orange">{{addonRes[item.safe_id]['年缴保费']}}</div>
+          </div>
+        </template>
+      </template>
+      <!-- 国华 附加少儿成长无忧年金保险-->
       <!-- 恒大 附加恒久安心住院医疗保险 -->
       <template v-if="item.safe_id==='19392' && addonsSelected[item.safe_id]">
-        <app-select label="保险今额">
+        <app-select label="保险金额">
           <select v-model.number="flag[item.safe_id]" @change="flagChanged(item.safe_id)">
             <option disabled value=''>请选择</option>
-            <option value="5000">5000元</option>
-            <option value="10000">10000元</option>
-          </select>
-        </app-select>
-        <app-select label="有无社保">
-          <select v-model.number="flag[193921]" @change="flagChanged(item.safe_id)">
-            <option disabled value=''>请选择</option>
-            <option value="1">有</option>
-            <option value="2">无</option>
+            <option value="15000">有社保5千元</option>
+            <option value="25000">无社保5千元</option>
+            <option value="110000">有社保1万元</option>
+            <option value="210000">无社保1万元</option>
           </select>
         </app-select>
         <div class="am-list-item">
@@ -1266,7 +1295,7 @@
   const calMoneyIns = ['74', '182', '290', '352', '360', '377', '378', '379', '381', '401', '19384'] // 算保费的主险
   const fuMoneyIns = ['318'] // 通过附加算主险
   // 附加险上线产品
-  const addonFilter = ['8', '11', '86', '94', '121', '131', '146', '147', '148', '175', '177', '196', '235', '236', '237', '273', '281', '284', '285', '289', '291', '293', '294', '295', '348', '380', '370', '383', '183', '385', '386', '387', '388', '19392']
+  const addonFilter = ['8', '11', '86', '94', '121', '131', '146', '147', '148', '175', '177', '196', '235', '236', '237', '273', '281', '284', '285', '289', '291', '293', '294', '295', '348', '380', '370', '383', '183', '385', '386', '387', '388', '19392', '19389']
   const mustSelected = ['291', '177', '11', '333', '332', '349', '354'] // 必须附加的附加险
   const noNeedCal = ['291', '11', '349', '398', '404', '19385'] // 不需要计算的险种
   const directNeedCal = ['11', '94', '121', '131', '177', '196', '284', '281', '285', '289', '333', '367', '368', '380', '370', '385', '386', '387', '388', '404'] // 直接 计算的险种
@@ -1310,7 +1339,8 @@
           pay_money333: '',
           base_money383: '',
           base_money183: '',
-          base_money398: ''
+          base_money398: '',
+          base_money19389: ''
         },
         mainInsData: {}, // 主险提交信息
         addonInsData: {}, // 附加险提交信息
@@ -1648,7 +1678,7 @@
                 }
               }
               break
-            case '292': // 千万人生
+            case '292': // 千万护航
               if (['295', '294', '293', '19392'].indexOf(index) > -1) {
                 if (this.insurance.money * 50000 < 200000) {
                   toastText = '主险保额小于20万元时不可附加该险种'
@@ -1821,7 +1851,6 @@
 //            取消时 清除缓存的提交数据
             this.flag[index] = ''
             this.flag[1831] = ''
-            this.flag[193921] = ''
             this.$delete(this.addonInsData, index)
             this.$delete(this.addonRes, index)
           }
@@ -1852,7 +1881,6 @@
           this.flag[294] = ''
           this.flag[293] = ''
           this.flag[19392] = ''
-          this.flag[193921] = ''
         } else if (safeid === '283') {
           this.flag[146] = ''
           this.flag[147] = ''
@@ -1873,6 +1901,7 @@
         this.cache.pay_money332 = ''
         this.cache.pay_money333 = ''
         this.cache.derate_money398 = ''
+        this.cache.derate_money19389 = ''
         if (this.Addons) {
           for (let i in this.Addons[safeid]) {
             const j = this.Addons[safeid][i].safe_id
@@ -2001,6 +2030,11 @@
 
         let toastText = null
         switch (safeid) {
+          case '19388': // 工银安盛鑫丰盈
+            if (assuAge > 7 || assuAge < 0) {
+              toastText = '被保人在0周岁到7周岁之间'
+            }
+            break
           case '19384': // 工银安盛鑫丰盈
             if (mainPayYear === 1 && assuAge > 60) {
               toastText = '趸交被保人不能超过60周岁'
@@ -2470,6 +2504,13 @@
         let toastText = null
 
         switch (safeid) {
+          case '19388': // 恒大万年红
+            if (money < 300000) {
+              toastText = '【' + name + '】最低基本保额为30万'
+            } else if (money % 10000 !== 0) {
+              toastText = '【' + name + '】保费需为1万元整数倍'
+            }
+            break
           case '401': // 恒大万年红
             if (periodMoney < 1000) {
               toastText = '【' + name + '】最低年缴保费为1千元'
@@ -2924,8 +2965,6 @@
           case '19392': // 恒大恒久安心住院医疗
             if (!flag) {
               toastText = '请先选择保险今额'
-            } else if (!this.flag[193921]) {
-              toastText = '请先选择有无社保'
             }
             break
           case '19385': // 工银养老年金
@@ -3388,12 +3427,21 @@
         let money = Number(this.insurance.money)
 
         // 险种参数
-        if (safeid === '19392') { // 中英人寿附加交通意外伤害保险
+        if (safeid === '19389') { // 国华附加少儿成长无忧年金保险
+          data.pay_year = 10
+          data.safe_year = 2500
+          data.base_money = this.cache.derate_money19389 * periodMoney * 10
+          data.year_fee = this.cache.derate_money19389
+        } else if (safeid === '19388') { // 国华少儿成长无忧重大疾病保险
+          data.pay_year = this.mainPayYear
+          data.safe_year = 2500
+          data.base_money = money
+        } else if (safeid === '19392') { // 中英人寿附加交通意外伤害保险
           data.pay_year = 1
           data.safe_year = 1
           data.base_money = 0
           data.assu_sex = 0
-          data.flag = String(this.flag[193921]) + this.flag[safeid]
+          data.flag = this.flag[safeid]
         } else if (safeid === '19385') { // 工银安盛-鑫丰盈年金保险-养老年金
           data.pay_year = 1
           data.safe_year = 10500
@@ -3694,16 +3742,16 @@
                 if (safeid === '366') {
                   this.insurance.period_money = Number(data['住院总保费'])
                 } else {
-                  this.insurance.period_money = Number(Number(data['年缴保费']).toFixed(0))
+                  this.insurance.period_money = Number(Number(data['年缴保费']).toFixed(2))
                 }
               } else if (this.isBaseMoney && this.fuBaseMoney) {
-                this.insurance.period_money = Number(Number(data['年缴保费']).toFixed(0))
-                this.insurance.money = Number(Number(ret.data.data[safeid].base_money).toFixed(0))
+                this.insurance.period_money = Number(Number(data['年缴保费']).toFixed(2))
+                this.insurance.money = Number(Number(ret.data.data[safeid].base_money).toFixed(2))
               } else {
                 if (safeid === '360') {
                   this.insurance.money = Number(data['保额'])
                 } else {
-                  this.insurance.money = Number(Number(ret.data.data[safeid].base_money).toFixed(0))
+                  this.insurance.money = Number(Number(ret.data.data[safeid].base_money).toFixed(2))
                 }
               }
               if (safeid !== '318' && safeid !== '366') {
